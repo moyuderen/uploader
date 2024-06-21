@@ -6,6 +6,7 @@ export default class Chunk {
   constructor(file, chunk, index) {
     this.opts = file.uploader.opts
     this.file = file
+    this.uploader = this.file.uploader
     this.blob = new Blob([chunk], { type: this.file.type })
     this.size = this.blob.size
     this.chunkIndex = index
@@ -17,11 +18,11 @@ export default class Chunk {
     this.progress = 0
     this.progressInFile = 0
     this.id = generateUid('chunk_id')
-    this.retries = 3
+    this.retries = this.uploader.opts.retries
     this.timer = null
   }
 
-  send() {
+  send(isRetry) {
     return new Promise((resolve, reject) => {
       this.status = Status.Pending
       const progressHandler = (e) => {
@@ -38,8 +39,14 @@ export default class Chunk {
         // this.file.setProgress(this)
         if (this.retries <= 0) {
           this.file.deleteReponseChunkInUploadingQueue(this)
-          this.file.upadteRrrorChunks(this)
-          this.file.send()
+
+          if (isRetry) {
+            this.file.retryErrorChunks.add(this)
+            this.file.errorChunks.delete(this)
+          } else {
+            this.file.upadteRrrorChunks(this)
+          }
+          this.file.send(isRetry)
           reject({
             xhr: this.xhr,
             response: this.xhr.response,
@@ -48,27 +55,38 @@ export default class Chunk {
             chunk: this,
             e: e
           })
+        } else {
+          this.timer = setTimeout(() => {
+            this.send()
+            this.retries--
+            clearTimeout(this.timer)
+          }, this.uploader.opts.retryInterval)
         }
-        this.timer = setTimeout(() => {
-          this.send()
-          this.retries--
-          clearTimeout(this.timer)
-        }, 2000)
       }
       const doneHandler = (e) => {
         if (this.xhr.status < 200 || this.xhr.status >= 300) {
           failHandler(e)
           return
         }
-        this.status = Status.Success
-        this.file.deleteReponseChunkInUploadingQueue(this)
-        this.file.send()
-        resolve({
-          xhr: this.xhr,
-          response: this.xhr.response,
-          status: this.xhr.status,
-          statusText: this.xhr.statusText
-        })
+        if (this.uploader.opts.successStatuses(this.xhr)) {
+          this.status = Status.Success
+          this.file.deleteReponseChunkInUploadingQueue(this)
+          if (this.file.errorChunks.has(this)) {
+            this.file.errorChunks.delete(this)
+          }
+          if (isRetry) {
+            this.file.retryErrorChunks.delete(this)
+          }
+          this.file.send(isRetry)
+          resolve({
+            xhr: this.xhr,
+            response: this.xhr.response,
+            status: this.xhr.status,
+            statusText: this.xhr.statusText
+          })
+        } else {
+          failHandler(e)
+        }
       }
 
       const data = new FormData()
@@ -77,7 +95,7 @@ export default class Chunk {
       each(this.opts.data, (val, key) => {
         data.append(key, val)
       })
-      data.append('file', this.blob)
+      data.append(this.file.uploader.opts.name, this.blob)
       data.append('id', this.id)
       data.append('fileId', this.file.id)
       data.append('index', this.chunkIndex)

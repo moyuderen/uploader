@@ -11,9 +11,16 @@ const defaultOptions = {
     name: 'hah'
   },
   data: {},
-  concurrency: 5,
+  concurrency: 10,
   chunkSize: 1 * 1024 * 4,
-  autoUpload: true
+  autoUpload: true,
+  name: 'file',
+  successStatuses(xhr) {
+    return [200, 201, 202].includes(xhr.status)
+    // return xhr.status === 200
+  },
+  retries: 0,
+  retryInterval: 2000
 }
 
 const defaultAttributes = {
@@ -91,6 +98,17 @@ export default class Uploader {
 
     delteFile.remove()
     this.fileList.splice(index, 1)
+    this.upload1()
+  }
+
+  retry(id) {
+    let retryFile
+    this.fileList.forEach((file) => {
+      if (file.id === id) {
+        retryFile = file
+      }
+    })
+    retryFile.send(true)
     this.upload1()
   }
 

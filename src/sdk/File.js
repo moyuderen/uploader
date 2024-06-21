@@ -16,6 +16,7 @@ export default class File {
     this.chunks = []
     this.uploadedChunks = []
     this.errorChunks = new Set()
+    this.retryErrorChunks = new Set()
     this.cancelChunks = []
     this.uploadingQueue = new Set()
     this.reqs = new Set()
@@ -47,7 +48,12 @@ export default class File {
     const progress = this.chunks.reduce((total, chunk) => {
       return (total += chunk.progressInFile)
     }, 0)
-    this.progress = Math.min(progress, 1)
+    if (this.status !== Status.Success) {
+      this.progress = Math.max(Math.min(progress, 0.99), this.progress)
+    }
+
+    // this.progress = Math.max(Math.min(progress, 1), this.progress)
+
     if (this.status === Status.Success) {
       this.progress = 1
     }
@@ -61,8 +67,14 @@ export default class File {
     this.uploadingQueue.delete(chunk)
   }
 
-  send() {
-    const readyChunks = this.chunks.filter((chunk) => chunk.status === Status.Ready)
+  send(isRetry = false) {
+    let readyChunks = []
+    if (isRetry) {
+      readyChunks = [...this.errorChunks]
+    } else {
+      readyChunks = this.chunks.filter((chunk) => chunk.status === Status.Ready)
+    }
+
     const run = () => {
       if (this.uploadingQueue.size >= this.uploader.opts.concurrency) {
         return
@@ -71,21 +83,47 @@ export default class File {
       while (this.uploadingQueue.size < this.uploader.opts.concurrency && readyChunks.length) {
         const chunk = readyChunks.shift()
         if (chunk) {
+          if (isRetry) {
+            if (this.retryErrorChunks.has(chunk)) {
+              break
+            }
+          }
           this.uploadingQueue.add(chunk)
         }
       }
-
       if (this.uploadingQueue.size === 0) {
         if (this.errorChunks.size === 0) {
-          this.status = this.errorChunks.size === 0 ? Status.Success : Status.Fail
-          this.uploader.upload1()
+          if (isRetry) {
+            if (this.retryErrorChunks.size === 0) {
+              this.status = Status.Success
+              this.progress = 1
+            } else {
+              this.status = Status.Fail
+              this.retryErrorChunks.forEach((chunk) => {
+                this.errorChunks.add(chunk)
+              })
+              this.retryErrorChunks.clear()
+            }
+          } else {
+            this.status = Status.Success
+            this.progress = 1
+          }
+        } else {
+          this.status = Status.Fail
+          this.retryErrorChunks.forEach((chunk) => {
+            this.errorChunks.add(chunk)
+          })
+          this.retryErrorChunks.clear()
         }
+        this.uploader.upload1()
         return
       }
       Promise.race(
         [...this.uploadingQueue]
-          .filter((chunk) => chunk.status === Status.Ready)
-          .map((chunk) => chunk.send())
+          .filter((chunk) =>
+            isRetry ? chunk.status === Status.Fail : chunk.status === Status.Ready
+          )
+          .map((chunk) => chunk.send(isRetry))
       )
     }
     run()
