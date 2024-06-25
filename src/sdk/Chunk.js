@@ -22,39 +22,45 @@ export default class Chunk {
     this.timer = null
   }
 
-  send(isRetry) {
+  prepareXhr() {
+    const data = new FormData()
+    this.xhr.responseType = 'json'
+    data.append(this.file.uploader.opts.name, this.blob)
+    data.append('id', this.id)
+    data.append('fileId', this.file.id)
+    data.append('index', this.chunkIndex)
+    data.append('filename', this.filename)
+    data.append('size', this.size)
+    data.append('totalSize', this.totalSize)
+    each(this.opts.data, (val, key) => {
+      data.append(key, val)
+    })
+    this.xhr.open('POST', this.opts.target, true)
+
+    // 'setRequestHeader' on 'XMLHttpRequest': The object's state must be OPENED
+    if ('setRequestHeader' in this.xhr) {
+      each(this.opts.headers, (val, key) => {
+        this.xhr.setRequestHeader(key, val)
+      })
+    }
+
+    return data
+  }
+
+  send() {
     return new Promise((resolve, reject) => {
       this.status = Status.Pending
-      const progressHandler = (e) => {
-        this.progress = Math.min(1, e.loaded / e.total)
-        this.progressInFile = this.progress * (this.size / this.file.size)
-        this.file.setProgress(this)
-        this.status = Status.Uploading
-        this.file.status = Status.Uploading
-      }
+
       const failHandler = (e) => {
-        this.status = Status.Fail
+        console.log(e)
         // this.progress = 0
         // this.progressInFile = 0
         // this.file.setProgress(this)
         if (this.retries <= 0) {
-          this.file.deleteReponseChunkInUploadingQueue(this)
-
-          if (isRetry) {
-            this.file.retryErrorChunks.add(this)
-            this.file.errorChunks.delete(this)
-          } else {
-            this.file.upadteRrrorChunks(this)
-          }
-          this.file.send(isRetry)
-          reject({
-            xhr: this.xhr,
-            response: this.xhr.response,
-            status: this.xhr.status,
-            file: this.file,
-            chunk: this,
-            e: e
-          })
+          this.file.removeChunkInUploadingQueue(this)
+          this.status = Status.Fail
+          this.file.uploadFile()
+          reject(this)
         } else {
           this.timer = setTimeout(() => {
             this.send()
@@ -64,53 +70,29 @@ export default class Chunk {
         }
       }
       const doneHandler = (e) => {
-        if (this.xhr.status < 200 || this.xhr.status >= 300) {
-          failHandler(e)
-          return
-        }
         if (this.uploader.opts.successStatuses(this.xhr)) {
           this.status = Status.Success
-          this.file.deleteReponseChunkInUploadingQueue(this)
-          if (this.file.errorChunks.has(this)) {
-            this.file.errorChunks.delete(this)
-          }
-          if (isRetry) {
-            this.file.retryErrorChunks.delete(this)
-          }
-          this.file.send(isRetry)
-          resolve({
-            xhr: this.xhr,
-            response: this.xhr.response,
-            status: this.xhr.status,
-            statusText: this.xhr.statusText
-          })
+          this.file.removeChunkInUploadingQueue(this)
+          this.file.uploadFile()
+          resolve(this)
         } else {
           failHandler(e)
         }
       }
 
-      const data = new FormData()
+      const progressHandler = (e) => {
+        this.progress = Math.min(1, e.loaded / e.total)
+        this.progressInFile = this.progress * (this.size / this.file.size)
+        this.status = Status.Uploading
+        this.file.status = Status.Uploading
+        this.file.setProgress(this)
+      }
+
       this.xhr = new XMLHttpRequest()
-      this.xhr.responseType = 'json'
-      each(this.opts.data, (val, key) => {
-        data.append(key, val)
-      })
-      data.append(this.file.uploader.opts.name, this.blob)
-      data.append('id', this.id)
-      data.append('fileId', this.file.id)
-      data.append('index', this.chunkIndex)
-      data.append('filename', this.filename)
-      data.append('size', this.size)
-      data.append('totalSize', this.totalSize)
+      const data = this.prepareXhr()
       this.xhr.upload.addEventListener('progress', progressHandler)
       this.xhr.addEventListener('load', doneHandler, false)
       this.xhr.addEventListener('error', failHandler, false)
-      this.xhr.open('POST', this.opts.target, true)
-      if ('setRequestHeader' in this.xhr) {
-        each(this.opts.headers, (val, key) => {
-          this.xhr.setRequestHeader(key, val)
-        })
-      }
       this.xhr.send(data)
     })
   }

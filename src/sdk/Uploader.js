@@ -6,6 +6,7 @@ import File from './File.js'
 
 const defaultOptions = {
   target: 'https://jsonplaceholder.typicode.com/posts',
+  multipart: true, // 是否分片上传，false时单文件上传
   withCredentials: true,
   headers: {
     name: 'hah'
@@ -19,7 +20,7 @@ const defaultOptions = {
     return [200, 201, 202].includes(xhr.status)
     // return xhr.status === 200
   },
-  retries: 0,
+  retries: 3,
   retryInterval: 2000
 }
 
@@ -45,11 +46,11 @@ export default class Uploader {
     this.status = Status.Ready
     this.fileList = [...this.fileList, ...newFileList]
     if (this.opts.autoUpload) {
-      this.upload1()
+      this.upload()
     }
   }
 
-  async upload() {
+  async uploadPool() {
     for (let i = 0; i < this.fileList.length; i++) {
       const file = this.fileList[i]
       const chunkPromises = []
@@ -68,7 +69,7 @@ export default class Uploader {
     }
   }
 
-  async upload1() {
+  async upload() {
     const hasUploadingFile = this.fileList.some((file) => file.status === Status.Uploading)
     if (hasUploadingFile) {
       return
@@ -76,7 +77,7 @@ export default class Uploader {
     for (let i = 0; i < this.fileList.length; i++) {
       const file = this.fileList[i]
       if (file.status === Status.Ready) {
-        file.send()
+        file.uploadFile()
         return
       }
     }
@@ -86,30 +87,31 @@ export default class Uploader {
     this.upload()
   }
 
-  remove(id) {
-    let delteFile
-    let index = -1
-    this.fileList.forEach((file, i) => {
-      if (file.id === id) {
-        delteFile = file
-        index = i
+  _findFileById(id) {
+    let fileInfo
+    for (let i = 0; i < this.fileList.length; i++) {
+      const file = this.fileList[i]
+      if (id === file.id) {
+        fileInfo = {
+          file: file,
+          index: i
+        }
+        return fileInfo
       }
-    })
+    }
+  }
 
-    delteFile.remove()
+  remove(id) {
+    const { file, index } = this._findFileById(id)
+    file.remove()
     this.fileList.splice(index, 1)
-    this.upload1()
+    this.upload()
   }
 
   retry(id) {
-    let retryFile
-    this.fileList.forEach((file) => {
-      if (file.id === id) {
-        retryFile = file
-      }
-    })
-    retryFile.send(true)
-    this.upload1()
+    const { file } = this._findFileById(id)
+    file.retryUpload()
+    this.upload()
   }
 
   assignBrowse(domNode, attributes) {

@@ -14,12 +14,7 @@ export default class File {
     this.status = Status.Ready
     this.progress = 0
     this.chunks = []
-    this.uploadedChunks = []
-    this.errorChunks = new Set()
-    this.retryErrorChunks = new Set()
-    this.cancelChunks = []
     this.uploadingQueue = new Set()
-    this.reqs = new Set()
 
     this.createChunks()
   }
@@ -59,74 +54,58 @@ export default class File {
     }
   }
 
-  upadteRrrorChunks(chunk) {
-    this.errorChunks.add(chunk)
-  }
-
-  deleteReponseChunkInUploadingQueue(chunk) {
+  removeChunkInUploadingQueue(chunk) {
     this.uploadingQueue.delete(chunk)
   }
 
-  send(isRetry = false) {
-    let readyChunks = []
-    if (isRetry) {
-      readyChunks = [...this.errorChunks]
-    } else {
-      readyChunks = this.chunks.filter((chunk) => chunk.status === Status.Ready)
-    }
+  addChunkInUploadingQueue(chunk) {
+    this.uploadingQueue.add(chunk)
+  }
+
+  retryUpload() {
+    this.chunks.forEach((chunk) => {
+      if (chunk.status === Status.Fail) {
+        chunk.status = Status.Ready
+      }
+    })
+    this.uploadFile()
+  }
+
+  uploadFile() {
+    const nextUploadChunks = this.chunks.filter((chunk) => chunk.status === Status.Ready)
 
     const run = () => {
       if (this.uploadingQueue.size >= this.uploader.opts.concurrency) {
         return
       }
 
-      while (this.uploadingQueue.size < this.uploader.opts.concurrency && readyChunks.length) {
-        const chunk = readyChunks.shift()
-        if (chunk) {
-          if (isRetry) {
-            if (this.retryErrorChunks.has(chunk)) {
-              break
-            }
-          }
-          this.uploadingQueue.add(chunk)
-        }
-      }
-      if (this.uploadingQueue.size === 0) {
-        if (this.errorChunks.size === 0) {
-          if (isRetry) {
-            if (this.retryErrorChunks.size === 0) {
-              this.status = Status.Success
-              this.progress = 1
-            } else {
-              this.status = Status.Fail
-              this.retryErrorChunks.forEach((chunk) => {
-                this.errorChunks.add(chunk)
-              })
-              this.retryErrorChunks.clear()
-            }
-          } else {
-            this.status = Status.Success
-            this.progress = 1
-          }
-        } else {
-          this.status = Status.Fail
-          this.retryErrorChunks.forEach((chunk) => {
-            this.errorChunks.add(chunk)
-          })
-          this.retryErrorChunks.clear()
-        }
-        this.uploader.upload1()
+      const chunk = nextUploadChunks.shift()
+      if (!chunk) {
         return
       }
-      Promise.race(
-        [...this.uploadingQueue]
-          .filter((chunk) =>
-            isRetry ? chunk.status === Status.Fail : chunk.status === Status.Ready
-          )
-          .map((chunk) => chunk.send(isRetry))
-      )
+      this.addChunkInUploadingQueue(chunk)
+      run()
     }
+
     run()
+
+    if (this.uploadingQueue.size === 0) {
+      const hasErrorChunk = this.chunks.some((chunk) => chunk.status === Status.Fail)
+      if (hasErrorChunk) {
+        this.status = Status.Fail
+      } else {
+        this.status = Status.Success
+        this.progress = 1
+      }
+      this.uploader.upload()
+      return
+    }
+
+    Promise.race(
+      [...this.uploadingQueue]
+        .filter((chunk) => chunk.status === Status.Ready)
+        .map((chunk) => chunk.send())
+    )
   }
 
   remove() {
@@ -144,7 +123,7 @@ export default class File {
 
   resume() {
     if (this.status === Status.Uploading) {
-      this.send()
+      this.uploadFile()
     }
   }
 }

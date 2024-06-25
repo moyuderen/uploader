@@ -3,6 +3,7 @@
     <div class="">
       <el-button id="uploadBtn" type="primary">Upload</el-button>
       <el-button type="primary" @click="getUploader">get uploader</el-button>
+      <el-button type="primary" @click="submit">Submit</el-button>
     </div>
     {{ uploaderPending }}
     <div v-loading="uploaderPending === 'pending'">
@@ -20,12 +21,14 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import Uploader from "@/sdk";
+import Uploader, { Status } from "@/sdk";
 
 const uploader = ref(null)
 
 onMounted(() => {
-  uploader.value = new Uploader()
+  uploader.value = new Uploader({
+    // autoUpload: false
+  })
   uploader.value.assignBrowse(document.getElementById('uploadBtn'))
   getUploader()
 })
@@ -44,6 +47,23 @@ const retry = (id) => {
 
 const getUploader = () => {
   console.log(uploader)
+  const fileList = uploader.value.fileList
+  const list = fileList.map(file => {
+    return {
+      name: file.name,
+      chunks: file.chunks,
+      errorChunks: file.chunks.filter(chunk => chunk.status === Status.Fail),
+      successChunks: file.chunks.filter(chunk => chunk.status === Status.Success),
+      readyChunks: file.chunks.filter(chunk => chunk.status === Status.Ready),
+      pendingChunks: file.chunks.filter(chunk => chunk.status === Status.Pending)
+    }
+  })
+
+  console.log(list)
+}
+
+const submit = () => {
+  uploader.value.submit()
 }
 
 </script>
