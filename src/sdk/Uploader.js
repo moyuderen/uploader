@@ -76,9 +76,7 @@ export default class Uploader extends Event {
   }
 
   async upload() {
-    const hasUploadingFile = this.fileList.some(
-      (file) => file.status === Status.Uploading || file.status === Status.Pause
-    )
+    const hasUploadingFile = this.fileList.some((file) => file.status === Status.Uploading)
     if (hasUploadingFile) {
       return
     }
@@ -148,6 +146,7 @@ export default class Uploader extends Event {
       return
     }
     const { file } = this._findFileById(id)
+    file.status = Status.Ready
     file.resume()
   }
 
