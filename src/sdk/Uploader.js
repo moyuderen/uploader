@@ -3,6 +3,7 @@ import each from './shared/each.js'
 import { pool } from './shared/pool.js'
 import { Status } from './shared/Status.js'
 import File from './File.js'
+import Event from './shared/event.js'
 
 const defaultOptions = {
   target: 'https://jsonplaceholder.typicode.com/posts',
@@ -21,16 +22,19 @@ const defaultOptions = {
     // return xhr.status === 200
   },
   retries: 3,
-  retryInterval: 2000
+  retryInterval: 1000,
+  merge: (file) => {
+    file.path = 'http://baidu.com'
+  }
 }
 
 const defaultAttributes = {
   multiple: true,
   accept: '*'
 }
-
-export default class Uploader {
+export default class Uploader extends Event {
   constructor(options) {
+    super()
     this.opts = extend({}, defaultOptions, options)
     this.fileList = []
     this.uploadingQueue = []
@@ -45,6 +49,7 @@ export default class Uploader {
     })
     this.status = Status.Ready
     this.fileList = [...this.fileList, ...newFileList]
+    this.emit('filesAdded', this.fileList)
     if (this.opts.autoUpload) {
       this.upload()
     }
@@ -81,6 +86,12 @@ export default class Uploader {
         return
       }
     }
+    const hasFail = this.fileList.some((file) => file.status === Status.Fail)
+    if (hasFail) {
+      // this.emit('allSuccess', this.fileList)
+    } else {
+      this.emit('allSuccess', this.fileList)
+    }
   }
 
   submit() {
@@ -102,9 +113,16 @@ export default class Uploader {
   }
 
   remove(id) {
+    if (!id) {
+      this.fileList.forEach((file) => {
+        file.remove()
+      })
+      return
+    }
     const { file, index } = this._findFileById(id)
     file.remove()
     this.fileList.splice(index, 1)
+    this.emit('fileRemove', file, this.fileList)
     this.upload()
   }
 

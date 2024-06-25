@@ -7,7 +7,7 @@
     </div>
     {{ uploaderPending }}
     <div v-loading="uploaderPending === 'pending'">
-      <div v-for="(file) in uploader && uploader.fileList" :key="file.id">
+      <div v-for="(file) in files" :key="file.id">
         {{ file.name }} {{ file.status }}
         <el-progress :percentage="+(file.progress * 100).toFixed(2)" />
         <div v-if="file.status === 'fail'" @click="retry(file.id)">
@@ -24,6 +24,7 @@ import { computed, onMounted, ref } from "vue";
 import Uploader, { Status } from "@/sdk";
 
 const uploader = ref(null)
+const files = ref([])
 
 onMounted(() => {
   uploader.value = new Uploader({
@@ -31,6 +32,33 @@ onMounted(() => {
   })
   uploader.value.assignBrowse(document.getElementById('uploadBtn'))
   getUploader()
+  uploader.value.on('filesAdded', (fileList) => {
+    files.value = fileList
+  })
+
+  uploader.value.on('allSuccess', (fileList) => {
+    console.log('全部上传成功', fileList)
+    files.value = fileList
+  })
+
+  uploader.value.on('fileSuccess', (file, fileList) => {
+    console.log(`${file.name}上传成功`, file, fileList)
+    files.value = fileList
+  })
+
+  uploader.value.on('fileFail', (file, fileList) => {
+    console.log(`${file.name}上传失败`, file, fileList)
+    files.value = fileList
+  })
+
+  uploader.value.on('fileRemove', (file, fileList) => {
+    console.log(`${file.name}被删除`, file, fileList)
+    files.value = fileList
+  })
+
+  uploader.value.on('fileProgress', (progress, file, fileList) => {
+    console.log(`${file.name} progress ${progress}`, file, fileList)
+  })
 })
 
 const uploaderPending = computed(() => {

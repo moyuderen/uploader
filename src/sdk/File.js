@@ -1,6 +1,7 @@
 import { generateUid } from './shared/uid.js'
 import { Status } from './shared/Status.js'
 import Chunk from './Chunk.js'
+import { isFunction } from './shared/valType.js'
 
 export default class File {
   constructor(uploader, file) {
@@ -15,7 +16,7 @@ export default class File {
     this.progress = 0
     this.chunks = []
     this.uploadingQueue = new Set()
-
+    this.path = ''
     this.createChunks()
   }
 
@@ -52,6 +53,7 @@ export default class File {
     if (this.status === Status.Success) {
       this.progress = 1
     }
+    this.uploader.emit('fileProgress', this.progress, this, this.uploader.fileList)
   }
 
   removeChunkInUploadingQueue(chunk) {
@@ -93,9 +95,25 @@ export default class File {
       const hasErrorChunk = this.chunks.some((chunk) => chunk.status === Status.Fail)
       if (hasErrorChunk) {
         this.status = Status.Fail
+        this.uploader.emit('fileFail', this, this.uploader.fileList)
       } else {
         this.status = Status.Success
-        this.progress = 1
+        this.setProgress()
+        this.uploader.emit('fileSuccess', this, this.uploader.fileList)
+        const merge = this.uploader.opts.merge
+        if (merge && isFunction(merge)) {
+          const p = merge(this)
+          if (p && p.then) {
+            p.then(
+              () => {
+                console.log('合并文件成功')
+              },
+              () => {
+                console.log('合并文件失败')
+              }
+            )
+          }
+        }
       }
       this.uploader.upload()
       return
