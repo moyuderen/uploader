@@ -3,5 +3,6 @@ export const Status = {
   Pending: 'pending',
   Uploading: 'uploading',
   Success: 'success',
-  Fail: 'fail'
+  Fail: 'fail',
+  Pause: 'pause'
 }

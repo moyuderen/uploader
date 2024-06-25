@@ -11,7 +11,13 @@
         {{ file.name }} {{ file.status }}
         <el-progress :percentage="+(file.progress * 100).toFixed(2)" />
         <div v-if="file.status === 'fail'" @click="retry(file.id)">
+          重试
+        </div>
+        <div v-if="file.status === 'pause'" @click="retry(file.id)">
           继续
+        </div>
+        <div v-if="file.status === 'uploading'" @click="pause(file.id)">
+          暂停
         </div>
         <div @click="remove(file.id)">X</div>
       </div>
@@ -31,7 +37,6 @@ onMounted(() => {
     // autoUpload: false
   })
   uploader.value.assignBrowse(document.getElementById('uploadBtn'))
-  getUploader()
   uploader.value.on('filesAdded', (fileList) => {
     files.value = fileList
   })
@@ -71,6 +76,10 @@ const remove = (id) => {
 
 const retry = (id) => {
   uploader.value.retry(id)
+}
+
+const pause = (id) => {
+  uploader.value.pause(id)
 }
 
 const getUploader = () => {

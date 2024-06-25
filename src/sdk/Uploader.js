@@ -14,9 +14,10 @@ const defaultOptions = {
   },
   data: {},
   concurrency: 10,
-  chunkSize: 1 * 1024 * 4,
+  chunkSize: 2 * 1024 * 1,
   autoUpload: true,
   name: 'file',
+  generateUniqueIdentifier: null,
   successStatuses(xhr) {
     return [200, 201, 202].includes(xhr.status)
     // return xhr.status === 200
@@ -42,7 +43,7 @@ export default class Uploader extends Event {
   }
 
   addFiles(files) {
-    this.status = Status.Pending
+    this.status = 'hahah'
 
     const newFileList = [...files].map((file) => {
       return new File(this, file)
@@ -75,7 +76,9 @@ export default class Uploader extends Event {
   }
 
   async upload() {
-    const hasUploadingFile = this.fileList.some((file) => file.status === Status.Uploading)
+    const hasUploadingFile = this.fileList.some(
+      (file) => file.status === Status.Uploading || file.status === Status.Pause
+    )
     if (hasUploadingFile) {
       return
     }
@@ -130,6 +133,22 @@ export default class Uploader extends Event {
     const { file } = this._findFileById(id)
     file.retryUpload()
     this.upload()
+  }
+
+  pause(id) {
+    if (!id) {
+      return
+    }
+    const { file } = this._findFileById(id)
+    file.pause()
+  }
+
+  resume(id) {
+    if (!id) {
+      return
+    }
+    const { file } = this._findFileById(id)
+    file.resume()
   }
 
   assignBrowse(domNode, attributes) {

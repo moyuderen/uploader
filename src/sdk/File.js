@@ -6,8 +6,14 @@ import { isFunction } from './shared/valType.js'
 export default class File {
   constructor(uploader, file) {
     this.uploader = uploader
+    this.opts = this.uploader.opts
     this.rawFile = file
-    this.id = generateUid('fid')
+    if (isFunction(this.opts.generateUniqueIdentifier)) {
+      this.id = this.opts.generateUniqueIdentifier(file) || generateUid('fid')
+    } else {
+      this.id = generateUid('fid')
+    }
+
     this.size = file.size
     this.name = file.name || file.fileName
     this.type = file.type
@@ -68,6 +74,7 @@ export default class File {
     this.chunks.forEach((chunk) => {
       if (chunk.status === Status.Fail) {
         chunk.status = Status.Ready
+        chunk.retries = this.uploader.opts.retries
       }
     })
     this.uploadFile()
@@ -134,13 +141,14 @@ export default class File {
   }
 
   pause() {
+    this.status = Status.Pause
     this.uploadingQueue.forEach((chunk) => {
       chunk.abort()
     })
   }
 
   resume() {
-    if (this.status === Status.Uploading) {
+    if (this.status === Status.Pause) {
       this.uploadFile()
     }
   }

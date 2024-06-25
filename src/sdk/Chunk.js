@@ -98,6 +98,7 @@ export default class Chunk {
   }
 
   abort() {
+    this.status = Status.Ready
     if (this.xhr) {
       this.xhr.abort()
       if (this.timer) {
