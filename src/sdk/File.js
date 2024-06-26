@@ -5,23 +5,24 @@ import { Status } from './constans.js'
 export default class File {
   constructor(uploader, file) {
     this.uploader = uploader
-    this.opts = this.uploader.opts
+    this.opts = uploader.opts
+
     this.rawFile = file
     if (utils.isFunction(this.opts.generateUniqueIdentifier)) {
       this.id = this.opts.generateUniqueIdentifier(file) || utils.generateUid('fid')
     } else {
       this.id = utils.generateUid('fid')
     }
-
     this.size = file.size
     this.name = file.name || file.fileName
     this.type = file.type
-    this.chunkSize = this.uploader.opts.chunkSize
+    this.chunkSize = this.opts.chunkSize
+
     this.status = Status.Ready
     this.progress = 0
     this.chunks = []
     this.uploadingQueue = new Set()
-    this.path = ''
+
     this.createChunks()
   }
 
@@ -53,11 +54,10 @@ export default class File {
       this.progress = Math.max(Math.min(progress, 0.99), this.progress)
     }
 
-    // this.progress = Math.max(Math.min(progress, 1), this.progress)
-
     if (this.status === Status.Success) {
       this.progress = 1
     }
+
     this.uploader.emit('fileProgress', this.progress, this, this.uploader.fileList)
   }
 
@@ -73,7 +73,7 @@ export default class File {
     this.chunks.forEach((chunk) => {
       if (chunk.status === Status.Fail) {
         chunk.status = Status.Ready
-        chunk.retries = this.uploader.opts.retries
+        chunk.retries = this.opts.retries
       }
     })
     this.uploadFile()

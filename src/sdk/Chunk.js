@@ -3,21 +3,26 @@ import { Status } from './constans.js'
 
 export default class Chunk {
   constructor(file, chunk, index) {
+    this.uploader = file.uploader
     this.opts = file.uploader.opts
     this.file = file
-    this.uploader = this.file.uploader
-    this.blob = new Blob([chunk], { type: this.file.type })
-    this.size = this.blob.size
-    this.chunkIndex = index
     this.filename = file.name
-    this.totalSize = file.size
     this.fileId = file.id
+    this.totalSize = file.size
+    this.chunkSize = this.opts.chunkSize
+
+    this.id = utils.generateUid('chunk_id')
+    this.stardByte = this.chunkSize * index
+    this.endByte = Math.min(this.stardByte + this.chunkSize, this.totalSize)
+    this.size = this.endByte - this.stardByte
+    this.blob = chunk
+    this.chunkIndex = index
+
+    this.retries = this.opts.retries
     this.xhr = null
     this.status = Status.Ready
     this.progress = 0
     this.progressInFile = 0
-    this.id = utils.generateUid('chunk_id')
-    this.retries = this.uploader.opts.retries
     this.timer = null
   }
 
@@ -101,9 +106,9 @@ export default class Chunk {
     this.status = Status.Ready
     if (this.xhr) {
       this.xhr.abort()
-      if (this.timer) {
-        clearTimeout(this.timer)
-      }
+    }
+    if (this.timer) {
+      clearTimeout(this.timer)
     }
   }
 
