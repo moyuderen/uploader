@@ -5,7 +5,7 @@ const options = {
   headers: {},
   data: {},
   concurrency: 6,
-  chunkSize: 2 * 1024 * 4,
+  chunkSize: 1024 * 4,
   autoUpload: true,
   name: 'file',
   generateUniqueIdentifier: null,
