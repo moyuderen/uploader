@@ -5,31 +5,41 @@
       <el-button type="primary" @click="getUploader">get uploader</el-button>
       <el-button type="primary" @click="submit">Submit</el-button>
     </div>
-    {{ uploaderPending }}
-    <div v-loading="uploaderPending === 'pending'">
-      <div v-for="(file) in files" :key="file.id">
-        {{ file.name }} {{ file.status }}
-        <el-progress :percentage="+(file.progress * 100).toFixed(2)" />
-        <div v-if="file.status === 'fail'" @click="retry(file.id)">
-          重试
+    <div v-for="(file) in files" :key="file.id">
+      <div style="overflow: hidden; text-overflow: ellipsis;">
+        {{ file.name }}
+      </div>
+      <div style="display: flex; align-items: center;">
+        <el-progress :percentage="+(file.progress * 100).toFixed(2)" :status="PROGRESS[file.status]" style="flex: 1;" />
+        <div style="width: 44px;">
+          <el-icon v-if="file.status === 'fail'" @click="retry(file.id)" class="action">
+            <RefreshRight color="#409EFF" />
+          </el-icon>
+          <el-icon v-if="file.status === 'pause'" @click="resume(file.id)" class="action">
+            <VideoPlay color="#409EFF" />
+          </el-icon>
+          <el-icon v-if="file.status === 'uploading'" @click="pause(file.id)" class="action">
+            <VideoPause color="#E6A23C" />
+          </el-icon>
+          <el-icon @click="remove(file.id)" class="action">
+            <Close />
+          </el-icon>
         </div>
-        <div v-if="file.status === 'pause'" @click="retry(file.id)">
-          继续
-        </div>
-        <div v-if="file.status === 'uploading'" @click="pause(file.id)">
-          暂停
-        </div>
-        <div @click="remove(file.id)">X</div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
+import { RefreshRight, VideoPlay, VideoPause, Close } from '@element-plus/icons-vue'
 import Uploader from "@/sdk";
 const Status = Uploader.Status
 
+const PROGRESS = {
+  [Status.Success]: 'success',
+  [Status.Fail]: 'exception',
+}
 const uploader = ref(null)
 const files = ref([])
 
@@ -63,12 +73,8 @@ onMounted(() => {
   })
 
   uploader.value.on('fileProgress', (progress, file, fileList) => {
-    console.log(`${file.name} progress ${progress}`, file, fileList)
+    // console.log(`${file.name} progress ${progress}`, file, fileList)
   })
-})
-
-const uploaderPending = computed(() => {
-  return uploader.value && uploader.value.status
 })
 
 const remove = (id) => {
@@ -77,6 +83,10 @@ const remove = (id) => {
 
 const retry = (id) => {
   uploader.value.retry(id)
+}
+
+const resume = (id) => {
+  uploader.value.resume(id)
 }
 
 const pause = (id) => {
@@ -105,3 +115,9 @@ const submit = () => {
 }
 
 </script>
+
+<style scoped>
+.action {
+  margin-left: 6px;
+}
+</style>

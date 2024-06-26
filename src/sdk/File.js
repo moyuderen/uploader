@@ -96,7 +96,7 @@ export default class File {
     }
 
     run()
-
+    // console.log(this.uploadingQueue)
     if (this.uploadingQueue.size === 0) {
       const hasErrorChunk = this.chunks.some((chunk) => chunk.status === Status.Fail)
       if (hasErrorChunk) {
@@ -146,9 +146,15 @@ export default class File {
     })
   }
 
+  pauseThenUpload() {
+    this.pause()
+    this.uploader.upload()
+  }
+
   resume() {
     if (this.status === Status.Pause) {
-      this.uploadFile()
+      this.status = Status.Resume
+      this.uploader.upload(true)
     }
   }
 }

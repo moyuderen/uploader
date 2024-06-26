@@ -29,13 +29,15 @@ export default class Chunk {
   prepareXhr() {
     const data = new FormData()
     this.xhr.responseType = 'json'
-    data.append(this.file.uploader.opts.name, this.blob)
+    this.xhr.withCredentials = this.opts.withCredentials
+    data.append(this.opts.name, this.blob)
     data.append('id', this.id)
     data.append('fileId', this.file.id)
     data.append('index', this.chunkIndex)
     data.append('filename', this.filename)
     data.append('size', this.size)
     data.append('totalSize', this.totalSize)
+    data.append('timestamp', Date.now())
     utils.each(this.opts.data, (val, key) => {
       data.append(key, val)
     })
@@ -64,7 +66,10 @@ export default class Chunk {
         if (this.retries <= 0) {
           this.file.removeChunkInUploadingQueue(this)
           this.status = Status.Fail
-          this.file.uploadFile()
+          if (this.file.status === Status.Uploading) {
+            this.file.uploadFile()
+          }
+
           reject(this)
         } else {
           this.timer = setTimeout(() => {
@@ -78,7 +83,9 @@ export default class Chunk {
         if (this.uploader.opts.successStatuses(this.xhr)) {
           this.status = Status.Success
           this.file.removeChunkInUploadingQueue(this)
-          this.file.uploadFile()
+          if (this.file.status === Status.Uploading) {
+            this.file.uploadFile()
+          }
           resolve(this)
         } else {
           failHandler(e)
@@ -106,6 +113,8 @@ export default class Chunk {
     this.status = Status.Ready
     if (this.xhr) {
       this.xhr.abort()
+      // this.xhr = null 避免缓存xhr，使用旧的xhr重新发起导致请求失败
+      this.xhr = null
     }
     if (this.timer) {
       clearTimeout(this.timer)

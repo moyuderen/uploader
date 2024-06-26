@@ -4,5 +4,6 @@ export const Status = {
   Uploading: 'uploading',
   Success: 'success',
   Fail: 'fail',
-  Pause: 'pause'
+  Pause: 'pause',
+  Resume: 'resume'
 }

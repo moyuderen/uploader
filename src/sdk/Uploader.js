@@ -28,22 +28,31 @@ class Uploader extends Event {
     }
   }
 
-  async upload() {
-    const hasUploadingFile = this.fileList.some((file) => file.status === Status.Uploading)
-    if (hasUploadingFile) {
-      return
+  async upload(pauseAllFile) {
+    if (pauseAllFile) {
+      const uploadingFiles = this.fileList.filter((file) => file.status === Status.Uploading)
+      uploadingFiles.forEach((file) => {
+        file.pause()
+      })
     }
+
     for (let i = 0; i < this.fileList.length; i++) {
       const file = this.fileList[i]
+      if (file.status === Status.Uploading) {
+        return
+      }
+      if (file.status === Status.Resume) {
+        file.status === Status.Uploading
+        file.uploadFile()
+        return
+      }
       if (file.status === Status.Ready) {
         file.uploadFile()
         return
       }
     }
-    const hasFail = this.fileList.some((file) => file.status === Status.Fail)
-    if (hasFail) {
-      // this.emit('allSuccess', this.fileList)
-    } else {
+    const allSuccess = this.fileList.every((file) => file.status === Status.Success)
+    if (allSuccess) {
       this.emit('allSuccess', this.fileList)
     }
   }
@@ -91,7 +100,7 @@ class Uploader extends Event {
       return
     }
     const { file } = this._findFileById(id)
-    file.pause()
+    file.pauseThenUpload()
   }
 
   resume(id) {
@@ -99,7 +108,6 @@ class Uploader extends Event {
       return
     }
     const { file } = this._findFileById(id)
-    file.status = Status.Ready
     file.resume()
   }
 
