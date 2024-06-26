@@ -1,6 +1,5 @@
-import { Status } from './shared/Status.js'
-import each from './shared/each.js'
-import { generateUid } from './shared/uid.js'
+import utils from './utils.js'
+import { Status } from './constans.js'
 
 export default class Chunk {
   constructor(file, chunk, index) {
@@ -17,7 +16,7 @@ export default class Chunk {
     this.status = Status.Ready
     this.progress = 0
     this.progressInFile = 0
-    this.id = generateUid('chunk_id')
+    this.id = utils.generateUid('chunk_id')
     this.retries = this.uploader.opts.retries
     this.timer = null
   }
@@ -32,14 +31,14 @@ export default class Chunk {
     data.append('filename', this.filename)
     data.append('size', this.size)
     data.append('totalSize', this.totalSize)
-    each(this.opts.data, (val, key) => {
+    utils.each(this.opts.data, (val, key) => {
       data.append(key, val)
     })
     this.xhr.open('POST', this.opts.target, true)
 
     // 'setRequestHeader' on 'XMLHttpRequest': The object's state must be OPENED
     if ('setRequestHeader' in this.xhr) {
-      each(this.opts.headers, (val, key) => {
+      utils.each(this.opts.headers, (val, key) => {
         this.xhr.setRequestHeader(key, val)
       })
     }
@@ -51,8 +50,9 @@ export default class Chunk {
     return new Promise((resolve, reject) => {
       this.status = Status.Pending
 
+      // eslint-disable-next-line no-unused-vars
       const failHandler = (e) => {
-        console.log(e)
+        // console.log(e)
         // this.progress = 0
         // this.progressInFile = 0
         // this.file.setProgress(this)

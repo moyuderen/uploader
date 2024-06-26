@@ -1,4 +1,44 @@
-export default function () {
+const isDefined = function (a) {
+  return typeof a !== 'undefined'
+}
+
+const isFunction = function (a) {
+  return typeof a == 'function'
+}
+
+const isPlainObject = function (obj) {
+  return (
+    Object.prototype.toString.call(obj) === '[object Object]' &&
+    Object.getPrototypeOf(obj) === Object.prototype
+  )
+}
+
+const isArray =
+  Array.isArray ||
+  function (arr) {
+    return Object.prototype.toString.call(arr) === '[object Array]'
+  }
+
+function each(ary, func, context) {
+  if (isDefined(ary.length)) {
+    for (var i = 0, len = ary.length; i < len; i++) {
+      if (func.call(context, ary[i], i, ary) === false) {
+        break
+      }
+    }
+  } else {
+    for (var k in ary) {
+      if (func.call(context, ary[k], k, ary) === false) {
+        break
+      }
+    }
+  }
+}
+
+let uid = 0
+export const generateUid = (prex = 'id') => `${prex}-${+new Date()}-${uid++}`
+
+function extend() {
   var options
   var name
   var src
@@ -46,12 +86,20 @@ export default function () {
           } else {
             clone = src && isPlainObject(src) ? src : {}
           }
-          target[name] = utils.extend(force, clone, copy)
+          target[name] = extend(force, clone, copy)
         } else if (copy !== undefined) {
           target[name] = copy
         }
       }
     }
   }
-  return target  
+  return target
+}
+
+export default {
+  isDefined,
+  isFunction,
+  each,
+  generateUid,
+  extend
 }

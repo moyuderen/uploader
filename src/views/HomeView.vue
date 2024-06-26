@@ -27,7 +27,8 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import Uploader, { Status } from "@/sdk";
+import Uploader from "@/sdk";
+const Status = Uploader.Status
 
 const uploader = ref(null)
 const files = ref([])

@@ -1,17 +1,16 @@
-import { generateUid } from './shared/uid.js'
-import { Status } from './shared/Status.js'
 import Chunk from './Chunk.js'
-import { isFunction } from './shared/valType.js'
+import utils from './utils.js'
+import { Status } from './constans.js'
 
 export default class File {
   constructor(uploader, file) {
     this.uploader = uploader
     this.opts = this.uploader.opts
     this.rawFile = file
-    if (isFunction(this.opts.generateUniqueIdentifier)) {
-      this.id = this.opts.generateUniqueIdentifier(file) || generateUid('fid')
+    if (utils.isFunction(this.opts.generateUniqueIdentifier)) {
+      this.id = this.opts.generateUniqueIdentifier(file) || utils.generateUid('fid')
     } else {
-      this.id = generateUid('fid')
+      this.id = utils.generateUid('fid')
     }
 
     this.size = file.size
@@ -108,7 +107,7 @@ export default class File {
         this.setProgress()
         this.uploader.emit('fileSuccess', this, this.uploader.fileList)
         const merge = this.uploader.opts.merge
-        if (merge && isFunction(merge)) {
+        if (merge && utils.isFunction(merge)) {
           const p = merge(this)
           if (p && p.then) {
             p.then(

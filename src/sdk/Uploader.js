@@ -1,42 +1,14 @@
-import extend from './shared/extend.js'
-import each from './shared/each.js'
-import { pool } from './shared/pool.js'
-import { Status } from './shared/Status.js'
 import File from './File.js'
-import Event from './shared/event.js'
+import Event from './event.js'
+import utils from './utils.js'
+import defaults from './defaults.js'
+import { Status } from './constans.js'
 
-const defaultOptions = {
-  target: 'https://jsonplaceholder.typicode.com/posts',
-  multipart: true, // 是否分片上传，false时单文件上传
-  withCredentials: true,
-  headers: {
-    name: 'hah'
-  },
-  data: {},
-  concurrency: 10,
-  chunkSize: 2 * 1024 * 1,
-  autoUpload: true,
-  name: 'file',
-  generateUniqueIdentifier: null,
-  successStatuses(xhr) {
-    return [200, 201, 202].includes(xhr.status)
-    // return xhr.status === 200
-  },
-  retries: 3,
-  retryInterval: 1000,
-  merge: (file) => {
-    file.path = 'http://baidu.com'
-  }
-}
-
-const defaultAttributes = {
-  multiple: true,
-  accept: '*'
-}
-export default class Uploader extends Event {
+class Uploader extends Event {
   constructor(options) {
     super()
-    this.opts = extend({}, defaultOptions, options)
+
+    this.opts = utils.extend({}, defaults.options, options)
     this.fileList = []
     this.uploadingQueue = []
     this.status = 'init'
@@ -53,25 +25,6 @@ export default class Uploader extends Event {
     this.emit('filesAdded', this.fileList)
     if (this.opts.autoUpload) {
       this.upload()
-    }
-  }
-
-  async uploadPool() {
-    for (let i = 0; i < this.fileList.length; i++) {
-      const file = this.fileList[i]
-      const chunkPromises = []
-      for (let j = 0; j < file.chunks.length; j++) {
-        const chunk = file.chunks[j]
-        chunkPromises.push(chunk)
-      }
-      try {
-        await pool(chunkPromises, this.opts.concurrency)
-        file.status = Status.Success
-        file.progress = 1
-      } catch (e) {
-        console.log(e)
-        file.status = Status.Fail
-      }
     }
   }
 
@@ -152,21 +105,21 @@ export default class Uploader extends Event {
 
   assignBrowse(domNode, attributes) {
     let input
-    attributes = extend({}, defaultAttributes, attributes)
+    attributes = utils.extend({}, defaults.attributes, attributes)
     if (domNode.tagname === 'INPUT' && domNode.type === 'file') {
       input = domNode
     } else {
       input = document.createElement('input')
       input.setAttribute('type', 'file')
 
-      extend(input.style, {
+      utils.extend(input.style, {
         visibility: 'hidden',
         position: 'absolute',
         width: '1px',
         height: '1px'
       })
 
-      each(attributes, (val, key) => {
+      utils.each(attributes, (val, key) => {
         input.setAttribute(key, val)
       })
 
@@ -208,8 +161,15 @@ export default class Uploader extends Event {
         this.addFiles(e.dataTransfer.files, e)
       }
     }
-    each(handles, (handler, name) => {
+    utils.each(handles, (handler, name) => {
       domNode.addEventListener(name, handler, false)
     })
   }
 }
+
+Uploader.Status = Status
+Uploader.create = (options) => {
+  return new Uploader(options)
+}
+
+export default Uploader
