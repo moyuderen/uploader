@@ -1,0 +1,19 @@
+{
+  "name": "@uploader/utils",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "vite build"
+  },
+  "main": "./dist/uploader-utils.umd.js",
+  "module": "./dist/uploader-utils.mjs",
+  "exports": {
+    ".": {
+      "require": "./dist/uploader-utils.umd.js",
+      "module": "./dist/uploader-utils.mjs"
+    }
+  },
+
+  "peerDependencies": {},
+  "dependencies": {},
+  "devDependencies": {}
+}

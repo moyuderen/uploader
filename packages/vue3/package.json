@@ -1,0 +1,23 @@
+{
+  "name": "@uploader/vue3",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "vite build"
+  },
+  "main": "./dist/uploader-vue3.umd.js",
+  "module": "./dist/uploader-vue3.mjs",
+  "exports": {
+    ".": {
+      "require": "./dist/uploader-vue3.umd.js",
+      "module": "./dist/uploader-vue3.mjs"
+    }
+  },
+  "peerDependencies": {
+    "@vitejs/plugin-vue": "^5.0.5",
+    "vite": "^5.3.2",
+    "vue": "^3.4.31"
+  },
+  "dependencies": {
+    "@uploader/sdk": "workspace:^1.0.0"
+  }
+}

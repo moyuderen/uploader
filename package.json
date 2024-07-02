@@ -1,0 +1,48 @@
+{
+  "name": "uploader",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "uploader",
+    "upload",
+    "上传",
+    "分片上传",
+    "大文件",
+    "并发",
+    "重试",
+    "断点续传",
+    "秒传"
+  ],
+  "author": "",
+  "license": "ISC",
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moyuderen/uploader.git"
+  },
+  "bugs": {
+    "url": "https://github.com/moyuderen/uploader/issues"
+  },
+  "main": "",
+  "module": "",
+  "types": "",
+  "exports": {
+    ".": {
+      "require": "",
+      "module": "",
+      "types": ""
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.5",
+    "vite": "^5.3.2",
+    "vue": "^3.4.31"
+  }
+}

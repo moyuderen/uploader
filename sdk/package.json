@@ -1,0 +1,40 @@
+{
+  "name": "@uploader/sdk",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build"
+  },
+  "keywords": [
+    "uploader",
+    "upload",
+    "上传",
+    "分片上传",
+    "大文件",
+    "并发",
+    "重试",
+    "断点续传",
+    "秒传"
+  ],
+  "author": "",
+  "license": "ISC",
+
+  "main": "./dist/uploader-sdk.umd.js",
+  "module": "./dist/uploader-sdk.mjs",
+  "exports": {
+    ".": {
+      "require": "./dist/uploader-sdk.umd.js",
+      "module": "./dist/uploader-sdk.mjs"
+    }
+  },
+
+  "files": [
+    "dist",
+    "README.md"
+  ],
+
+  "dependencies": {
+    "@uploader/utils": "workspace:^1.0.0"
+  }
+}
