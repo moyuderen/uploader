@@ -19,7 +19,6 @@
   ],
   "author": "",
   "license": "ISC",
-
   "main": "./dist/uploader-sdk.umd.js",
   "module": "./dist/uploader-sdk.mjs",
   "exports": {
@@ -28,13 +27,11 @@
       "module": "./dist/uploader-sdk.mjs"
     }
   },
-
   "files": [
     "dist",
     "README.md"
   ],
-
   "dependencies": {
-    "@uploader/utils": "workspace:^1.0.0"
+    "@uploader/utils": "workspace:^"
   }
 }

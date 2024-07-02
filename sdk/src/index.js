@@ -1,11 +1,3 @@
-import { isFunction } from '@uploader/utils'
+import Uploader from './Uploader'
 
-export default class Uploader {
-  constructor() {
-
-  }
-
-  say() {
-    console.log(isFunction(1))
-  }
-}
+export default Uploader

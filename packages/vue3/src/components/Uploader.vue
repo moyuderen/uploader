@@ -1,16 +1,55 @@
 <template>
-  <button class="openx-button" @click="clickHandler">
-    Butto1
-    <slot></slot>
+  <button class="uploader-btn">
+    uploader
   </button>
+
+  <div>
+    <div v-for="file in files" :key="file.id">
+      {{ file.name }} {{ file.progress * 100 }} {{ file.status }}
+    </div>
+  </div>
 </template>
 
 <script setup>
-import Uploader from '@uploader/sdk'
+import { onMounted, ref } from 'vue'
+// import Uploader from '@uploader/sdk'
+import Uploader from '../../../../sdk/src/index'
+const uploader = ref(null)
+const files = ref([])
 
-const uploader = new Uploader()
-function clickHandler() {
-  console.log('uploader')
-  uploader.say()
-}
+onMounted(() => {
+  uploader.value = new Uploader()
+
+  uploader.value.assignBrowse(document.querySelector('.uploader-btn'))
+
+  uploader.value.on('filesAdded', (fileList) => {
+    files.value = fileList
+  })
+
+  uploader.value.on('allSuccess', (fileList) => {
+    console.log('全部上传成功', fileList)
+    files.value = fileList
+  })
+
+  uploader.value.on('fileSuccess', (file, fileList) => {
+    console.log(`${file.name}上传成功`, file, fileList)
+    files.value = fileList
+  })
+
+  uploader.value.on('fileFail', (file, fileList) => {
+    console.log(`${file.name}上传失败`, file, fileList)
+    files.value = fileList
+  })
+
+  uploader.value.on('fileRemove', (file, fileList) => {
+    console.log(`${file.name}被删除`, file, fileList)
+    files.value = fileList
+  })
+
+  uploader.value.on('fileProgress', (progress, file, fileList) => {
+    // console.log(`${file.name} progress ${progress}`, file, fileList)
+  })
+})
+
+
 </script>

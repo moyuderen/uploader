@@ -18,6 +18,6 @@
     "vue": "^3.4.31"
   },
   "dependencies": {
-    "@uploader/sdk": "workspace:^1.0.0"
+    "@uploader/sdk": "workspace:^"
   }
 }
