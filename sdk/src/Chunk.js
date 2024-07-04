@@ -2,7 +2,7 @@ import { generateUid, each } from '@uploader/utils'
 import { Status } from './constans.js'
 
 export default class Chunk {
-  constructor(file, chunk, index) {
+  constructor(file, chunk,  index) {
     this.uploader = file.uploader
     this.opts = file.uploader.opts
     this.file = file

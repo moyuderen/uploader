@@ -1,6 +1,6 @@
 <template>
   <button class="uploader-btn">
-    uploader
+    uploader4
   </button>
 
   <div>
@@ -12,8 +12,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-// import Uploader from '@uploader/sdk'
-import Uploader from '../../../../sdk/src/index'
+import Uploader from '@uploader/sdk'
 const uploader = ref(null)
 const files = ref([])
 

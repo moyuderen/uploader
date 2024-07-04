@@ -2,9 +2,10 @@
   "name": "@uploader/demos",
   "private": true,
   "scripts": {
-    "dev": "vite dev"
+    "dev": "vite",
+    "build": "vite build"
   },
   "dependencies": {
-    "@uploader/vue3": "workspace:^1.0.0"
+    "@uploader/vue3": "workspace:^"
   }
 }
