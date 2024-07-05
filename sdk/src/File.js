@@ -79,9 +79,8 @@ export default class File {
           chunk.retries = this.opts.retries
         }
       })
+      this.uploadFile()
     }
-
-    this.uploadFile()
   }
 
   uploadFile() {
@@ -132,10 +131,11 @@ export default class File {
 
     const onFail = (e) => {
       this.status = Status.Fail
-      this.uploader.emit('fileFail', this, this.uploader.fileList)
+      this.uploader.emit('fileMergeFail', this, this.uploader.fileList)
     }
 
     const merge = this.uploader.opts.merge
+    typeof merge 
     if (merge && isFunction(merge)) {
       const p = merge(this)
       if (p && p.then) {
@@ -147,6 +147,8 @@ export default class File {
           onFail()
         }
       }
+    } else {
+      onSuccess()
     }
   }
   

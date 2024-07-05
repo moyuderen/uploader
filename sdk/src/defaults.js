@@ -17,9 +17,11 @@ const options = {
   retries: 3,
   retryInterval: 1000,
   merge: async (file) => {
-    await sleep(5000)
+    console.log('merge', file)
+    await sleep(5000, true)
     file.path = 'http://baidu.com'
-  }
+  },
+  // merge: true
 }
 
 const attributes = {

@@ -51,6 +51,11 @@ onMounted(() => {
     files.value = fileList
   })
 
+  uploader.value.on('fileMergeFail', (file, fileList) => {
+    console.log(`${file.name}合并失败`, file, fileList)
+    files.value = fileList
+  })
+
   uploader.value.on('fileRemove', (file, fileList) => {
     console.log(`${file.name}被删除`, file, fileList)
     files.value = fileList
