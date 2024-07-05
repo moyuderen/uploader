@@ -14,7 +14,6 @@ onMounted(() => {
     uploader.value.assignDrop(document.querySelector('.uploader-drop'))
   })
 })
-
 </script>
 
 <style scoped>

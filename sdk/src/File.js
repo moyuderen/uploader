@@ -70,9 +70,9 @@ export default class File {
   }
 
   retryUpload() {
-    if(this.status === Status.UploadSuccess) {
+    if (this.status === Status.UploadSuccess) {
       this.merge()
-    }else {
+    } else {
       this.chunks.forEach((chunk) => {
         if (chunk.status === Status.Fail) {
           chunk.status = Status.Ready
@@ -135,7 +135,7 @@ export default class File {
     }
 
     const merge = this.uploader.opts.merge
-    typeof merge 
+    typeof merge
     if (merge && isFunction(merge)) {
       const p = merge(this)
       if (p && p.then) {
@@ -151,7 +151,7 @@ export default class File {
       onSuccess()
     }
   }
-  
+
   remove() {
     this.chunks = []
     this.uploadingQueue.forEach((chunk) => {

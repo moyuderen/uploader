@@ -12,5 +12,4 @@ import uploaderFile from './uploader-file.vue'
 const props = defineProps({
   fileList: Array
 })
-
 </script>

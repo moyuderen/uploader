@@ -1,10 +1,8 @@
 <template>
   <div class="uploader">
     <uploader-drop>
-      <span style="margin-right: 6px;">Drop file here or</span>
-      <uploader-btn>
-        click to upload
-      </uploader-btn>
+      <span style="margin-right: 6px">Drop file here or</span>
+      <uploader-btn> click to upload </uploader-btn>
     </uploader-drop>
     <slot :file-list="files">
       <uploader-list :file-list="files"></uploader-list>
@@ -15,9 +13,9 @@
 <script setup>
 import { onMounted, ref, provide } from 'vue'
 import Uploader from '@uploader/sdk'
-import uploaderDrop from './uploader-drop.vue';
+import uploaderDrop from './uploader-drop.vue'
 import uploaderBtn from './uploader-btn.vue'
-import uploaderList from './uploader-list.vue';
+import uploaderList from './uploader-list.vue'
 
 const uploader = ref(null)
 const files = ref([])
@@ -26,7 +24,6 @@ uploader.value = new Uploader()
 provide('uploader', uploader)
 
 onMounted(() => {
-
   uploader.value.on('filesAdded', (fileList) => {
     files.value = fileList
   })
@@ -65,6 +62,4 @@ onMounted(() => {
     // console.log(`${file.name} progress ${progress}`, file, fileList)
   })
 })
-
-
 </script>

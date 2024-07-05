@@ -20,7 +20,7 @@ const options = {
     console.log('merge', file)
     await sleep(5000, true)
     file.path = 'http://baidu.com'
-  },
+  }
   // merge: true
 }
 

@@ -13,7 +13,6 @@ onMounted(() => {
     // uploader.value.assignBrowse(document.querySelector('.uploader-btn'))
   })
 })
-
 </script>
 
 <style scoped>

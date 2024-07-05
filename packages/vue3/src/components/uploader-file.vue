@@ -2,50 +2,53 @@
   <div class="uploader-file">
     <div class="info-wrap">
       <div class="file-name">
-        <file-icon :size="14" class="file-icon"/>
+        <file-icon :size="14" class="file-icon" />
         {{ file.name }}
       </div>
-      <div style="display: flex;">
-        <div class="percent">
-          {{ parseProgress(file.progress) }}%
-        </div>
+      <div style="display: flex">
+        <div class="percent">{{ parseProgress(file.progress) }}%</div>
         <div class="actions">
           <span v-if="file.status === 'pause'" class="action" @click="resume(file.id)">
-            <play-icon :size="14"/>
+            <play-icon :size="14" />
           </span>
           <span v-if="file.status === 'uploading'" class="action" @click="pause(file.id)">
-            <pause-icon :size="14"/>
+            <pause-icon :size="14" />
           </span>
           <span v-if="file.status === 'fail'" class="action" @click="retry(file.id)">
-            <retry-icon :size="14"/>
+            <retry-icon :size="14" />
           </span>
           <span class="action remove" @click="remove(file.id)">
-            <remove-icon :size="14"/>
+            <remove-icon :size="14" />
           </span>
         </div>
       </div>
       <div class="progress-wrap">
-        <div class="progress" :style="{width:progressWidth }" 
+        <div
+          class="progress"
+          :style="{ width: progressWidth }"
           :class="{
-            'uploading': file.status === 'uploading' || file.status === 'pause' || file.status === 'resume' || file.status === 'uploadSuccess',
-            'success': file.status === 'success',
-            'fail': file.status === 'fail',
-          }">
-        </div>
+            uploading:
+              file.status === 'uploading' ||
+              file.status === 'pause' ||
+              file.status === 'resume' ||
+              file.status === 'uploadSuccess',
+            success: file.status === 'success',
+            fail: file.status === 'fail'
+          }"
+        ></div>
       </div>
-      
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, inject, onMounted, ref, watch } from 'vue';
+import { computed, inject, onMounted, ref, watch } from 'vue'
 
-import fileIcon from './file-icon.vue';
-import playIcon from './play-icon.vue';
-import pauseIcon from './pause-icon.vue';
-import retryIcon from './retry-icon.vue';
-import removeIcon from './remove-icon.vue';
+import fileIcon from './file-icon.vue'
+import playIcon from './play-icon.vue'
+import pauseIcon from './pause-icon.vue'
+import retryIcon from './retry-icon.vue'
+import removeIcon from './remove-icon.vue'
 
 const props = defineProps({
   file: Object
@@ -53,11 +56,11 @@ const props = defineProps({
 const uploader = inject('uploader')
 const progressWidth = ref(0)
 watch(
-  () => props.file.progress, 
+  () => props.file.progress,
   (progress) => {
     progressWidth.value = `${progress * 100}%`
-  }, 
-  { 
+  },
+  {
     immediate: true
   }
 )
@@ -81,11 +84,10 @@ const resume = (id) => {
 const pause = (id) => {
   uploader.value.pause(id)
 }
-
 </script>
 
 <style scoped>
-.info-wrap { 
+.info-wrap {
   position: relative;
   display: flex;
   justify-content: space-between;
@@ -137,7 +139,7 @@ const pause = (id) => {
 }
 
 .uploading {
-  background-color: #d9ecff
+  background-color: #d9ecff;
 }
 
 .success {

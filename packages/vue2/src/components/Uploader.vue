@@ -1,5 +1,3 @@
 <template>
-  <div>
-    Uploader
-  </div>
+  <div>Uploader</div>
 </template>
