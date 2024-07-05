@@ -31,7 +31,6 @@ export class Event {
   }
 
   emit(name, ...args) {
-    console.log(1)
     if (!this.event) {
       this.event = {};
     }

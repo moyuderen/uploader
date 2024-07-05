@@ -1,10 +1,10 @@
-import Uploader from './components/Uploader.vue'
+import uploader from './components/uploader.vue'
 
-const uploader = {
+const Uploader = {
   install(app) {
-    app.component('Uploader', Uploader)
+    app.component('Uploader', uploader)
   }
 }
 
-export default uploader
+export default Uploader
 

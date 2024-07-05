@@ -1,5 +1,5 @@
 {
-  "name": "@uploader/vue3",
+  "name": "@uploader/vue2",
   "version": "1.0.0",
   "scripts": {
     "dev": "vite build --watch",

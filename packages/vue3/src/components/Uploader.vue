@@ -1,25 +1,31 @@
 <template>
-  <button class="uploader-btn">
-    uploader4
-  </button>
-
-  <div>
-    <div v-for="file in files" :key="file.id">
-      {{ file.name }} {{ file.progress * 100 }} {{ file.status }}
-    </div>
+  <div class="uploader">
+    <uploader-drop>
+      <span style="margin-right: 6px;">Drop file here or</span>
+      <uploader-btn>
+        click to upload
+      </uploader-btn>
+    </uploader-drop>
+    <slot :file-list="files">
+      <uploader-list :file-list="files"></uploader-list>
+    </slot>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, provide } from 'vue'
 import Uploader from '@uploader/sdk'
+import uploaderDrop from './uploader-drop.vue';
+import uploaderBtn from './uploader-btn.vue'
+import uploaderList from './uploader-list.vue';
+
 const uploader = ref(null)
 const files = ref([])
 
-onMounted(() => {
-  uploader.value = new Uploader()
+uploader.value = new Uploader()
+provide('uploader', uploader)
 
-  uploader.value.assignBrowse(document.querySelector('.uploader-btn'))
+onMounted(() => {
 
   uploader.value.on('filesAdded', (fileList) => {
     files.value = fileList
@@ -30,8 +36,13 @@ onMounted(() => {
     files.value = fileList
   })
 
-  uploader.value.on('fileSuccess', (file, fileList) => {
+  uploader.value.on('fileUploadSuccess', (file, fileList) => {
     console.log(`${file.name}上传成功`, file, fileList)
+    files.value = fileList
+  })
+
+  uploader.value.on('fileSuccess', (file, fileList) => {
+    console.log(`${file.name}合并成功`, file, fileList)
     files.value = fileList
   })
 

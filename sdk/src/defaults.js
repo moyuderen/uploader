@@ -1,3 +1,5 @@
+import { sleep } from '@uploader/utils'
+
 const options = {
   target: 'https://jsonplaceholder.typicode.com/posts',
   multipart: true, // 是否分片上传，false时单文件上传
@@ -14,7 +16,8 @@ const options = {
   },
   retries: 3,
   retryInterval: 1000,
-  merge: (file) => {
+  merge: async (file) => {
+    await sleep(5000)
     file.path = 'http://baidu.com'
   }
 }

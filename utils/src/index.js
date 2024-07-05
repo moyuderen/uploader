@@ -79,3 +79,12 @@ export function extend() {
   }
   return target
 }
+
+export const sleep = (time = 600, mockError = false) => {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      clearTimeout(timer)
+      mockError ? reject() : resolve()
+    }, time)
+  })
+}

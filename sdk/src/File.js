@@ -50,11 +50,11 @@ export default class File {
     const progress = this.chunks.reduce((total, chunk) => {
       return (total += chunk.progressInFile)
     }, 0)
-    if (this.status !== Status.Success) {
-      this.progress = Math.max(Math.min(progress, 0.99), this.progress)
+    if (this.status !== Status.UploadSuccess) {
+      this.progress = Math.max(Math.min(progress, 0.9999), this.progress)
     }
 
-    if (this.status === Status.Success) {
+    if (this.status === Status.UploadSuccess) {
       this.progress = 1
     }
 
@@ -70,12 +70,17 @@ export default class File {
   }
 
   retryUpload() {
-    this.chunks.forEach((chunk) => {
-      if (chunk.status === Status.Fail) {
-        chunk.status = Status.Ready
-        chunk.retries = this.opts.retries
-      }
-    })
+    if(this.status === Status.UploadSuccess) {
+      this.merge()
+    }else {
+      this.chunks.forEach((chunk) => {
+        if (chunk.status === Status.Fail) {
+          chunk.status = Status.Ready
+          chunk.retries = this.opts.retries
+        }
+      })
+    }
+
     this.uploadFile()
   }
 
@@ -103,23 +108,10 @@ export default class File {
         this.status = Status.Fail
         this.uploader.emit('fileFail', this, this.uploader.fileList)
       } else {
-        this.status = Status.Success
+        this.status = Status.UploadSuccess
         this.setProgress()
-        this.uploader.emit('fileSuccess', this, this.uploader.fileList)
-        const merge = this.uploader.opts.merge
-        if (merge && isFunction(merge)) {
-          const p = merge(this)
-          if (p && p.then) {
-            p.then(
-              () => {
-                console.log('合并文件成功')
-              },
-              () => {
-                console.log('合并文件失败')
-              }
-            )
-          }
-        }
+        this.uploader.emit('fileUploadSuccess', this, this.uploader.fileList)
+        this.merge()
       }
       this.uploader.upload()
       return
@@ -132,6 +124,32 @@ export default class File {
     )
   }
 
+  merge() {
+    const onSuccess = () => {
+      this.status = Status.Success
+      this.uploader.emit('fileSuccess', this, this.uploader.fileList)
+    }
+
+    const onFail = (e) => {
+      this.status = Status.Fail
+      this.uploader.emit('fileFail', this, this.uploader.fileList)
+    }
+
+    const merge = this.uploader.opts.merge
+    if (merge && isFunction(merge)) {
+      const p = merge(this)
+      if (p && p.then) {
+        p.then(onSuccess, onFail)
+      } else {
+        if (p) {
+          onSuccess()
+        } else {
+          onFail()
+        }
+      }
+    }
+  }
+  
   remove() {
     this.chunks = []
     this.uploadingQueue.forEach((chunk) => {
