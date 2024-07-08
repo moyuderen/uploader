@@ -1,5 +1,5 @@
 {
-  "name": "@uploader/utils",
+  "name": "tiny-uploader-utils",
   "version": "1.0.0",
   "scripts": {
     "dev": "vite build --watch",
@@ -7,7 +7,6 @@
   },
   "main": "./src/index.js",
   "module": "./src/index.js",
-
   "peerDependencies": {},
   "dependencies": {},
   "devDependencies": {}

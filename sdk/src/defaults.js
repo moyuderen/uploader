@@ -1,4 +1,4 @@
-import { sleep } from '@uploader/utils'
+import { sleep } from 'tiny-uploader-utils'
 
 const options = {
   target: 'https://jsonplaceholder.typicode.com/posts',

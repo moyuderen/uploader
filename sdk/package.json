@@ -1,5 +1,5 @@
 {
-  "name": "@uploader/sdk",
+  "name": "tiny-uploader-sdk",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -20,12 +20,12 @@
   ],
   "author": "",
   "license": "ISC",
-  "main": "./dist/uploader-sdk.umd.js",
-  "module": "./dist/uploader-sdk.mjs",
+  "main": "./dist/tiny-uploader-sdk.umd.js",
+  "module": "./dist/tiny-uploader-sdk.mjs",
   "exports": {
     ".": {
-      "require": "./dist/uploader-sdk.umd.js",
-      "import": "./dist/uploader-sdk.mjs"
+      "require": "./dist/tiny-uploader-sdk.umd.js",
+      "import": "./dist/tiny-uploader-sdk.mjs"
     }
   },
   "files": [
@@ -33,6 +33,6 @@
     "README.md"
   ],
   "dependencies": {
-    "@uploader/utils": "workspace:^"
+    "tiny-uploader-utils": "workspace:^"
   }
 }

@@ -1,11 +1,11 @@
 {
-  "name": "@uploader/demos",
+  "name": "tiny-uploader-demos",
   "private": true,
   "scripts": {
     "dev": "vite",
     "build": "vite build"
   },
   "dependencies": {
-    "@uploader/v3": "workspace:^"
+    "tiny-uploader-vuenext": "workspace:^"
   }
 }

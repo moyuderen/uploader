@@ -1,5 +1,5 @@
 import Chunk from './Chunk.js'
-import { isFunction, generateUid } from '@uploader/utils'
+import { isFunction, generateUid } from 'tiny-uploader-utils'
 import { Status } from './constans.js'
 
 export default class File {
