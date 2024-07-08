@@ -20,7 +20,7 @@ importers:
 
   demos:
     dependencies:
-      '@uploader/vue3':
+      '@uploader/v3':
         specifier: workspace:^
         version: link:../packages/vue3
 

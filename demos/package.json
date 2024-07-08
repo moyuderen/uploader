@@ -6,6 +6,6 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@uploader/vue3": "workspace:^"
+    "@uploader/v3": "workspace:^"
   }
 }

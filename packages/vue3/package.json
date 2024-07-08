@@ -1,12 +1,19 @@
 {
-  "name": "@uploader/vue3",
+  "name": "@uploader/v3",
   "version": "1.0.0",
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build"
   },
-  "main": "./src/index.js",
-  "module": "./src/index.js",
+  "main": "dist/uploader3.umd.js",
+  "module": "dist/uploader3.mjs",
+  "exports": {
+    ".": {
+      "require": "./dist/uploader3.umd.js",
+      "import": "./dist/uploader3.mjs"
+    },
+    "./styles.css": "./dist/style.css"
+  },
   "peerDependencies": {
     "vue": "^3.4.31"
   },

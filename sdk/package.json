@@ -20,8 +20,14 @@
   ],
   "author": "",
   "license": "ISC",
-  "main": "./src/index.js",
-  "module": "./src/index.js",
+  "main": "./dist/uploader-sdk.umd.js",
+  "module": "./dist/uploader-sdk.mjs",
+  "exports": {
+    ".": {
+      "require": "./dist/uploader-sdk.umd.js",
+      "import": "./dist/uploader-sdk.mjs"
+    }
+  },
   "files": [
     "dist",
     "README.md"

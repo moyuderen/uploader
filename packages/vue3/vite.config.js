@@ -9,6 +9,13 @@ export default defineConfig({
       name: 'Uploader3',
       fileName: 'uploader3'
     },
-    minify: true
+    minify: false,
+    cssCodeSplit: false,
+    rollupOptions: {
+      external: ['vue'],
+      output: {
+        globals: 'vue'
+      }
+    }
   }
 })
