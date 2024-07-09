@@ -15,7 +15,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style>
 .uploader-btn {
   color: #409eff;
 }

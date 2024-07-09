@@ -1,24 +1,30 @@
 {
-  "name": "tiny-uploader-vuenext",
-  "version": "1.0.1",
+  "name": "@tinyuploader/vuenext",
+  "version": "1.0.9",
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build"
   },
-  "main": "dist/tiny-uploader-vuenext.umd.js",
-  "module": "dist/tiny-uploader-vuenext.mjs",
+  "main": "dist/tinyuploader-vuenext.umd.js",
+  "module": "dist/tinyuploader-vuenext.mjs",
   "exports": {
     ".": {
-      "require": "./dist/tiny-uploader-vuenext.umd.js",
-      "import": "./dist/tiny-uploader-vuenext.mjs"
+      "require": "./dist/tinyuploader-vuenext.umd.js",
+      "import": "./dist/tinyuploader-vuenext.mjs"
     },
-    "./styles.css": "./dist/style.css"
+    "./dist/style.css": "./dist/style.css"
   },
+  "sideEffects": [
+    "dist/*",
+    "es/**/style/*",
+    "lib/**/style/*",
+    "*.less"
+  ],
   "peerDependencies": {
     "vue": "^3.4.31"
   },
   "dependencies": {
-    "tiny-uploader-sdk": "workspace:^"
+    "@tinyuploader/sdk": "workspace:^"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",

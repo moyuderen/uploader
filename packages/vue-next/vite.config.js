@@ -7,7 +7,7 @@ export default defineConfig({
     lib: {
       entry: './src/index.js',
       name: 'TinyUploaderVueNext',
-      fileName: 'tiny-uploader-vuenext'
+      fileName: 'tinyuploader-vuenext'
     },
     minify: false,
     cssCodeSplit: false,

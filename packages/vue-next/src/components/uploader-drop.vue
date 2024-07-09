@@ -16,7 +16,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style>
 .uploader-drop {
   display: flex;
   align-items: center;

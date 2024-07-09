@@ -86,7 +86,7 @@ const pause = (id) => {
 }
 </script>
 
-<style scoped>
+<style>
 .info-wrap {
   position: relative;
   display: flex;
@@ -98,6 +98,7 @@ const pause = (id) => {
   cursor: pointer;
   color: #606266;
   font-size: 14px;
+  z-index: 0;
 }
 
 .info-wrap:hover .actions {
