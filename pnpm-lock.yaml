@@ -20,29 +20,13 @@ importers:
 
   demos:
     dependencies:
-      tiny-uploader-vuenext:
+      '@tinyuploader/vuenext':
         specifier: workspace:^
         version: link:../packages/vue-next
 
   packages/vue-next:
     dependencies:
-      tiny-uploader-sdk:
-        specifier: workspace:^
-        version: link:../../sdk
-      vue:
-        specifier: ^3.4.31
-        version: 3.4.31
-    devDependencies:
-      '@vitejs/plugin-vue':
-        specifier: ^5.0.5
-        version: 5.0.5(vite@5.3.2)(vue@3.4.31)
-      vite:
-        specifier: ^5.3.2
-        version: 5.3.2
-
-  packages/vue3:
-    dependencies:
-      tiny-uploader-sdk:
+      '@tinyuploader/sdk':
         specifier: workspace:^
         version: link:../../sdk
       vue:
@@ -58,7 +42,7 @@ importers:
 
   sdk:
     dependencies:
-      tiny-uploader-utils:
+      '@tinyuploader/utils':
         specifier: workspace:^
         version: link:../utils
 

@@ -1,11 +1,11 @@
 {
-  "name": "tiny-uploader",
+  "name": "tinyuploader",
   "version": "1.0.0",
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "pnpm run --parallel --filter tiny-uploader-* dev",
-    "build": "pnpm run --parallel --filter tiny-uploader-* build"
+    "dev": "pnpm run --parallel --filter @tinyuploader/* dev",
+    "build": "pnpm run --parallel --filter @tinyuploader/* build"
   },
   "keywords": [
     "uploader",

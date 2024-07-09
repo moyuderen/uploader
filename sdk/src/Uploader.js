@@ -1,4 +1,4 @@
-import { Event, extend, each } from 'tiny-uploader-utils'
+import { Event, extend, each } from '@tinyuploader/utils'
 import File from './File.js'
 import defaults from './defaults.js'
 import { Status } from './constans.js'

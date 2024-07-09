@@ -1,9 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import uploader from 'tiny-uploader-vuenext'
-import 'tiny-uploader-vuenext/styles.css'
+import uploader from '@tinyuploader/vuenext'
+import '@tinyuploader/vuenext/dist/style.css'
 
-console.log(uploader)
 const app = createApp(App)
 
 app.use(uploader)

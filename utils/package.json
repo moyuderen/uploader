@@ -1,6 +1,6 @@
 {
-  "name": "tiny-uploader-utils",
-  "version": "1.0.0",
+  "name": "@tinyuploader/utils",
+  "version": "1.0.1",
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build"

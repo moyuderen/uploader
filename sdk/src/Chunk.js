@@ -1,4 +1,4 @@
-import { generateUid, each } from 'tiny-uploader-utils'
+import { generateUid, each } from '@tinyuploader/utils'
 import { Status } from './constans.js'
 
 export default class Chunk {

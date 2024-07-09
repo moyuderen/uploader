@@ -1,4 +1,4 @@
-import { sleep } from 'tiny-uploader-utils'
+import { sleep } from '@tinyuploader/utils'
 
 const options = {
   target: 'https://jsonplaceholder.typicode.com/posts',
@@ -17,8 +17,7 @@ const options = {
   retries: 3,
   retryInterval: 1000,
   merge: async (file) => {
-    console.log('merge', file)
-    await sleep(5000, true)
+    await sleep(5000)
     file.path = 'http://baidu.com'
   }
   // merge: true
