@@ -8,3 +8,14 @@ export const Status = {
   Pause: 'pause',
   Resume: 'resume'
 }
+
+export const Events = {
+  FilesAdded: 'filesAdded',
+  FileRemove: 'fileRemove',
+  FileProgress: 'fileProgress',
+  FileFail: 'fileFail',
+  FileUploadSuccess: 'fileUploadSuccess',
+  FileSuccess: 'fileSuccess',
+  FileMergeFail: 'fileMergeFail',
+  AllFileSuccess: 'allFilesSuccess'
+}

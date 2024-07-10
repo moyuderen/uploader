@@ -1,7 +1,7 @@
 import { Event, extend, each } from '@tinyuploader/utils'
 import File from './File.js'
 import defaults from './defaults.js'
-import { Status } from './constans.js'
+import { Status, Events } from './constans.js'
 
 class Uploader extends Event {
   constructor(options) {
@@ -14,14 +14,12 @@ class Uploader extends Event {
   }
 
   addFiles(files) {
-    this.status = 'hahah'
-
     const newFileList = [...files].map((file) => {
       return new File(this, file)
     })
     this.status = Status.Ready
     this.fileList = [...this.fileList, ...newFileList]
-    this.emit('filesAdded', this.fileList)
+    this.emit(Events.FilesAdded, this.fileList)
     if (this.opts.autoUpload) {
       this.upload()
     }
@@ -52,7 +50,7 @@ class Uploader extends Event {
     }
     const allSuccess = this.fileList.every((file) => file.status === Status.Success)
     if (allSuccess) {
-      this.emit('allSuccess', this.fileList)
+      this.emit(Events.AllFileSuccess, this.fileList)
     }
   }
 
@@ -84,7 +82,7 @@ class Uploader extends Event {
     const { file, index } = this._findFileById(id)
     file.remove()
     this.fileList.splice(index, 1)
-    this.emit('fileRemove', file, this.fileList)
+    this.emit(Events.FileRemove, file, this.fileList)
     this.upload()
   }
 
@@ -175,6 +173,7 @@ class Uploader extends Event {
 }
 
 Uploader.Status = Status
+Uploader.Events = Events
 Uploader.create = (options) => {
   return new Uploader(options)
 }

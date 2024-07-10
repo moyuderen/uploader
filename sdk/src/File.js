@@ -1,6 +1,6 @@
 import Chunk from './Chunk.js'
 import { isFunction, generateUid } from '@tinyuploader/utils'
-import { Status } from './constans.js'
+import { Status, Events } from './constans.js'
 
 export default class File {
   constructor(uploader, file) {
@@ -58,7 +58,7 @@ export default class File {
       this.progress = 1
     }
 
-    this.uploader.emit('fileProgress', this.progress, this, this.uploader.fileList)
+    this.uploader.emit(Events.FileProgress, this.progress, this, this.uploader.fileList)
   }
 
   removeChunkInUploadingQueue(chunk) {
@@ -99,17 +99,16 @@ export default class File {
       run()
     }
 
-    run()
     // console.log(this.uploadingQueue)
     if (this.uploadingQueue.size === 0) {
       const hasErrorChunk = this.chunks.some((chunk) => chunk.status === Status.Fail)
       if (hasErrorChunk) {
         this.status = Status.Fail
-        this.uploader.emit('fileFail', this, this.uploader.fileList)
+        this.uploader.emit(Events.FileFail, this, this.uploader.fileList)
       } else {
         this.status = Status.UploadSuccess
         this.setProgress()
-        this.uploader.emit('fileUploadSuccess', this, this.uploader.fileList)
+        this.uploader.emit(Events.FileUploadSuccess, this, this.uploader.fileList)
         this.merge()
       }
       this.uploader.upload()
@@ -126,12 +125,12 @@ export default class File {
   merge() {
     const onSuccess = () => {
       this.status = Status.Success
-      this.uploader.emit('fileSuccess', this, this.uploader.fileList)
+      this.uploader.emit(Events.FileSuccess, this, this.uploader.fileList)
     }
 
     const onFail = (e) => {
       this.status = Status.Fail
-      this.uploader.emit('fileMergeFail', this, this.uploader.fileList)
+      this.uploader.emit(Events.FileMergeFail, this, this.uploader.fileList)
     }
 
     const merge = this.uploader.opts.merge
