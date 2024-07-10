@@ -127,9 +127,10 @@ class Uploader extends Event {
       each(attributes, (val, key) => {
         input.setAttribute(key, val)
       })
-
       if (attributes.multiple) {
         input.setAttribute('multiple', 'multiple')
+      } else {
+        input.removeAttribute('multiple')
       }
 
       domNode.appendChild(input)
