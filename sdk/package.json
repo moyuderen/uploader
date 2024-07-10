@@ -1,6 +1,6 @@
 {
   "name": "@tinyuploader/sdk",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -27,6 +27,14 @@
       "require": "./dist/@tinyuploader/sdk.umd.js",
       "import": "./dist/@tinyuploader/sdk.mjs"
     }
+  },
+  "homepage": "https://github.com/moyuderen/uploader/tree/monorepo/sdk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moyuderen/uploader.git"
+  },
+  "bugs": {
+    "url": "https://github.com/moyuderen/uploader/issues"
   },
   "files": [
     "dist",
