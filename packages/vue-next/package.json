@@ -1,6 +1,6 @@
 {
   "name": "@tinyuploader/vuenext",
-  "version": "1.0.9",
+  "version": "1.0.0",
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build"

@@ -7,10 +7,20 @@
 <script setup>
 import { inject, nextTick, onMounted } from 'vue'
 
+const props = defineProps({
+  multiple: {
+    type: Boolean,
+    default: true
+  },
+  accept: {
+    type: String,
+    default: '*'
+  }
+})
 onMounted(() => {
   const uploader = inject('uploader')
   nextTick(() => {
-    uploader.value.assignBrowse(document.querySelector('.uploader-drop'))
+    uploader.value.assignBrowse(document.querySelector('.uploader-drop'), props)
     uploader.value.assignDrop(document.querySelector('.uploader-drop'))
   })
 })

@@ -9,7 +9,7 @@ export default defineConfig({
       name: 'TinyUploaderVueNext',
       fileName: 'tinyuploader-vuenext'
     },
-    minify: false,
+    minify: true,
     cssCodeSplit: false,
     rollupOptions: {
       external: ['vue'],
