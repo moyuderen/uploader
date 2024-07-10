@@ -99,6 +99,7 @@ export default class File {
       run()
     }
 
+    run()
     // console.log(this.uploadingQueue)
     if (this.uploadingQueue.size === 0) {
       const hasErrorChunk = this.chunks.some((chunk) => chunk.status === Status.Fail)
