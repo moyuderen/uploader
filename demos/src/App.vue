@@ -14,6 +14,7 @@
       :merge="merge"
     />
     <button @click="abort">取消所有上传</button>
+    <button @click="submit">Submit</button>
   </div>
 </template>
 
@@ -69,5 +70,9 @@ const merge = async (file) => {
 
 const abort = () => {
   uploaderRef.value.abort()
+}
+
+const submit = () => {
+  uploaderRef.value.submit()
 }
 </script>
