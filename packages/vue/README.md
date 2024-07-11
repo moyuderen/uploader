@@ -1,4 +1,4 @@
-# uploader-vuenext
+# uploader-vue
 
 ## Quick Start
 
