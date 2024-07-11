@@ -6,6 +6,8 @@
 <template>
   <div>
     <uploader
+      ref="uploaderRef"
+      :chunkSize="1024 * 1024 * 10"
       @onFilesAdded="onFilesAdded"
       @onFileRemove="onFileRemove"
       @onFileProgress="onFileProgress"
@@ -16,10 +18,15 @@
       @onAllFileSuccess="onAllFileSuccess"
       :merge="merge"
     />
+    <button @click="abort">取消所有上传</button>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
+const uploaderRef = ref()
+
 const onFilesAdded = (fileList) => {
   console.log('添加文件成功', fileList)
 }
@@ -63,6 +70,10 @@ const sleep = () => {
 const merge = async (file) => {
   const { url } = await sleep()
   file.url = url
+}
+
+const abort = () => {
+  uploaderRef.value.abort()
 }
 </script>
 ```

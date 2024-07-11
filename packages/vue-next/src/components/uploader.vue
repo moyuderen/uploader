@@ -73,4 +73,16 @@ onMounted(() => {
     emit('onFileProgress', progress, file, fileList)
   })
 })
+
+const abort = (id) => {
+  if (id) {
+    uploader.value.remove(id)
+    return
+  }
+  uploader.value.remove()
+}
+
+defineExpose({
+  abort
+})
 </script>
