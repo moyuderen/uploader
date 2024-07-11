@@ -15,7 +15,7 @@ export default class Chunk {
     this.stardByte = this.chunkSize * index
     this.endByte = Math.min(this.stardByte + this.chunkSize, this.totalSize)
     this.size = this.endByte - this.stardByte
-    this.blob = chunk
+    // this.blob = chunk
     this.chunkIndex = index
 
     this.retries = this.opts.retries
@@ -30,7 +30,8 @@ export default class Chunk {
     const data = new FormData()
     this.xhr.responseType = 'json'
     this.xhr.withCredentials = this.opts.withCredentials
-    data.append(this.opts.name, this.blob)
+    const blob = this.file.rawFile.slice(this.stardByte, this.endByte)
+    data.append(this.opts.name, blob)
     data.append('id', this.id)
     data.append('fileId', this.file.id)
     data.append('index', this.chunkIndex)

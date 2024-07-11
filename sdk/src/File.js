@@ -26,15 +26,15 @@ export default class File {
     this.createChunks()
   }
 
-  createChunks() {
-    const blob = new Blob([this.rawFile], {
-      size: this.size
-    })
-    const chunks = this.slice(blob)
-    this.chunks = chunks.map((chunk, index) => {
-      return new Chunk(this, chunk, index)
-    })
-  }
+  // createChunks() {
+  //   const blob = new Blob([this.rawFile], {
+  //     size: this.size
+  //   })
+  //   const chunks = this.slice(blob)
+  //   this.chunks = chunks.map((chunk, index) => {
+  //     return new Chunk(this, chunk, index)
+  //   })
+  // }
 
   slice(blob, size = this.chunkSize) {
     const fileChunkList = []
@@ -44,6 +44,13 @@ export default class File {
       cur += size
     }
     return fileChunkList
+  }
+
+  createChunks() {
+    const tatal = Math.ceil(this.size / this.chunkSize)
+    for (let i = 0; i < tatal; i++) {
+      this.chunks.push(new Chunk(this, null, i))
+    }
   }
 
   setProgress() {
