@@ -82,7 +82,12 @@ const abort = (id) => {
   uploader.value.remove()
 }
 
+const submit = () => {
+  uploader.value.submit()
+}
+
 defineExpose({
-  abort
+  abort,
+  submit
 })
 </script>
