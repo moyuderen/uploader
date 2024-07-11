@@ -74,9 +74,13 @@ class Uploader extends Event {
 
   remove(id) {
     if (!id) {
-      this.fileList.forEach((file) => {
+      for (let i = 0; i < this.fileList.length; i++) {
+        const file = this.fileList[i]
         file.remove()
-      })
+        this.emit(Events.FileRemove, file, this.fileList)
+      }
+      this.fileList = []
+      this.emit(Events.FileRemove, null, [])
       return
     }
     const { file, index } = this._findFileById(id)
