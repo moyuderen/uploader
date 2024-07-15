@@ -18,3 +18,7 @@ export const isArray =
   function (arr) {
     return Object.prototype.toString.call(arr) === '[object Array]'
   }
+
+export const isPromise = (promise) => {
+  return promise && isFunction(promise.then)
+}
