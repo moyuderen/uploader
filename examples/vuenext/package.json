@@ -1,0 +1,11 @@
+{
+  "name": "@examples/vuenext",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@tinyuploader/vuenext": "workspace:^"
+  }
+}
