@@ -5,6 +5,9 @@
     "dev": "vite build --watch",
     "build": "vite build"
   },
+  "files": [
+    "dist"
+  ],
   "main": "./src/index.js",
   "module": "./src/index.js",
   "peerDependencies": {},

@@ -37,8 +37,7 @@
     "url": "https://github.com/moyuderen/uploader/issues"
   },
   "files": [
-    "dist",
-    "README.md"
+    "dist"
   ],
   "dependencies": {
     "@tinyuploader/utils": "workspace:^"
