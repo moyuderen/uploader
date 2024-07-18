@@ -1,5 +1,13 @@
 # @tinyuploader/vue
 
+## 0.0.11
+
+### Patch Changes
+
+- 打包配置
+- Updated dependencies
+  - @tinyuploader/sdk@1.0.11
+
 ## 0.0.10
 
 ### Patch Changes

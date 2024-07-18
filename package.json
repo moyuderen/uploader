@@ -1,6 +1,6 @@
 {
   "name": "tinyuploader",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "workspaces": [
     "packages/*",
     "sdk"
