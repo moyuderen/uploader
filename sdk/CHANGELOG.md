@@ -1,5 +1,11 @@
 # @tinyuploader/sdk
 
+## 1.0.10
+
+### Patch Changes
+
+- 5315ec6: 更新包名称为 tinyuploader
+
 ## 1.0.9
 
 ### Patch Changes

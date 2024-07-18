@@ -1,5 +1,13 @@
 # @tinyuploader/vue
 
+## 0.0.10
+
+### Patch Changes
+
+- 5315ec6: 更新包名称为 tinyuploader
+- Updated dependencies [5315ec6]
+  - @tinyuploader/sdk@1.0.10
+
 ## 0.0.9
 
 ### Patch Changes
