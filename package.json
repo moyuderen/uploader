@@ -1,6 +1,10 @@
 {
   "name": "tiny-uploader",
-  "version": "1.1.0",
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/*",
+    "sdk"
+  ],
   "description": "",
   "private": "true",
   "scripts": {
@@ -14,8 +18,8 @@
     "build:package-vuenext": "pnpm -F @tiny-uploader/vuenext run build",
     "dev:demo-vue": "pnpm run dev:sdk & pnpm run dev:package-vue & pnpm -F @demos/vue run dev",
     "dev:demo-vuenext": "pnpm run dev:sdk & pnpm run dev:package-vuenext & pnpm -F @demos/vuenext run dev",
-    "changeset": "pnpm changeset",
-    "changeset-version": "pnpm changeset version",
+    "change": "pnpm changeset",
+    "change-version": "pnpm changeset version",
     "publish": "pnpm install && pnpm publish -r"
   },
   "keywords": [
