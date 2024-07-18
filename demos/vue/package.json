@@ -7,7 +7,7 @@
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
-    "@tiny-uploader/vue": "workspace:^",
+    "@tinyUploader/vue": "workspace:^",
     "vue": "^2.6.10"
   },
   "devDependencies": {

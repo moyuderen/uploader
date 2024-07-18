@@ -1,4 +1,4 @@
-import Uploader from '@tiny-uploader/sdk'
+import Uploader from '@tinyUploader/sdk'
 
 export const uploaderProps = {
   multiple: {
