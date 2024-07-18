@@ -1,5 +1,5 @@
 {
-  "name": "@tinyUploader/vue",
+  "name": "@tinyuploader/vue",
   "version": "0.0.9",
   "private": "false",
   "scripts": {
@@ -14,12 +14,12 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "./dist/tinyUploader-vue.umd.js",
-  "module": "./dist/tinyUploader-vue.mjs",
+  "main": "./dist/tinyuploader-vue.umd.js",
+  "module": "./dist/tinyuploader-vue.mjs",
   "exports": {
     ".": {
-      "require": "./dist/tinyUploader-vue.umd.js",
-      "import": "./dist/tinyUploader-vue.mjs"
+      "require": "./dist/tinyuploader-vue.umd.js",
+      "import": "./dist/tinyuploader-vue.mjs"
     },
     "./dist/style.css": "./dist/style.css"
   },
@@ -39,6 +39,6 @@
     "vue": "^2.6.10"
   },
   "dependencies": {
-    "@tinyUploader/sdk": "workspace:^"
+    "@tinyuploader/sdk": "workspace:^"
   }
 }

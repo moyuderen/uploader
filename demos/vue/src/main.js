@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
-import Uploader from '@tinyUploader/vue'
-import '@tinyUploader/vue/dist/style.css'
+import Uploader from '@tinyuploader/vue'
+import '@tinyuploader/vue/dist/style.css'
 
 Vue.use(Uploader)
 

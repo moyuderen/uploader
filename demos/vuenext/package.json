@@ -6,6 +6,6 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@tinyUploader/vuenext": "workspace:^"
+    "@tinyuploader/vuenext": "workspace:^"
   }
 }

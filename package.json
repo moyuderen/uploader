@@ -1,5 +1,5 @@
 {
-  "name": "tinyUploader",
+  "name": "tinyuploader",
   "version": "1.0.0",
   "workspaces": [
     "packages/*",
@@ -9,13 +9,13 @@
   "private": "true",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "pnpm run --parallel --filter @tinyUploader/* build",
-    "dev:sdk": "pnpm -F @tinyUploader/sdk run dev",
-    "build:sdk": "pnpm -F @tinyUploader/sdk run build",
-    "dev:package-vue": "pnpm -F @tinyUploader/vue run dev",
-    "build:package-vue": "pnpm -F @tinyUploader/vue run build",
-    "dev:package-vuenext": "pnpm -F @tinyUploader/vuenext run dev",
-    "build:package-vuenext": "pnpm -F @tinyUploader/vuenext run build",
+    "build": "pnpm run --parallel --filter @tinyuploader/* build",
+    "dev:sdk": "pnpm -F @tinyuploader/sdk run dev",
+    "build:sdk": "pnpm -F @tinyuploader/sdk run build",
+    "dev:package-vue": "pnpm -F @tinyuploader/vue run dev",
+    "build:package-vue": "pnpm -F @tinyuploader/vue run build",
+    "dev:package-vuenext": "pnpm -F @tinyuploader/vuenext run dev",
+    "build:package-vuenext": "pnpm -F @tinyuploader/vuenext run build",
     "dev:demo-vue": "pnpm run dev:sdk & pnpm run dev:package-vue & pnpm -F @demos/vue run dev",
     "dev:demo-vuenext": "pnpm run dev:sdk & pnpm run dev:package-vuenext & pnpm -F @demos/vuenext run dev",
     "change": "pnpm changeset",

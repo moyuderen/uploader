@@ -36,7 +36,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { RefreshRight, VideoPlay, VideoPause, Close } from '@element-plus/icons-vue'
-import Uploader from '@tinyUploader/sdk'
+import Uploader from '@tinyuploader/sdk'
 const Status = Uploader.Status
 const Events = Uploader.Events
 

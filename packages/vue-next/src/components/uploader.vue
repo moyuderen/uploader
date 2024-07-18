@@ -14,7 +14,7 @@
 
 <script setup>
 import { onMounted, ref, provide } from 'vue'
-import Uploader from '@tinyUploader/sdk'
+import Uploader from '@tinyuploader/sdk'
 import uploaderDrop from './uploader-drop.vue'
 import uploaderBtn from './uploader-btn.vue'
 import uploaderList from './uploader-list.vue'

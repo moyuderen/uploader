@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import Uploader from '@tinyUploader/sdk'
+import Uploader from '@tinyuploader/sdk'
 import UploaderDrop from './uploader-drop.vue'
 import UploaderBtn from './uploader-btn.vue'
 import UploaderList from './uploader-list.vue'

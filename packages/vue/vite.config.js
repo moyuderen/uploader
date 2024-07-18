@@ -15,7 +15,7 @@ export default defineConfig({
     lib: {
       entry: './src/index.js',
       name: 'Uploader',
-      fileName: 'tinyUploader-vue'
+      fileName: 'tinyuploader-vue'
     },
     minify: true,
     cssCodeSplit: false,

@@ -21,7 +21,7 @@ importers:
 
   demos/vue:
     dependencies:
-      '@tinyUploader/vue':
+      '@tinyuploader/vue':
         specifier: workspace:^
         version: link:../../packages/vue
       vue:
@@ -43,13 +43,13 @@ importers:
 
   demos/vuenext:
     dependencies:
-      '@tinyUploader/vuenext':
+      '@tinyuploader/vuenext':
         specifier: workspace:^
         version: link:../../packages/vue-next
 
   packages/vue:
     dependencies:
-      '@tinyUploader/sdk':
+      '@tinyuploader/sdk':
         specifier: workspace:^
         version: link:../../sdk
     devDependencies:
@@ -86,7 +86,7 @@ importers:
 
   packages/vue-next:
     dependencies:
-      '@tinyUploader/sdk':
+      '@tinyuploader/sdk':
         specifier: workspace:^
         version: link:../../sdk
       vue:

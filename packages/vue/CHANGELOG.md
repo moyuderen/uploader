@@ -1,12 +1,12 @@
-# @tinyUploader/vue
+# @tinyuploader/vue
 
 ## 0.0.9
 
 ### Patch Changes
 
-- 更新包名称为 tinyUploader
+- 更新包名称为 tinyuploader
 - Updated dependencies
-  - @tinyUploader/sdk@1.0.9
+  - @tinyuploader/sdk@1.0.9
 
 ## 0.0.8
 
@@ -14,4 +14,4 @@
 
 - 支持默认参数
 - Updated dependencies
-  - @tinyUploader/sdk@1.0.8
+  - @tinyuploader/sdk@1.0.8
