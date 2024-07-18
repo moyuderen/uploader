@@ -1,8 +1,8 @@
 {
-  "name": "@tinyuploader/vue",
-  "version": "0.0.5",
+  "name": "@tiny-uploader/vue",
+  "version": "0.0.7",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite build --watch",
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
@@ -10,12 +10,12 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/tinyuploader-vue.umd.js",
-  "module": "./dist/tinyuploader-vue.mjs",
+  "main": "./dist/tiny-uploader-vue.umd.js",
+  "module": "./dist/tiny-uploader-vue.mjs",
   "exports": {
     ".": {
-      "require": "./dist/tinyuploader-vue.umd.js",
-      "import": "./dist/tinyuploader-vue.mjs"
+      "require": "./dist/tiny-uploader-vue.umd.js",
+      "import": "./dist/tiny-uploader-vue.mjs"
     },
     "./dist/style.css": "./dist/style.css"
   },
@@ -35,6 +35,6 @@
     "vue": "^2.6.10"
   },
   "dependencies": {
-    "@tinyuploader/sdk": "workspace:^"
+    "@tiny-uploader/sdk": "workspace:^"
   }
 }

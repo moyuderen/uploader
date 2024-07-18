@@ -1,5 +1,5 @@
 import Chunk from './Chunk.js'
-import { isFunction, generateUid } from '@tinyuploader/utils'
+import { isFunction, generateUid } from '@/shared'
 import { Status, Events } from './constans.js'
 
 export default class File {
@@ -8,7 +8,7 @@ export default class File {
     this.opts = uploader.opts
 
     this.rawFile = file
-    if (isFunction(this.opts.generateUniqueIdentifier)) {
+    if (this.opts && isFunction(this.opts.generateUniqueIdentifier)) {
       this.id = this.opts.generateUniqueIdentifier(file) || generateUid('fid')
     } else {
       this.id = generateUid('fid')
@@ -16,10 +16,10 @@ export default class File {
     this.size = file.size
     this.name = file.name || file.fileName
     this.type = file.type
-    this.chunkSize = this.opts.chunkSize
+    this.chunkSize = this.opts && this.opts.chunkSize
 
-    this.status = Status.Ready
-    this.progress = 0
+    this.status = file.status || Status.Ready
+    this.progress = file.progress || 0
     this.chunks = []
     this.uploadingQueue = new Set()
 

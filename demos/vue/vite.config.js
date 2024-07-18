@@ -19,10 +19,6 @@ export default defineConfig({
       {
         find: '@',
         replacement: fileURLToPath(new URL('./src', import.meta.url))
-      },
-      {
-        find: /^\@tinyuploader\/vue$/,
-        replacement: path.resolve('../../packages/vue/src/', 'index.js')
       }
     ]
   }

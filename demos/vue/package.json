@@ -1,13 +1,13 @@
 {
-  "name": "@examples/vue",
+  "name": "@demos/vue",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
-    "@tinyuploader/vue": "workspace:^",
+    "@tiny-uploader/vue": "workspace:^",
     "vue": "^2.6.10"
   },
   "devDependencies": {

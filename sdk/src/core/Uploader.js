@@ -1,4 +1,4 @@
-import { Event, extend, each } from '@tinyuploader/utils'
+import { Event, extend, each } from '@/shared'
 import File from './File.js'
 import defaults from './defaults.js'
 import { Status, Events } from './constans.js'
@@ -6,9 +6,8 @@ import { Status, Events } from './constans.js'
 class Uploader extends Event {
   constructor(options) {
     super()
-
     this.opts = extend({}, defaults.options, options)
-    this.fileList = []
+    this.fileList = this.opts.fileList || []
     this.uploadingQueue = []
     this.status = 'init'
   }
@@ -179,6 +178,7 @@ class Uploader extends Event {
 
 Uploader.Status = Status
 Uploader.Events = Events
+Uploader.File = File
 Uploader.create = (options) => {
   return new Uploader(options)
 }

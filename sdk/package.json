@@ -1,5 +1,5 @@
 {
-  "name": "@tinyuploader/sdk",
+  "name": "@tiny-uploader/sdk",
   "version": "1.0.7",
   "description": "",
   "scripts": {
@@ -20,12 +20,12 @@
   ],
   "author": "",
   "license": "ISC",
-  "main": "./dist/@tinyuploader/sdk.umd.js",
-  "module": "./dist/@tinyuploader/sdk.mjs",
+  "main": "./dist/sdk.umd.js",
+  "module": "./dist/sdk.mjs",
   "exports": {
     ".": {
-      "require": "./dist/@tinyuploader/sdk.umd.js",
-      "import": "./dist/@tinyuploader/sdk.mjs"
+      "require": "./dist/sdk.umd.js",
+      "import": "./dist/sdk.mjs"
     }
   },
   "homepage": "https://github.com/moyuderen/uploader/tree/monorepo/sdk",
@@ -38,8 +38,5 @@
   },
   "files": [
     "dist"
-  ],
-  "dependencies": {
-    "@tinyuploader/utils": "workspace:^"
-  }
+  ]
 }

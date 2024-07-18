@@ -2,6 +2,7 @@
   <div id="app">
     <Uploader
       ref="uploaderRef"
+      :fileList="fileList"
       :chunkSize="1024 * 1024 * 10"
       @onFilesAdded="onFilesAdded"
       @onFileRemove="onFileRemove"
@@ -20,6 +21,15 @@
 
 <script>
 export default {
+  data() {
+    return {
+      fileList: [
+        {
+          url: 'http://baidu.com'
+        }
+      ]
+    }
+  },
   methods: {
     onFilesAdded(fileList) {
       console.log('添加文件成功', fileList)

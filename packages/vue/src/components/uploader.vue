@@ -15,13 +15,15 @@
 </template>
 
 <script>
-import Uploader from '@tinyuploader/sdk'
+import Uploader from '@tiny-uploader/sdk'
 import UploaderDrop from './uploader-drop.vue'
 import UploaderBtn from './uploader-btn.vue'
 import UploaderList from './uploader-list.vue'
 import UploaderFile from './uploader-file.vue'
 
 const Events = Uploader.Events
+const Status = Uploader.Status
+const File = Uploader.File
 
 export default {
   components: {
@@ -94,6 +96,12 @@ export default {
     },
     merge: {
       type: Function
+    },
+    fileList: {
+      type: [],
+      default() {
+        return []
+      }
     }
   },
   data() {
@@ -102,49 +110,76 @@ export default {
       files: []
     }
   },
-  created() {
-    this.uploader = new Uploader()
+  watch: {
+    fileList: {
+      handler(fileList) {
+        this.files = fileList.map((item) => {
+          const file = new File(
+            {},
+            {
+              name: 'haha',
+              status: Status.Success,
+              progress: 1
+            }
+          )
+          console.log(file)
+          return file
+        })
+        this.uploader = new Uploader({
+          ...this._props,
+          fileList: this.files
+        })
+        this.uploader.on(Events.FilesAdded, (fileList) => {
+          this.files = fileList
+          this.$emit('onFilesAdded', fileList)
+          this.$emit('onChange', fileList)
+        })
 
-    this.uploader.on(Events.FilesAdded, (fileList) => {
-      this.files = fileList
-      this.$emit('onFilesAdded', fileList)
-    })
+        this.uploader.on(Events.AllFileSuccess, (fileList) => {
+          this.files = fileList
+          this.$emit('onAllFileSuccess', fileList)
+          this.$emit('onChange', fileList)
+        })
 
-    this.uploader.on(Events.AllFileSuccess, (fileList) => {
-      this.files = fileList
-      this.$emit('onAllFileSuccess', fileList)
-    })
+        this.uploader.on(Events.FileUploadSuccess, (file, fileList) => {
+          this.files = fileList
+          this.$emit('onFileUploadSuccess', file, fileList)
+          this.$emit('onChange', fileList)
+        })
 
-    this.uploader.on(Events.FileUploadSuccess, (file, fileList) => {
-      this.files = fileList
-      this.$emit('onFileUploadSuccess', file, fileList)
-    })
+        this.uploader.on(Events.FileSuccess, (file, fileList) => {
+          this.files = fileList
+          this.$emit('onFileSuccess', file, fileList)
+          this.$emit('onChange', fileList)
+        })
 
-    this.uploader.on(Events.FileSuccess, (file, fileList) => {
-      this.files = fileList
-      this.$emit('onFileSuccess', file, fileList)
-    })
+        this.uploader.on(Events.FileFail, (file, fileList) => {
+          this.files = fileList
+          this.$emit('onFileFail', file, fileList)
+          this.$emit('onChange', fileList)
+        })
 
-    this.uploader.on(Events.FileFail, (file, fileList) => {
-      this.files = fileList
-      this.$emit('onFileFail', file, fileList)
-    })
+        this.uploader.on(Events.FileMergeFail, (file, fileList) => {
+          this.files = fileList
+          this.$emit('onFileMergeFail', file, fileList)
+          this.$emit('onChange', fileList)
+        })
 
-    this.uploader.on(Events.FileMergeFail, (file, fileList) => {
-      this.files = fileList
-      this.$emit('onFileMergeFail', file, fileList)
-    })
+        this.uploader.on(Events.FileRemove, (file, fileList) => {
+          this.files = fileList
+          this.$emit('onFileRemove', file, fileList)
+          this.$emit('onChange', fileList)
+        })
 
-    this.uploader.on(Events.FileRemove, (file, fileList) => {
-      this.files = fileList
-      this.$emit('onFileRemove', file, fileList)
-    })
-
-    this.uploader.on(Events.FileProgress, (progress, file, fileList) => {
-      this.files = fileList
-      this.$emit('onFileProgress', file, fileList)
-    })
+        this.uploader.on(Events.FileProgress, (progress, file, fileList) => {
+          this.files = fileList
+          this.$emit('onFileProgress', file, fileList)
+        })
+      },
+      immediate: true
+    }
   },
+  created() {},
   methods: {
     abort(id) {
       if (id) {
