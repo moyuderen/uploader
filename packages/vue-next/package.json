@@ -1,6 +1,7 @@
 {
   "name": "@tinyUploader/vuenext",
   "version": "1.1.3",
+  "private": "false",
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build"
@@ -8,6 +9,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "dist/tinyUploader-vuenext.umd.js",
   "module": "dist/tinyUploader-vuenext.mjs",
   "exports": {

@@ -2,6 +2,10 @@
   "name": "@tinyUploader/sdk",
   "version": "1.0.9",
   "description": "",
+  "private": "false",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite build --watch",
