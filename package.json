@@ -6,7 +6,7 @@
     "sdk"
   ],
   "description": "",
-  "private": "true",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "pnpm run --parallel --filter @tinyuploader/* build",
