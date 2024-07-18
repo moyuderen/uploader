@@ -20,7 +20,7 @@
     "dev:demo-vuenext": "pnpm run dev:sdk & pnpm run dev:package-vuenext & pnpm -F @demos/vuenext run dev",
     "change": "pnpm changeset",
     "change-version": "pnpm changeset version",
-    "publish": "pnpm install && pnpm publish -r"
+    "publish": "pnpm install && pnpm publish -F @tinyuploader/* "
   },
   "keywords": [
     "uploader",
