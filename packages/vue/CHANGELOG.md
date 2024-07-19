@@ -1,5 +1,11 @@
 # @tinyuploader/vue
 
+## 0.0.12
+
+### Patch Changes
+
+- 支持默认 fileList
+
 ## 0.0.11
 
 ### Patch Changes

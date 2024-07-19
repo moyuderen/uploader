@@ -179,7 +179,6 @@ export default {
       immediate: true
     }
   },
-  created() {},
   methods: {
     abort(id) {
       if (id) {

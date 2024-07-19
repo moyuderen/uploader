@@ -16,8 +16,10 @@
     "build:package-vue": "pnpm -F @tinyuploader/vue run build",
     "dev:package-vuenext": "pnpm -F @tinyuploader/vuenext run dev",
     "build:package-vuenext": "pnpm -F @tinyuploader/vuenext run build",
-    "dev:demo-vue": "pnpm run dev:sdk & pnpm run dev:package-vue & pnpm -F @demos/vue run dev",
-    "dev:demo-vuenext": "pnpm run dev:sdk & pnpm run dev:package-vuenext & pnpm -F @demos/vuenext run dev",
+    "play:vue": "npm-run-all -p dev:sdk dev:package-vue dev:vue",
+    "play:vuenext": "node ./scripts/play-vuenext.js && pnpm run dev:vuenext",
+    "dev:vue": "pnpm -F @demos/vue run dev",
+    "dev:vuenext": "pnpm -F @demos/vuenext run dev",
     "change": "pnpm changeset",
     "change-version": "pnpm changeset version",
     "publish": "pnpm install && pnpm publish -F @tinyuploader/* "

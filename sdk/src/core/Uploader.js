@@ -6,7 +6,6 @@ import { Status, Events } from './constans.js'
 class Uploader extends Event {
   constructor(options) {
     super()
-    console.log(1)
     this.opts = extend({}, defaults.options, options)
     this.fileList = this.opts.fileList || []
     this.uploadingQueue = []
