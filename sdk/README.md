@@ -8,23 +8,23 @@
     <div class="">
       <el-button id="uploadBtn" type="primary">Upload</el-button>
     </div>
-    <div v-for="file in files" :key="file.id">
+    <div v-for="file in files" :key="file.uid">
       <div style="overflow: hidden; text-overflow: ellipsis;">
         {{ file.name }}
       </div>
       <div style="display: flex; align-items: center;">
         <el-progress :percentage="+(file.progress * 100).toFixed(2)" style="flex: 1;" />
         <div style="width: 44px;">
-          <el-icon v-if="file.status === Status.Fail" @click="retry(file.id)" class="action">
+          <el-icon v-if="file.status === Status.Fail" @click="retry(file)" class="action">
             <RefreshRight color="#409EFF" />
           </el-icon>
-          <el-icon v-if="file.status === Status.Pause" @click="resume(file.id)" class="action">
+          <el-icon v-if="file.status === Status.Pause" @click="resume(file)" class="action">
             <VideoPlay color="#409EFF" />
           </el-icon>
-          <el-icon v-if="file.status === Status.Uploading" @click="pause(file.id)" class="action">
+          <el-icon v-if="file.status === Status.Uploading" @click="pause(file)" class="action">
             <VideoPause color="#E6A23C" />
           </el-icon>
-          <el-icon @click="remove(file.id)" class="action">
+          <el-icon @click="remove(file)" class="action">
             <Close />
           </el-icon>
         </div>
@@ -95,20 +95,20 @@ onMounted(() => {
   })
 })
 
-const remove = (id) => {
-  uploader.value.remove(id)
+const remove = (file) => {
+  uploader.value.remove(file)
 }
 
-const retry = (id) => {
-  uploader.value.retry(id)
+const retry = (file) => {
+  uploader.value.retry(file)
 }
 
-const resume = (id) => {
-  uploader.value.resume(id)
+const resume = (file) => {
+  uploader.value.resume(file)
 }
 
-const pause = (id) => {
-  uploader.value.pause(id)
+const pause = (file) => {
+  uploader.value.pause(file)
 }
 </script>
 ```
@@ -144,15 +144,15 @@ const pause = (id) => {
 
 ### 方法
 
-| 名称   | 说明                                            | 默认值 | 类型 |
-| ------ | ----------------------------------------------- | ------ | ---- |
-| remove | 删除某个文件，参数是文件 id，没有 id 时删除全部 |        |      |
-| retry  | 上传失败时重试，参数是文件 id                   |        |      |
-| pause  | 暂停上传，参数是文件 id                         |        |      |
-| resume | 重新上传，参数是文件 id                         |        |      |
-|        |                                                 |        |      |
-|        |                                                 |        |      |
-|        |                                                 |        |      |
+| 名称   | 说明                                      | 默认值 | 类型 |
+| ------ | ----------------------------------------- | ------ | ---- |
+| remove | 删除某个文件，参数是文件，没有 时删除全部 |        |      |
+| retry  | 上传失败时重试，参数是文件                |        |      |
+| pause  | 暂停上传，参数是文件                      |        |      |
+| resume | 重新上传，参数是文件                      |        |      |
+|        |                                           |        |      |
+|        |                                           |        |      |
+|        |                                           |        |      |
 
 ### 常量
 
