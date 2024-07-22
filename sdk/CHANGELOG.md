@@ -1,5 +1,12 @@
 # @tinyuploader/sdk
 
+## 1.0.12
+
+### Patch Changes
+
+- 1. 优化内部代码
+  2. 操作时参数 id 改为 file 文件
+
 ## 1.0.11
 
 ### Patch Changes

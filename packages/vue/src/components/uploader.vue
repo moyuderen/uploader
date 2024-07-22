@@ -180,9 +180,9 @@ export default {
     }
   },
   methods: {
-    abort(id) {
-      if (id) {
-        this.uploader.remove(id)
+    abort(file) {
+      if (file) {
+        this.uploader.remove(file)
         return
       }
       this.uploader.remove()

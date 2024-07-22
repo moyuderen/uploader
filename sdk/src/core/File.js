@@ -9,9 +9,9 @@ export default class File {
 
     this.rawFile = file
     if (this.opts && isFunction(this.opts.generateUniqueIdentifier)) {
-      this.id = this.opts.generateUniqueIdentifier(file) || generateUid('fid')
+      this.uid = this.opts.generateUniqueIdentifier(file) || generateUid('fid')
     } else {
-      this.id = generateUid('fid')
+      this.uid = generateUid('fid')
     }
     this.size = file.size
     this.name = file.name || file.fileName
@@ -26,30 +26,14 @@ export default class File {
     this.createChunks()
   }
 
-  // createChunks() {
-  //   const blob = new Blob([this.rawFile], {
-  //     size: this.size
-  //   })
-  //   const chunks = this.slice(blob)
-  //   this.chunks = chunks.map((chunk, index) => {
-  //     return new Chunk(this, chunk, index)
-  //   })
-  // }
-
-  slice(blob, size = this.chunkSize) {
-    const fileChunkList = []
-    let cur = 0
-    while (cur < blob.size) {
-      fileChunkList.push(blob.slice(cur, cur + size))
-      cur += size
-    }
-    return fileChunkList
+  isSuccess() {
+    return this.status === Status.Success
   }
 
   createChunks() {
     const tatal = Math.ceil(this.size / this.chunkSize)
     for (let i = 0; i < tatal; i++) {
-      this.chunks.push(new Chunk(this, null, i))
+      this.chunks.push(new Chunk(this, i))
     }
   }
 
@@ -57,6 +41,7 @@ export default class File {
     const progress = this.chunks.reduce((total, chunk) => {
       return (total += chunk.progressInFile)
     }, 0)
+
     if (this.status !== Status.UploadSuccess) {
       this.progress = Math.max(Math.min(progress, 0.9999), this.progress)
     }
@@ -93,7 +78,7 @@ export default class File {
   uploadFile() {
     const nextUploadChunks = this.chunks.filter((chunk) => chunk.status === Status.Ready)
 
-    const run = () => {
+    const fullUploadingQueue = () => {
       if (this.uploadingQueue.size >= this.uploader.opts.concurrency) {
         return
       }
@@ -103,11 +88,11 @@ export default class File {
         return
       }
       this.addChunkInUploadingQueue(chunk)
-      run()
+      fullUploadingQueue()
     }
 
-    run()
-    // console.log(this.uploadingQueue)
+    fullUploadingQueue()
+
     if (this.uploadingQueue.size === 0) {
       const hasErrorChunk = this.chunks.some((chunk) => chunk.status === Status.Fail)
       if (hasErrorChunk) {
@@ -142,7 +127,6 @@ export default class File {
     }
 
     const merge = this.uploader.opts.merge
-    typeof merge
     if (merge && isFunction(merge)) {
       const p = merge(this)
       if (p && p.then) {
@@ -167,10 +151,11 @@ export default class File {
   }
 
   pause() {
-    this.status = Status.Pause
     this.uploadingQueue.forEach((chunk) => {
       chunk.abort()
     })
+    this.status = Status.Pause
+    this.uploader.upload()
   }
 
   pauseThenUpload() {
@@ -181,7 +166,8 @@ export default class File {
   resume() {
     if (this.status === Status.Pause) {
       this.status = Status.Resume
-      this.uploader.upload(true)
+      this.uploader.pauseUploadingFiles()
+      this.uploader.upload()
     }
   }
 }

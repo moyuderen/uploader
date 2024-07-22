@@ -7,6 +7,7 @@
   <div id="app">
     <Uploader
       ref="uploaderRef"
+      :fileList="fileList"
       :chunkSize="1024 * 1024 * 10"
       @onFilesAdded="onFilesAdded"
       @onFileRemove="onFileRemove"
@@ -25,6 +26,15 @@
 
 <script>
 export default {
+  data() {
+    return {
+      fileList: [
+        {
+          url: 'http://baidu.com'
+        }
+      ]
+    }
+  },
   methods: {
     onFilesAdded(fileList) {
       console.log('添加文件成功', fileList)
@@ -112,15 +122,15 @@ body {
 
 ### 方法
 
-| 名称   | 说明                                            | 默认值 | 类型 |
-| ------ | ----------------------------------------------- | ------ | ---- |
-| remove | 删除某个文件，参数是文件 id，没有 id 时删除全部 |        |      |
-| retry  | 上传失败时重试，参数是文件 id                   |        |      |
-| pause  | 暂停上传，参数是文件 id                         |        |      |
-| resume | 重新上传，参数是文件 id                         |        |      |
-|        |                                                 |        |      |
-|        |                                                 |        |      |
-|        |                                                 |        |      |
+| 名称   | 说明                                     | 默认值 | 类型 |
+| ------ | ---------------------------------------- | ------ | ---- |
+| remove | 删除某个文件，参数是文件，没有时删除全部 |        |      |
+| retry  | 上传失败时重试，参数是文件               |        |      |
+| pause  | 暂停上传，参数是文件                     |        |      |
+| resume | 重新上传，参数是文件                     |        |      |
+|        |                                          |        |      |
+|        |                                          |        |      |
+|        |                                          |        |      |
 
 ### 常量
 

@@ -1,5 +1,14 @@
 # @tinyuploader/vue
 
+## 0.0.13
+
+### Patch Changes
+
+- 1. 优化内部代码
+  2. 操作时参数 id 改为 file 文件
+- Updated dependencies
+  - @tinyuploader/sdk@1.0.12
+
 ## 0.0.12
 
 ### Patch Changes

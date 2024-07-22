@@ -6,39 +6,46 @@ import { Status, Events } from './constans.js'
 class Uploader extends Event {
   constructor(options) {
     super()
+
     this.opts = extend({}, defaults.options, options)
     this.fileList = this.opts.fileList || []
-    this.uploadingQueue = []
-    this.status = 'init'
+    this.status = Status.Init
   }
 
   addFiles(files) {
-    const newFileList = [...files].map((file) => {
-      return new File(this, file)
-    })
+    const originFiles = [...files]
+
+    if (originFiles.length + this.fileList.length > this.opts.limit) {
+      this.emit(Events.Exceed)
+      return
+    }
+
+    const newFileList = originFiles.map((file) => new File(this, file))
+
     this.status = Status.Ready
     this.fileList = [...this.fileList, ...newFileList]
     this.emit(Events.FilesAdded, this.fileList)
+
     if (this.opts.autoUpload) {
       this.upload()
     }
   }
 
-  async upload(pauseAllFile) {
-    if (pauseAllFile) {
-      const uploadingFiles = this.fileList.filter((file) => file.status === Status.Uploading)
-      uploadingFiles.forEach((file) => {
-        file.pause()
-      })
-    }
+  pauseUploadingFiles() {
+    const uploadingFiles = this.fileList.filter((file) => file.status === Status.Uploading)
+    uploadingFiles.forEach((file) => {
+      file.pause()
+    })
+  }
 
+  async upload() {
     for (let i = 0; i < this.fileList.length; i++) {
       const file = this.fileList[i]
       if (file.status === Status.Uploading) {
         return
       }
       if (file.status === Status.Resume) {
-        file.status === Status.Uploading
+        file.status = Status.Uploading
         file.uploadFile()
         return
       }
@@ -47,9 +54,12 @@ class Uploader extends Event {
         return
       }
     }
-    const allSuccess = this.fileList.every((file) => file.status === Status.Success)
-    if (allSuccess) {
-      this.emit(Events.AllFileSuccess, this.fileList)
+    // every 在数组为空时会返回true
+    if (this.fileList.length) {
+      const allSuccess = this.fileList.every((file) => file.isSuccess())
+      if (allSuccess) {
+        this.emit(Events.AllFileSuccess, this.fileList)
+      }
     }
   }
 
@@ -57,58 +67,49 @@ class Uploader extends Event {
     this.upload()
   }
 
-  _findFileById(id) {
-    let fileInfo
+  remove(file) {
+    if (!file) {
+      this.clear()
+      return
+    }
+    const index = this.fileList.indexOf(file)
+    if (index > -1) {
+      file.remove()
+      this.fileList.splice(index, 1)
+      this.emit(Events.FileRemove, file, this.fileList)
+      this.upload()
+    }
+  }
+
+  retry(file) {
+    if (index > -1) {
+      file.retryUpload()
+      this.upload()
+    }
+  }
+
+  pause(file) {
+    const index = this.fileList.indexOf(file)
+    if (index > -1) {
+      file.pause()
+    }
+  }
+
+  resume(file) {
+    const index = this.fileList.indexOf(file)
+    if (index > -1) {
+      file.resume()
+    }
+  }
+
+  clear() {
     for (let i = 0; i < this.fileList.length; i++) {
       const file = this.fileList[i]
-      if (id === file.id) {
-        fileInfo = {
-          file: file,
-          index: i
-        }
-        return fileInfo
-      }
+      file.remove()
+      this.emit(Events.FileRemove, file, this.fileList)
     }
-  }
-
-  remove(id) {
-    if (!id) {
-      for (let i = 0; i < this.fileList.length; i++) {
-        const file = this.fileList[i]
-        file.remove()
-        this.emit(Events.FileRemove, file, this.fileList)
-      }
-      this.fileList = []
-      this.emit(Events.FileRemove, null, [])
-      return
-    }
-    const { file, index } = this._findFileById(id)
-    file.remove()
-    this.fileList.splice(index, 1)
-    this.emit(Events.FileRemove, file, this.fileList)
-    this.upload()
-  }
-
-  retry(id) {
-    const { file } = this._findFileById(id)
-    file.retryUpload()
-    this.upload()
-  }
-
-  pause(id) {
-    if (!id) {
-      return
-    }
-    const { file } = this._findFileById(id)
-    file.pauseThenUpload()
-  }
-
-  resume(id) {
-    if (!id) {
-      return
-    }
-    const { file } = this._findFileById(id)
-    file.resume()
+    this.fileList = []
+    this.emit(Events.FileRemove, null, [])
   }
 
   assignBrowse(domNode, attributes) {

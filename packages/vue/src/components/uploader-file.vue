@@ -8,16 +8,16 @@
       <div style="display: flex">
         <div class="percent">{{ parseProgress(file.progress) }}%</div>
         <div class="actions">
-          <span v-if="file.status === 'pause'" class="action" @click="resume(file.id)">
+          <span v-if="file.status === 'pause'" class="action" @click="resume(file)">
             <play-icon :size="14" />
           </span>
-          <span v-if="file.status === 'uploading'" class="action" @click="pause(file.id)">
+          <span v-if="file.status === 'uploading'" class="action" @click="pause(file)">
             <pause-icon :size="14" />
           </span>
-          <span v-if="file.status === 'fail'" class="action" @click="retry(file.id)">
+          <span v-if="file.status === 'fail'" class="action" @click="retry(file)">
             <retry-icon :size="14" />
           </span>
-          <span class="action remove" @click="remove(file.id)">
+          <span class="action remove" @click="remove(file)">
             <remove-icon :size="14" />
           </span>
         </div>
@@ -80,17 +80,17 @@ export default {
     parseProgress(progress) {
       return parseFloat(progress * 100).toFixed(2)
     },
-    remove(id) {
-      this.uploader.remove(id)
+    remove(file) {
+      this.uploader.remove(file)
     },
-    retry(id) {
-      this.uploader.retry(id)
+    retry(file) {
+      this.uploader.retry(file)
     },
-    resume(id) {
-      this.uploader.resume(id)
+    resume(file) {
+      this.uploader.resume(file)
     },
-    pause(id) {
-      this.uploader.pause(id)
+    pause(file) {
+      this.uploader.pause(file)
     }
   }
 }
