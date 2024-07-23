@@ -12,9 +12,10 @@
     "vue": "^2.6.10"
   },
   "devDependencies": {
-    "@vitejs/plugin-legacy": "^2.0.0",
-    "@vitejs/plugin-vue2": "^1.1.2",
     "terser": "^5.14.2",
-    "vite": "^3.0.2"
+    "vite": "^3.0.2",
+    "vite-plugin-vue2": "^2.0.3",
+    "vue": "^2.6.10",
+    "vue-template-compiler": "2.6.10"
   }
 }

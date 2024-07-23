@@ -1,5 +1,11 @@
 # @tinyuploader/sdk
 
+## 1.0.14
+
+### Patch Changes
+
+- 支持 hasChunkHash 为每个 chunk 创建唯一值 hash
+
 ## 1.0.12
 
 ### Patch Changes

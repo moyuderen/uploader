@@ -28,6 +28,7 @@ const options = {
   autoUpload: true,
   name: 'file',
   limit: 10,
+  hasChunkHash: false,
   generateUniqueIdentifier: null
 }
 

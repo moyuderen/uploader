@@ -1,11 +1,11 @@
 import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
-import vue2 from '@vitejs/plugin-vue2'
+import { createVuePlugin } from 'vite-plugin-vue2'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue2()],
+  plugins: [createVuePlugin()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

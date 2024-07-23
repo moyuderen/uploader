@@ -98,7 +98,7 @@ export default {
       type: Function
     },
     fileList: {
-      type: [],
+      type: Array,
       default() {
         return []
       }
@@ -122,7 +122,6 @@ export default {
               progress: 1
             }
           )
-          console.log(file)
           return file
         })
         this.uploader = new Uploader({

@@ -1,5 +1,13 @@
 # @tinyuploader/vue
 
+## 0.0.14
+
+### Patch Changes
+
+- 支持 hasChunkHash 为每个 chunk 创建唯一值 hash
+- Updated dependencies
+  - @tinyuploader/sdk@1.0.14
+
 ## 0.0.13
 
 ### Patch Changes

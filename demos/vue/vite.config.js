@@ -1,25 +1,14 @@
 import { fileURLToPath, URL } from 'node:url'
-import path from 'node:path'
 
 import { defineConfig } from 'vite'
-import legacy from '@vitejs/plugin-legacy'
-import vue2 from '@vitejs/plugin-vue2'
+import { createVuePlugin } from 'vite-plugin-vue2'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    vue2(),
-    legacy({
-      targets: ['ie >= 11'],
-      additionalLegacyPolyfills: ['regenerator-runtime/runtime']
-    })
-  ],
+  plugins: [createVuePlugin()],
   resolve: {
-    alias: [
-      {
-        find: '@',
-        replacement: fileURLToPath(new URL('./src', import.meta.url))
-      }
-    ]
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
   }
 })
