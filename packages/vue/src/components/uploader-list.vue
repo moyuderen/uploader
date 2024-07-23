@@ -1,6 +1,6 @@
 <template>
   <div class="uploader-list">
-    <div v-for="file in fileList" :key="file.id">
+    <div v-for="file in fileList" :key="file.uid">
       <slot v-bind:file="file"></slot>
     </div>
   </div>

@@ -10,20 +10,5 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  },
-  build: {
-    lib: {
-      entry: './src/index.js',
-      name: 'Uploader',
-      fileName: 'tinyuploader-vue'
-    },
-    minify: true,
-    cssCodeSplit: false,
-    rollupOptions: {
-      external: ['vue'],
-      output: {
-        globals: 'Vue'
-      }
-    }
   }
 })

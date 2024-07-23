@@ -1,4 +1,5 @@
 export const Status = {
+  Init: 'init',
   Ready: 'ready',
   Pending: 'pending',
   Uploading: 'uploading',
@@ -10,6 +11,7 @@ export const Status = {
 }
 
 export const Events = {
+  Exceed: 'exceed',
   FilesAdded: 'filesAdded',
   FileRemove: 'fileRemove',
   FileProgress: 'fileProgress',
@@ -17,5 +19,6 @@ export const Events = {
   FileUploadSuccess: 'fileUploadSuccess',
   FileSuccess: 'fileSuccess',
   FileMergeFail: 'fileMergeFail',
-  AllFileSuccess: 'allFilesSuccess'
+  AllFileSuccess: 'allFilesSuccess',
+  Change: 'change'
 }

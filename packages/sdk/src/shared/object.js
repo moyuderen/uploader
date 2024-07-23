@@ -1,26 +1,4 @@
-export * from './types'
-export * from './event'
-
-import { isDefined, isFunction, isArray, isPlainObject } from './types'
-
-export function each(ary, func, context) {
-  if (isDefined(ary.length)) {
-    for (var i = 0, len = ary.length; i < len; i++) {
-      if (func.call(context, ary[i], i, ary) === false) {
-        break
-      }
-    }
-  } else {
-    for (var k in ary) {
-      if (func.call(context, ary[k], k, ary) === false) {
-        break
-      }
-    }
-  }
-}
-
-let uid = 0
-export const generateUid = (prex = 'id') => `${prex}-${+new Date()}-${uid++}`
+import { isFunction, isArray, isPlainObject } from './types'
 
 export function extend() {
   var options
@@ -78,13 +56,4 @@ export function extend() {
     }
   }
   return target
-}
-
-export const sleep = (time = 600, mockError = false) => {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => {
-      clearTimeout(timer)
-      mockError ? reject() : resolve()
-    }, time)
-  })
 }

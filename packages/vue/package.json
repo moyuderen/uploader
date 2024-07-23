@@ -1,11 +1,18 @@
 {
   "name": "@tinyuploader/vue",
-  "version": "0.0.2",
+  "version": "0.0.14",
+  "private": false,
   "scripts": {
-    "dev": "vite",
+    "dev": "vite build --watch",
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "main": "./dist/tinyuploader-vue.umd.js",
   "module": "./dist/tinyuploader-vue.mjs",
@@ -21,15 +28,15 @@
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",
-    "@vitejs/plugin-legacy": "^2.0.0",
-    "@vitejs/plugin-vue2": "^1.1.2",
     "@vue/eslint-config-prettier": "^7.0.0",
     "eslint": "^8.5.0",
     "eslint-plugin-vue": "^9.0.0",
     "prettier": "^2.5.1",
     "terser": "^5.14.2",
     "vite": "^3.0.2",
-    "vue": "^2.6.10"
+    "vite-plugin-vue2": "^2.0.3",
+    "vue": "^2.6.10",
+    "vue-template-compiler": "2.6.10"
   },
   "dependencies": {
     "@tinyuploader/sdk": "workspace:^"

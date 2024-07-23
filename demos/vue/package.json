@@ -1,8 +1,9 @@
 {
-  "name": "@examples/vue",
+  "name": "@demos/vue",
+  "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview --port 4173"
   },
@@ -11,9 +12,10 @@
     "vue": "^2.6.10"
   },
   "devDependencies": {
-    "@vitejs/plugin-legacy": "^2.0.0",
-    "@vitejs/plugin-vue2": "^1.1.2",
     "terser": "^5.14.2",
-    "vite": "^3.0.2"
+    "vite": "^3.0.2",
+    "vite-plugin-vue2": "^2.0.3",
+    "vue": "^2.6.10",
+    "vue-template-compiler": "2.6.10"
   }
 }

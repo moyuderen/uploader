@@ -7,6 +7,7 @@
   <div id="app">
     <Uploader
       ref="uploaderRef"
+      :fileList="fileList"
       :chunkSize="1024 * 1024 * 10"
       @onFilesAdded="onFilesAdded"
       @onFileRemove="onFileRemove"
@@ -25,6 +26,15 @@
 
 <script>
 export default {
+  data() {
+    return {
+      fileList: [
+        {
+          url: 'http://baidu.com'
+        }
+      ]
+    }
+  },
   methods: {
     onFilesAdded(fileList) {
       console.log('添加文件成功', fileList)
@@ -93,34 +103,34 @@ body {
 
 ### options 参数
 
-| 参数                     | 说明                         | 默认值                                                                                       | 类型                      |
-| ------------------------ | ---------------------------- | -------------------------------------------------------------------------------------------- | ------------------------- |
-| target                   | 上传 url                     | <https://jsonplaceholder.typicode.com/posts，用来测试>                                       | String                    |
-| withCredentials          | 携带 cookie                  |                                                                                              | Boolean                   |
-| headers                  | 请求头                       |                                                                                              | Object                    |
-| data                     | 其他参数                     |                                                                                              | Object                    |
-| concurrency              | 并发大小                     | 6                                                                                            | Number                    |
-| chunkSize                | chunk 大小 kb                | 1024\*4，用来测试 demo                                                                       | Number                    |
-| autoUpload               |                              | true                                                                                         | Boolean                   |
-| name                     | 上传时后端需要的文件名称     | file                                                                                         | String                    |
-| generateUniqueIdentifier | 自定义文件 id                | null                                                                                         | Null 或者 function        |
-| successStatuses          | 上传成功条件,参数是 xhr 对象 | (xhr) => {<br />return [200, 201, 202].includes(xhr.status)<br />}                           | function                  |
-| retries                  | 重试次数                     | 3                                                                                            | Number                    |
-| retryInterval            | 重试间隔 ms                  | 1000                                                                                         | Number                    |
+| 参数                     | 说明                         | 默认值                                                       | 类型                      |
+| ------------------------ | ---------------------------- | ------------------------------------------------------------ | ------------------------- |
+| target                   | 上传 url                     | <https://jsonplaceholder.typicode.com/posts，用来测试>       | String                    |
+| withCredentials          | 携带 cookie                  |                                                              | Boolean                   |
+| headers                  | 请求头                       |                                                              | Object                    |
+| data                     | 其他参数                     |                                                              | Object                    |
+| concurrency              | 并发大小                     | 6                                                            | Number                    |
+| chunkSize                | chunk 大小 kb                | 1024\*4，用来测试 demo                                       | Number                    |
+| autoUpload               |                              | true                                                         | Boolean                   |
+| name                     | 上传时后端需要的文件名称     | file                                                         | String                    |
+| generateUniqueIdentifier | 自定义文件 id                | null                                                         | Null 或者 function        |
+| successStatuses          | 上传成功条件,参数是 xhr 对象 | (xhr) => {<br />return [200, 201, 202].includes(xhr.status)<br />} | function                  |
+| retries                  | 重试次数                     | 3                                                            | Number                    |
+| retryInterval            | 重试间隔 ms                  | 1000                                                         | Number                    |
 | merge                    | 合并回调，参数是 file 实例   | merge: (file) => { <br /> await sleep(5000) ; <br /> file.path = '<http://baidu.com>'<br />} | functioin/promise/Boolean |
-|                          |                              |                                                                                              |                           |
+| hasChunkHash             | chunk是否携带hash            | False                                                        | Boolean                   |
 
 ### 方法
 
-| 名称   | 说明                                            | 默认值 | 类型 |
-| ------ | ----------------------------------------------- | ------ | ---- |
-| remove | 删除某个文件，参数是文件 id，没有 id 时删除全部 |        |      |
-| retry  | 上传失败时重试，参数是文件 id                   |        |      |
-| pause  | 暂停上传，参数是文件 id                         |        |      |
-| resume | 重新上传，参数是文件 id                         |        |      |
-|        |                                                 |        |      |
-|        |                                                 |        |      |
-|        |                                                 |        |      |
+| 名称   | 说明                                     | 默认值 | 类型 |
+| ------ | ---------------------------------------- | ------ | ---- |
+| remove | 删除某个文件，参数是文件，没有时删除全部 |        |      |
+| retry  | 上传失败时重试，参数是文件               |        |      |
+| pause  | 暂停上传，参数是文件                     |        |      |
+| resume | 重新上传，参数是文件                     |        |      |
+|        |                                          |        |      |
+|        |                                          |        |      |
+|        |                                          |        |      |
 
 ### 常量
 

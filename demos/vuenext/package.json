@@ -1,5 +1,5 @@
 {
-  "name": "@examples/vuenext",
+  "name": "@demos/vuenext",
   "private": true,
   "scripts": {
     "dev": "vite",

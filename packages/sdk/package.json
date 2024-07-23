@@ -1,7 +1,11 @@
 {
   "name": "@tinyuploader/sdk",
-  "version": "1.0.7",
+  "version": "1.0.14",
   "description": "",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite build --watch",
@@ -20,12 +24,12 @@
   ],
   "author": "",
   "license": "ISC",
-  "main": "./dist/@tinyuploader/sdk.umd.js",
-  "module": "./dist/@tinyuploader/sdk.mjs",
+  "main": "./dist/sdk.umd.js",
+  "module": "./dist/sdk.mjs",
   "exports": {
     ".": {
-      "require": "./dist/@tinyuploader/sdk.umd.js",
-      "import": "./dist/@tinyuploader/sdk.mjs"
+      "require": "./dist/sdk.umd.js",
+      "import": "./dist/sdk.mjs"
     }
   },
   "homepage": "https://github.com/moyuderen/uploader/tree/monorepo/sdk",
@@ -37,10 +41,12 @@
     "url": "https://github.com/moyuderen/uploader/issues"
   },
   "files": [
-    "dist",
-    "README.md"
+    "dist"
   ],
+  "devDependencies": {
+    "vite": "^5.3.4"
+  },
   "dependencies": {
-    "@tinyuploader/utils": "workspace:^"
+    "spark-md5": "^3.0.2"
   }
 }

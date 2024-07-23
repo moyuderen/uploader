@@ -1,39 +1,52 @@
-import { generateUid, each } from '@tinyuploader/utils'
+import { generateUid, each, getHash } from '@/shared'
 import { Status } from './constans.js'
 
 export default class Chunk {
-  constructor(file, chunk, index) {
+  constructor(file, index) {
     this.uploader = file.uploader
     this.opts = file.uploader.opts
     this.file = file
     this.filename = file.name
-    this.fileId = file.id
+    this.fileId = file.uid
     this.totalSize = file.size
     this.chunkSize = this.opts.chunkSize
 
-    this.id = generateUid('chunk_id')
+    this.hash = ''
+    this.uid = generateUid('chunk_id')
     this.stardByte = this.chunkSize * index
     this.endByte = Math.min(this.stardByte + this.chunkSize, this.totalSize)
     this.size = this.endByte - this.stardByte
-    // this.blob = chunk
     this.chunkIndex = index
 
     this.retries = this.opts.retries
     this.xhr = null
+    this.promise = null
     this.status = Status.Ready
     this.progress = 0
     this.progressInFile = 0
     this.timer = null
   }
 
-  prepareXhr() {
+  async prepareXhr() {
     const data = new FormData()
     this.xhr.responseType = 'json'
     this.xhr.withCredentials = this.opts.withCredentials
     const blob = this.file.rawFile.slice(this.stardByte, this.endByte)
+
+    if (this.opts.hasChunkHash) {
+      if (!this.hash) {
+        try {
+          this.hash = await getHash(blob)
+        } catch {
+          //
+        }
+      }
+    }
+
     data.append(this.opts.name, blob)
+    data.append('hash', this.hash)
     data.append('id', this.id)
-    data.append('fileId', this.file.id)
+    data.append('fileId', this.fileId)
     data.append('index', this.chunkIndex)
     data.append('filename', this.filename)
     data.append('size', this.size)
@@ -54,8 +67,8 @@ export default class Chunk {
     return data
   }
 
-  send() {
-    return new Promise((resolve, reject) => {
+  async send() {
+    return new Promise(async (resolve, reject) => {
       this.status = Status.Pending
 
       // eslint-disable-next-line no-unused-vars
@@ -102,7 +115,7 @@ export default class Chunk {
       }
 
       this.xhr = new XMLHttpRequest()
-      const data = this.prepareXhr()
+      const data = await this.prepareXhr()
       this.xhr.upload.addEventListener('progress', progressHandler)
       this.xhr.addEventListener('load', doneHandler, false)
       this.xhr.addEventListener('error', failHandler, false)

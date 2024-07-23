@@ -12,7 +12,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .uploader-btn {
   color: #409eff;
 }
