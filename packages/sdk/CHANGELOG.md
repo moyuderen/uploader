@@ -1,5 +1,11 @@
 # @tinyuploader/sdk
 
+## 1.1.0
+
+### Minor Changes
+
+- hasFileHash: 文件的 hash
+
 ## 1.0.14
 
 ### Patch Changes

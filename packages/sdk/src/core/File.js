@@ -1,5 +1,5 @@
 import Chunk from './Chunk.js'
-import { isFunction, generateUid } from '@/shared'
+import { isFunction, generateUid, getHash } from '@/shared'
 import { Status, Events } from './constans.js'
 
 export default class File {
@@ -13,6 +13,7 @@ export default class File {
     } else {
       this.uid = generateUid('fid')
     }
+    this.hash = ''
     this.size = file.size
     this.name = file.name || file.fileName
     this.type = file.type
@@ -22,8 +23,15 @@ export default class File {
     this.progress = file.progress || 0
     this.chunks = []
     this.uploadingQueue = new Set()
+  }
 
-    this.createChunks()
+  async bootstrap() {
+    if (this.opts && this.opts.hasFileHash) {
+      this.hash = await getHash(this.rawFile)
+      this.createChunks()
+    } else {
+      this.createChunks()
+    }
   }
 
   isSuccess() {

@@ -12,7 +12,7 @@ class Uploader extends Event {
     this.status = Status.Init
   }
 
-  addFiles(files) {
+  async addFiles(files) {
     const originFiles = [...files]
 
     if (originFiles.length + this.fileList.length > this.opts.limit) {
@@ -25,6 +25,8 @@ class Uploader extends Event {
     this.status = Status.Ready
     this.fileList = [...this.fileList, ...newFileList]
     this.emit(Events.FilesAdded, this.fileList)
+
+    await Promise.all(newFileList.map((file) => file.bootstrap()))
 
     if (this.opts.autoUpload) {
       this.upload()

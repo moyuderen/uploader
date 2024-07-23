@@ -11,6 +11,7 @@ export default class Chunk {
     this.totalSize = file.size
     this.chunkSize = this.opts.chunkSize
 
+    this.fileHash = this.file.hash
     this.hash = ''
     this.uid = generateUid('chunk_id')
     this.stardByte = this.chunkSize * index
@@ -44,8 +45,13 @@ export default class Chunk {
     }
 
     data.append(this.opts.name, blob)
-    data.append('hash', this.hash)
-    data.append('id', this.id)
+    if (this.fileHash) {
+      data.append('fileHash', this.fileHash)
+    }
+    if (this.hash) {
+      data.append('hash', this.hash)
+    }
+    data.append('id', this.uid)
     data.append('fileId', this.fileId)
     data.append('index', this.chunkIndex)
     data.append('filename', this.filename)
