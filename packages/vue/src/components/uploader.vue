@@ -63,7 +63,7 @@ export default {
     },
     headers: Object,
     data: Object,
-    concurrency: {
+    maxConcurrency: {
       type: Number,
       default: 6
     },
@@ -79,14 +79,14 @@ export default {
       type: String,
       default: 'file'
     },
-    generateUniqueIdentifier: {
+    customGenerateUid: {
       type: [Function, null],
       default: null
     },
-    successStatuses: {
+    requestSucceed: {
       type: Function
     },
-    retries: {
+    maxRetries: {
       type: Number,
       default: 3
     },
@@ -94,7 +94,7 @@ export default {
       type: Number,
       default: 1000
     },
-    merge: {
+    mergeRequest: {
       type: Function
     },
     fileList: {
@@ -158,10 +158,9 @@ export default {
           this.$emit('onChange', fileList)
         })
 
-        this.uploader.on(Events.FileMergeFail, (file, fileList) => {
+        this.uploader.on(Events.FileUploadFail, (file, fileList) => {
           this.files = fileList
-          this.$emit('onFileMergeFail', file, fileList)
-          this.$emit('onChange', fileList)
+          this.$emit('onFileUploadFail', file, fileList)
         })
 
         this.uploader.on(Events.FileRemove, (file, fileList) => {

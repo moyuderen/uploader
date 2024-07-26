@@ -1,5 +1,5 @@
 import Chunk from './Chunk.js'
-import { isFunction, generateUid, getHash } from '@/shared'
+import { isFunction, generateUid, asyncComputedHash, isPromise, each } from '@/shared'
 import { Status, Events } from './constans.js'
 
 export default class File {
@@ -8,8 +8,8 @@ export default class File {
     this.opts = uploader.opts
 
     this.rawFile = file
-    if (this.opts && isFunction(this.opts.generateUniqueIdentifier)) {
-      this.uid = this.opts.generateUniqueIdentifier(file) || generateUid('fid')
+    if (this.opts && isFunction(this.opts.customGenerateUid)) {
+      this.uid = this.opts.customGenerateUid(file) || generateUid('fid')
     } else {
       this.uid = generateUid('fid')
     }
@@ -19,40 +19,70 @@ export default class File {
     this.type = file.type
     this.chunkSize = this.opts && this.opts.chunkSize
 
-    this.status = file.status || Status.Ready
+    this.status = file.status || Status.Init
     this.progress = file.progress || 0
     this.chunks = []
     this.uploadingQueue = new Set()
+    this.readProgress = 0
   }
 
-  async bootstrap() {
-    if (this.opts && this.opts.hasFileHash) {
-      this.hash = await getHash(this.rawFile)
-      this.createChunks()
-    } else {
-      this.createChunks()
-    }
+  isInited() {
+    return this.status === Status.Init
+  }
+
+  isReady() {
+    return this.status === Status.Ready
+  }
+
+  isUploading() {
+    return this.status === Status.Uploading
   }
 
   isSuccess() {
     return this.status === Status.Success
   }
 
+  start() {
+    return new Promise((resolve, reject) => {
+      if (this.opts.withHash) {
+        this.status = Status.Reading
+        asyncComputedHash(
+          {
+            file: this.rawFile,
+            chunkSize: this.chunkSize,
+            inWorker: this.opts.computedHashWorker
+          },
+          ({ progress }) => {
+            this.readProgress = progress
+          }
+        ).then(({ hash }) => {
+          this.hash = hash
+          this.createChunks()
+          resolve(this)
+        })
+      } else {
+        this.createChunks()
+        resolve(this)
+      }
+    })
+  }
+
   createChunks() {
-    const tatal = Math.ceil(this.size / this.chunkSize)
-    for (let i = 0; i < tatal; i++) {
+    const totalChunks = (this.totalChunks = Math.ceil(this.size / this.chunkSize))
+    for (let i = 0; i < totalChunks; i++) {
       this.chunks.push(new Chunk(this, i))
     }
+    this.status = Status.Ready
   }
 
   setProgress() {
     const progress = this.chunks.reduce((total, chunk) => {
-      return (total += chunk.progressInFile)
+      const p = this.opts.fakeProgress ? chunk.fakeProgress : chunk.progress
+      return (total += p * (chunk.size / this.size))
     }, 0)
 
-    if (this.status !== Status.UploadSuccess) {
-      this.progress = Math.max(Math.min(progress, 0.9999), this.progress)
-    }
+    // this.progress = Math.max(Math.min(progress, 1), this.progress)
+    this.progress = Math.min(1, progress)
 
     if (this.status === Status.UploadSuccess) {
       this.progress = 1
@@ -61,93 +91,106 @@ export default class File {
     this.uploader.emit(Events.FileProgress, this.progress, this, this.uploader.fileList)
   }
 
-  removeChunkInUploadingQueue(chunk) {
+  removeUploadingQueue(chunk) {
     this.uploadingQueue.delete(chunk)
   }
 
-  addChunkInUploadingQueue(chunk) {
+  addUploadingQueue(chunk) {
     this.uploadingQueue.add(chunk)
   }
 
-  retryUpload() {
-    if (this.status === Status.UploadSuccess) {
-      this.merge()
-    } else {
-      this.chunks.forEach((chunk) => {
-        if (chunk.status === Status.Fail) {
-          chunk.status = Status.Ready
-          chunk.retries = this.opts.retries
-        }
-      })
-      this.uploadFile()
-    }
-  }
-
   uploadFile() {
-    const nextUploadChunks = this.chunks.filter((chunk) => chunk.status === Status.Ready)
+    const readyChunks = this.chunks.filter((chunk) => chunk.status === Status.Ready)
 
-    const fullUploadingQueue = () => {
-      if (this.uploadingQueue.size >= this.uploader.opts.concurrency) {
-        return
+    each(readyChunks, () => {
+      if (this.uploadingQueue.size >= this.opts.maxConcurrency) {
+        return false // false时break;
       }
 
-      const chunk = nextUploadChunks.shift()
-      if (!chunk) {
-        return
-      }
-      this.addChunkInUploadingQueue(chunk)
-      fullUploadingQueue()
-    }
-
-    fullUploadingQueue()
-
-    if (this.uploadingQueue.size === 0) {
-      const hasErrorChunk = this.chunks.some((chunk) => chunk.status === Status.Fail)
-      if (hasErrorChunk) {
-        this.status = Status.Fail
-        this.uploader.emit(Events.FileFail, this, this.uploader.fileList)
+      const chunk = readyChunks.shift()
+      if (chunk) {
+        this.addUploadingQueue(chunk)
       } else {
-        this.status = Status.UploadSuccess
-        this.setProgress()
-        this.uploader.emit(Events.FileUploadSuccess, this, this.uploader.fileList)
-        this.merge()
+        return false
       }
-      this.uploader.upload()
+    })
+
+    if (this.uploadingQueue.size) {
+      // 有的chunk处于pending状态，但是已经准备发起请求了，就不在后面调用其send方法
+      const readyInUploadQueue = [...this.uploadingQueue].filter(
+        (chunk) => chunk.status === Status.Ready
+      )
+
+      Promise.race(readyInUploadQueue.map((chunk) => chunk.send()))
       return
     }
 
-    Promise.race(
-      [...this.uploadingQueue]
-        .filter((chunk) => chunk.status === Status.Ready)
-        .map((chunk) => chunk.send())
-    )
+    const hasErrorChunk = this.chunks.some((chunk) => chunk.status === Status.Fail)
+    if (hasErrorChunk) {
+      this.uploadFail()
+    } else {
+      this.uploadSuccess()
+      this.setProgress()
+      this.merge()
+    }
+  }
+
+  uploadSuccess() {
+    this.status = Status.UploadSuccess
+    this.uploader.emit(Events.FileUploadSuccess, this, this.uploader.fileList)
+  }
+
+  uploadFail() {
+    this.status = Status.UploadFail
+    this.uploader.emit(Events.FileUploadFail, this, this.uploader.fileList)
+    this.uploader.upload()
+  }
+
+  success() {
+    this.status = Status.Success
+    this.uploader.emit(Events.FileSuccess, this, this.uploader.fileList)
+    this.uploader.upload()
+  }
+
+  mergeFail() {
+    this.status = Status.Fail
+    this.uploader.emit(Events.FileFail, this, this.uploader.fileList)
+    this.uploader.upload()
   }
 
   merge() {
-    const onSuccess = () => {
-      this.status = Status.Success
-      this.uploader.emit(Events.FileSuccess, this, this.uploader.fileList)
+    const merge = this.opts.mergeRequest
+    if (!isFunction(merge)) {
+      this.success()
+      return
     }
 
-    const onFail = (e) => {
-      this.status = Status.Fail
-      this.uploader.emit(Events.FileMergeFail, this, this.uploader.fileList)
-    }
+    const result = merge(this)
 
-    const merge = this.uploader.opts.merge
-    if (merge && isFunction(merge)) {
-      const p = merge(this)
-      if (p && p.then) {
-        p.then(onSuccess, onFail)
-      } else {
-        if (p) {
-          onSuccess()
-        } else {
-          onFail()
-        }
-      }
+    if (isPromise(result)) {
+      result.then(
+        () => this.success(),
+        () => this.mergeFail()
+      )
     } else {
-      onSuccess()
+      result ? this.success() : this.mergeFail()
+    }
+  }
+
+  retry() {
+    if (this.status === Status.UploadSuccess || this.status === Status.Fail) {
+      this.merge()
+      return
+    }
+    if (this.status === Status.UploadFail) {
+      each(this.chunks, (chunk) => {
+        if (chunk.status === Status.Fail) {
+          chunk.status = Status.Ready
+          chunk.maxRetries = this.opts.maxRetries
+        }
+      })
+
+      this.uploadFile()
     }
   }
 
@@ -163,11 +206,6 @@ export default class File {
       chunk.abort()
     })
     this.status = Status.Pause
-    this.uploader.upload()
-  }
-
-  pauseThenUpload() {
-    this.pause()
     this.uploader.upload()
   }
 

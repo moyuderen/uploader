@@ -12,6 +12,11 @@ export class Event {
       this.event[name] = []
     }
 
+    // 避免通过函数多次被调用
+    if (this.event[name].indexOf(func) > -1) {
+      return
+    }
+
     this.event[name].push(func)
   }
 

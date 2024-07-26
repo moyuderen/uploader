@@ -1,214 +1,98 @@
 # uploader-sdk
 
-## Quick Start
+## 参数
 
-```vue
-<template>
-  <div>
-    <div class="">
-      <el-button id="uploadBtn" type="primary">Upload</el-button>
-    </div>
-    <div v-for="file in files" :key="file.uid">
-      <div style="overflow: hidden; text-overflow: ellipsis;">
-        {{ file.name }}
-      </div>
-      <div style="display: flex; align-items: center;">
-        <el-progress :percentage="+(file.progress * 100).toFixed(2)" style="flex: 1;" />
-        <div style="width: 44px;">
-          <el-icon v-if="file.status === Status.Fail" @click="retry(file)" class="action">
-            <RefreshRight color="#409EFF" />
-          </el-icon>
-          <el-icon v-if="file.status === Status.Pause" @click="resume(file)" class="action">
-            <VideoPlay color="#409EFF" />
-          </el-icon>
-          <el-icon v-if="file.status === Status.Uploading" @click="pause(file)" class="action">
-            <VideoPause color="#E6A23C" />
-          </el-icon>
-          <el-icon @click="remove(file)" class="action">
-            <Close />
-          </el-icon>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
+| **参数**             | **说明**                                                                            | **默认值**                                                            | **类型**         |
+| -------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ---------------- |
+| TODO: multipart      | 是否为分片上传                                                                      | true                                                                  | boolean          |
+| accept               | 接受的上传文件类型可被方法 assignBrowse 中的 attributes 覆盖                        |                                                                       | string           |
+| multiple             | 是否支持多选文件，可被方法 assignBrowse 中的 attributes 覆盖                        |                                                                       |                  |
+| limit                | 上传最大数量，为 0 时不限制                                                         | 0                                                                     | number           |
+| fileList             | 已上传的文件列表                                                                    |                                                                       |                  |
+| name                 | 上传文件名称                                                                        | name                                                                  | string           |
+| autoUpload           | 自动上传                                                                            | true                                                                  |                  |
+| beforeAdd            | 所有上传动作开始上传前, false 或者 reject 则停止上传，参数是 file,                  |                                                                       | function         |
+| beforeRemove         | 删除文件 false 或者 reject 则停止上传，参数是 file                                  |                                                                       |                  |
+| action               | 上传地址                                                                            | <https://jsonplaceholder.typicode.com/posts>                          | 接口             |
+| fakeProgress         | 是否使用模拟进度条，为 false 时会有进度条回退                                       | true                                                                  |                  |
+| TODO: checkFileUrl   | 校验文件，秒传，断点续传                                                            |                                                                       |                  |
+| withCredentials      | 携带 cookie                                                                         | true                                                                  |                  |
+| headers              | 自定义 headers                                                                      | { }                                                                   |                  |
+| data                 | 请求的其他参数                                                                      | { }                                                                   |                  |
+| withHash             | 是否给 file 文件生成 hash                                                           | true                                                                  |                  |
+| computedhashInWorker | 如果浏览器支持，是否启用 web worker 来计算文件 hash                                 | true                                                                  |                  |
+| chunkSize            | chunk 的大小单位为字节                                                              | 1024 \* 4(4kb)                                                        | number           |
+| maxRetries           | 最大重试次数                                                                        | 3                                                                     |                  |
+| retryInterval        | 重试间隔，单位是 ms                                                                 | 1000                                                                  |                  |
+| maxConcurrency       | 最大并发数，浏览器支持最大请求数                                                    | 6                                                                     |                  |
+| customGenerateUid    | 自定义 id 生成规则                                                                  | null                                                                  | function \| null |
+| requestSucceed       | 校验是否上传成功，根据接口定义，通过 http 的 status 或者 code 判断，参数是 xhr 对象 | `requestSucceed(xhr) { return [200, 201, 202].includes(xhr.status) }` | function         |
+| mergeRequest         | 合并文件请求，参数是 file, 返回一个成功 cdn 地址，支持异步                          |                                                                       | function         |
 
-<script setup>
-import { onMounted, ref } from 'vue'
-import { RefreshRight, VideoPlay, VideoPause, Close } from '@element-plus/icons-vue'
-import Uploader from '@tinyuploader/sdk'
-const Status = Uploader.Status
-const Events = Uploader.Events
+## 回调函数
 
-const uploader = ref(null)
-const files = ref([])
-const merge = (file) => {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => {
-      file.path = 'http://baidu.com'
-    }, 1000)
-  })
-}
+| **回调函数**      | **说明**                                           | **参数**       | **类型** |
+| ----------------- | -------------------------------------------------- | -------------- | -------- |
+| TODO: change      |                                                    |                |          |
+| exceed            | 超出最大上传个数                                   | fileList       |          |
+| filesAdded        |                                                    | fileList       |          |
+| fileSuccess       | 某个文件上传成功，参数 file, fileList              | file，fileList |          |
+| fileFail          | 文件合并失败回调                                   | file，fileList |          |
+| fileProgress      | 上传进度回调                                       | file，fileList |          |
+| fileRemove        | 删除文件的回调                                     | file，fileList |          |
+| fileUploadFail    | 所有 chunk 上传过，且有失败                        | file，fileList |          |
+| fileUploadSuccess | 所有 chunks 上传成功，但是未调用合并接口，准备合并 | file，fileList |          |
+| fileMergeFile     | 合并接口失败                                       |                |          |
+| allFilesSuccess   | 所有文件上传成功                                   | fileList       |          |
 
-onMounted(() => {
-  uploader.value = new Uploader({
-    merge
-  })
-  uploader.value.assignBrowse(document.getElementById('uploadBtn'))
+### 回调函数名称枚举值
 
-  uploader.value.on(Events.FilesAdded, (fileList) => {
-    files.value = fileList
-  })
-
-  uploader.value.on(Events.AllFileSuccess, (fileList) => {
-    console.log('全部上传成功', fileList)
-    files.value = fileList
-  })
-
-  uploader.value.on(Events.FileUploadSuccess, (file, fileList) => {
-    console.log(`${file.name}上传成功`, file, fileList)
-    files.value = fileList
-  })
-
-  uploader.value.on(Events.FileFail, (file, fileList) => {
-    console.log(`${file.name}上传失败`, file, fileList)
-    files.value = fileList
-  })
-
-  uploader.value.on(Events.FileMergeFail, (file, fileList) => {
-    console.log(`${file.name}合并失败`, file, fileList)
-    files.value = fileList
-  })
-
-  uploader.value.on(Events.FileSuccess, (file, fileList) => {
-    console.log(`${file.name}合并成功，并且可拿到merge中file的url`, file, fileList)
-    files.value = fileList
-  })
-
-  uploader.value.on(Events.FileRemove, (file, fileList) => {
-    console.log(`${file.name}被删除`, file, fileList)
-    files.value = fileList
-  })
-
-  uploader.value.on(Events.FileProgress, (progress, file, fileList) => {
-    console.log(`${file.name} progress ${progress}`, file, fileList)
-  })
-})
-
-const remove = (file) => {
-  uploader.value.remove(file)
-}
-
-const retry = (file) => {
-  uploader.value.retry(file)
-}
-
-const resume = (file) => {
-  uploader.value.resume(file)
-}
-
-const pause = (file) => {
-  uploader.value.pause(file)
-}
-</script>
-```
-
-## 接口
-
-### assignBrowse 参数
-
-| 参数     | 说明                 | 默认值 | 类型    |
-| -------- | -------------------- | ------ | ------- |
-| multiple | 是否支持选择多个文件 | true   | boolean |
-| accept   | 上传文件类型         | \*     | string  |
-|          |                      |        |         |
-
-### options 参数
-
-| 参数                     | 说明                                                         | 默认值                                                       | 类型                      |
-| ------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------- |
-| target                   | 上传 url                                                     | <https://jsonplaceholder.typicode.com/posts，用来测试>       | String                    |
-| withCredentials          | 携带 cookie                                                  |                                                              | Boolean                   |
-| headers                  | 请求头                                                       |                                                              | Object                    |
-| data                     | 其他参数                                                     |                                                              | Object                    |
-| concurrency              | 并发大小                                                     | 6                                                            | Number                    |
-| chunkSize                | chunk 大小 kb                                                | 1024\*4，用来测试 demo                                       | Number                    |
-| autoUpload               |                                                              | true                                                         | Boolean                   |
-| name                     | 上传时后端需要的文件名称                                     | file                                                         | String                    |
-| generateUniqueIdentifier | 自定义文件 id                                                | null                                                         | Null 或者 function        |
-| successStatuses          | 上传成功条件,参数是 xhr 对象                                 | (xhr) => {<br />return [200, 201, 202].includes(xhr.status)<br />} | function                  |
-| retries                  | 重试次数                                                     | 3                                                            | Number                    |
-| retryInterval            | 重试间隔 ms                                                  | 1000                                                         | Number                    |
-| merge                    | 合并回调，参数是 file 实例                                   | merge: (file) => { <br /> await sleep(5000) ; <br /> file.path = '<http://baidu.com>'<br />} | functioin/promise/Boolean |
-| hasChunkHash             | chunk是否携带hash值                                          | false                                                        | Boolean                   |
-| hasFileHash              | 是否解析file生成hash，因为涉及到文件解析hash会有一个解析过程导致上传变慢 | False                                                        | Boolean                   |
-
-```js
-// hash生成方式
-import * as SparkMD5 from 'spark-md5'
-
-export const getHash = (data) => {
-  return new Promise((resolve, reject) => {
-    const fileReader = new FileReader()
-    fileReader.onload = (e) => {
-      const fileHash = SparkMD5.ArrayBuffer.hash(e.target.result)
-      resolve(fileHash)
-    }
-    fileReader.onerror = () => {
-      reject('文件读取失败')
-    }
-    fileReader.readAsArrayBuffer(data)
-  })
-}
-```
-
-### 方法
-
-| 名称   | 说明                                      | 默认值 | 类型 |
-| ------ | ----------------------------------------- | ------ | ---- |
-| remove | 删除某个文件，参数是文件，没有 时删除全部 |        |      |
-| retry  | 上传失败时重试，参数是文件                |        |      |
-| pause  | 暂停上传，参数是文件                      |        |      |
-| resume | 重新上传，参数是文件                      |        |      |
-|        |                                           |        |      |
-|        |                                           |        |      |
-|        |                                           |        |      |
-
-### 常量
-
-```
-Uploader.Status = {
-  Ready: 'ready',
-  Pending: 'pending',
-  Uploading: 'uploading',
-  UploadSuccess: 'uploadSuccess',
-  Success: 'success',
-  Fail: 'fail',
-  Pause: 'pause',
-  Resume: 'resume'
-}
-
-Uploader.Events = {
+```javascript
+const Events = {
+  Exceed: 'exceed',
   FilesAdded: 'filesAdded',
   FileRemove: 'fileRemove',
   FileProgress: 'fileProgress',
   FileFail: 'fileFail',
+  FileUploadFail: 'fileUploadFail',
   FileUploadSuccess: 'fileUploadSuccess',
   FileSuccess: 'fileSuccess',
-  FileMergeFail: 'fileMergeFail',
-  AllFileSuccess: 'allFilesSuccess'
+  // FileMergeFail: 'fileMergeFail',
+  AllFileSuccess: 'allFilesSuccess',
+  Change: 'change'
 }
 ```
 
-### 回调
+## 方法
 
-| 名称                              | 说明                                                                 | 默认值 | 类型 |
-| --------------------------------- | -------------------------------------------------------------------- | ------ | ---- |
-| Uploader.Events.FilesAdded        | 回调参数 fileList                                                    |        |      |
-| Uploader.Events.FileRemove        | 回调参数 file, fileList                                              |        |      |
-| Uploader.Events.FileProgress      | 回调参数 progress， file，fileList                                   |        |      |
-| Uploader.Events.FileFail          | 回调参数 file, fileList, 上传过程中失败                              |        |      |
-| Uploader.Events.FileUploadSuccess | 回调参数 file, fileList, 文件上传成功，但是还未进行 merge 操作       |        |      |
-| Uploader.Events.FileSuccess       | 回调参数 file, fileList, 文件上传成功，merge 成功                    |        |      |
-| Uploader.Events.FileMergeFail     | 回调参数 file, fileList, 文件上传成功，merge 失败，可尝试 retry 操作 |        |      |
-| Uploader.Events.AllFileSuccess    | 回调参数 fileList                                                    |        |      |
+| **方法**     | **说明**                                                                                                                  | **默认值** | **类型** |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------- | ---------- | -------- |
+| assignBrowse | assignBrowse(domNode, attributes);attributes 是 input 文件的属性对象，可覆盖熟悉中的 accept 和 multiple，或者添加别的属性 |            |          |
+| assignDrop   | assignDrop(attributes)                                                                                                    |            |          |
+| submit       | 手动提交                                                                                                                  |            |          |
+| clear        | 清除 fileList, 取消正在上传的请求                                                                                         |            |          |
+| remove       | 参数是文件，有文件时删除当前文件以及去取消当前文件正在上传的请求，没有参数时删除所有文件                                  |            |          |
+| pause        | 暂停某个文件上传，参数是 file, 参数必传                                                                                   |            |          |
+| resume       | 恢复某个文件上传，参数是 file, 参数必传                                                                                   |            |          |
+| retry        | 重试某个文件上传，参数是 file, 参数必传                                                                                   |            |          |
+
+## 状态枚举值
+
+```javascript
+// File和Chunk的状态是共用，有重合
+const Status = {
+  Init: 'init', // 文件初始化状态
+  Reading: 'reading', // 计算hash,读取文件hash中
+  Ready: 'ready', // 1. 文件hash计算完成；2. chunk初始化状态是Ready
+  Pending: 'pending', // 1. chunk的已经发起请求，Promise处于Pending状态
+  Uploading: 'uploading', // 1. 文件在上传中 2. chunk上传中
+  UploadSuccess: 'uploadSuccess', // 文件的所有chunk上传完成, 准备合并文件
+  UploadFail: 'uploadFail', // 文件所有chunk已经请求上传接口，但是自动重试之后仍有失败时，文件状态为UploadFail
+  Success: 'success', // 1. 文件合并成功 2. chunk上传成功
+  Fail: 'fail', // 1. 文件合并失败 2. chunk上传（所有重试都不成功）失败
+  Pause: 'pause', // 暂停状态
+  Resume: 'resume' // 恢复状态
+}
+```
+
+## [CHANGELOG](https://github.com/moyuderen/uploader/blob/main/packages/sdk/CHANGELOG.md)

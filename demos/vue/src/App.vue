@@ -10,9 +10,9 @@
       @onFileFail="onFileFail"
       @onFileUploadSuccess="onFileUploadSuccess"
       @onFileSuccess="onFileSuccess"
-      @onFileMergeFail="onFileMergeFail"
+      @onFileUploadFail="onFileUploadFail"
       @onAllFileSuccess="onAllFileSuccess"
-      :merge="merge"
+      :mergeRequest="merge"
     />
     <button @click="abort">取消所有上传</button>
     <button @click="submit">Submit</button>
@@ -49,13 +49,14 @@ export default {
     onFileSuccess(file, fileList) {
       console.log('合并成功', file, fileList)
     },
-    onFileMergeFail(file, fileList) {
-      console.log('合并文件失败', file, fileList)
+    onFileUploadFail(file, fileList) {
+      console.log('上传文件失败', file, fileList)
     },
     onAllFileSuccess(fileList) {
       console.log('全部上传成功', fileList)
     },
     async merge(file) {
+      fetch('https://google.com')
       const sleep = () => {
         return new Promise((resolve, reject) => {
           const timer = setTimeout(() => {
