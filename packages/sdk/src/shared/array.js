@@ -4,7 +4,7 @@ export function each(ary, func, context) {
   if (isDefined(ary.length)) {
     for (var i = 0, len = ary.length; i < len; i++) {
       if (func.call(context, ary[i], i, ary) === false) {
-        break
+        break // 退出所有循序
       }
     }
   } else {

@@ -1,8 +1,8 @@
 <template>
   <div class="uploader-file">
     <div class="info-wrap">
-      <div class="file-name">
-        <file-icon :size="14" class="file-icon" />
+      <file-icon :size="14" class="file-icon" />
+      <div class="file-name" :title="file.name">
         {{ file.name }}
       </div>
       <div style="display: flex">
@@ -14,7 +14,11 @@
           <span v-if="file.status === 'uploading'" class="action" @click="pause(file)">
             <pause-icon :size="14" />
           </span>
-          <span v-if="file.status === 'fail'" class="action" @click="retry(file)">
+          <span
+            v-if="file.status === 'fail' || file.status === 'uploadFail'"
+            class="action"
+            @click="retry(file)"
+          >
             <retry-icon :size="14" />
           </span>
           <span class="action remove" @click="remove(file)">
@@ -27,13 +31,14 @@
           class="progress"
           :style="{ width: progressWidth }"
           :class="{
+            reading: file.status === 'reading',
             uploading:
               file.status === 'uploading' ||
               file.status === 'pause' ||
               file.status === 'resume' ||
               file.status === 'uploadSuccess',
             success: file.status === 'success',
-            fail: file.status === 'fail'
+            fail: file.status === 'fail' || file.status === 'uploadFail'
           }"
         ></div>
       </div>
@@ -116,7 +121,7 @@ export default {
 }
 
 .file-name {
-  display: flex;
+  flex: 1;
   align-items: center;
   overflow: hidden;
   text-overflow: ellipsis;
