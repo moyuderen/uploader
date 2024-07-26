@@ -26,3 +26,9 @@ export const Events = {
   AllFileSuccess: 'allFilesSuccess',
   Change: 'change'
 }
+
+export const CheckStatus = {
+  Part: 'part',
+  Success: 'success',
+  None: 'none'
+}

@@ -1,5 +1,11 @@
 # @tinyuploader/sdk
 
+## 2.0.1
+
+### Patch Changes
+
+- 新增 checkFileRequest 参数, 支持提前通过接口校验该文件的上传情况
+
 ## 2.0.0
 
 ### Major Changes
