@@ -1,4 +1,5 @@
 import { sleep } from '@/shared'
+import { CheckStatus } from './constans'
 
 export const defaults = {
   multipart: true, // TODO: 是否分片上传，false时单文件上传
@@ -16,6 +17,25 @@ export const defaults = {
   },
   retries: 3,
   retryInterval: 1000,
+  async checkFileRequest(file) {
+    await sleep(1000)
+    // 成功
+    // return {
+    //   status: 'success',
+    //   data: 'http://google.com'
+    // }
+
+    // 没上传
+    // return {
+    //   status: CheckStatus.None
+    // }
+
+    // 部分成功
+    return {
+      status: CheckStatus.Part,
+      data: [0, 1, 2, 3, 4, 5, 6]
+    }
+  },
   mergeRequest: async (file) => {
     await sleep(5000)
     file.path = 'http://baidu.com'

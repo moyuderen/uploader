@@ -15,7 +15,7 @@
 | beforeRemove         | 删除文件 false或者reject则停止上传，参数是file               |                                                              |                  |
 | action               | 上传地址                                                     | https://jsonplaceholder.typicode.com/posts                   | 接口             |
 | fakeProgress         | 是否使用模拟进度条，为false时会有进度条回退                  | true                                                         |                  |
-| TODO: checkFileUrl   | 校验文件，秒传，断点续传                                     |                                                              |                  |
+| checkFileRequest     | 校验文件，秒传，断点续传。默认不校验文件， 看下方的详细说明；使用尽量保证withHash开启，因为校验时会用到hash去后端校验。默认参数是file |                                                              |                  |
 | withCredentials      | 携带cookie                                                   | true                                                         |                  |
 | headers              | 自定义headers                                                | { }                                                          |                  |
 | data                 | 请求的其他参数                                               | { }                                                          |                  |
@@ -28,6 +28,49 @@
 | customGenerateUid    | 自定义id生成规则                                             | null                                                         | function \| null |
 | requestSucceed       | 校验是否上传成功，根据接口定义，通过http的status或者code判断，参数是xhr对象 | `requestSucceed(xhr) {  return [200, 201, 202].includes(xhr.status) }` | function         |
 | mergeRequest         | 合并文件请求，参数是file, 返回一个成功cdn地址，支持异步      |                                                              | function         |
+
+`checkFileRequest` 参数详细说明
+
+```javascript
+const CheckStatus = {
+  Part: 'part', // 部分上传成功
+  Success: 'success', // 全部上传成功
+  None: 'none' // 没有上传
+}
+
+const checkFileApi = (hash) => { 
+	// ...
+}
+
+// 情况一；默认不校验
+async checkFileRequest(file) {
+  const hash = file.hash
+  const { data } = await checkFileApi(hash)
+  return { status: CheckStatus.None }
+}
+
+// 情况二；根据文件hash,文件已经上传
+async checkFileRequest(file) {
+  const hash = file.hash
+  const { data } = await checkFileApi(hash)
+  return { 
+    status: CheckStatus.Success,
+    data: 'http://baidu.com' // data是一个上传成功文件的url地址
+  }
+}
+
+// 情况三；根据文件hash,文件部分上传成功
+async checkFileRequest(file) {
+  const hash = file.hash
+  const { data } = await checkFileApi(hash)
+  return { 
+    status: CheckStatus.Part,
+    data: [0, 2, 4, 6, 8, 10] // data是已经上传成功chunk的chunkIndex
+  }
+}
+```
+
+
 
 ## 回调函数
 

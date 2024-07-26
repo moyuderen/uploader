@@ -1,6 +1,6 @@
 import Chunk from './Chunk.js'
 import { isFunction, generateUid, asyncComputedHash, isPromise, each } from '@/shared'
-import { Status, Events } from './constans.js'
+import { Status, Events, CheckStatus } from './constans.js'
 
 export default class File {
   constructor(uploader, file) {
@@ -42,28 +42,57 @@ export default class File {
     return this.status === Status.Success
   }
 
-  start() {
-    return new Promise((resolve, reject) => {
-      if (this.opts.withHash) {
-        this.status = Status.Reading
-        asyncComputedHash(
-          {
-            file: this.rawFile,
-            chunkSize: this.chunkSize,
-            inWorker: this.opts.computedHashWorker
-          },
-          ({ progress }) => {
-            this.readProgress = progress
+  async start() {
+    await this.computedHash()
+    this.createChunks()
+    if (this.opts.checkFileRequest) {
+      await this.checkRequest()
+    }
+  }
+
+  async checkRequest() {
+    try {
+      const { status, data } = await this.opts.checkFileRequest(this)
+      if (status === CheckStatus.Part) {
+        this.chunks.forEach((chunk) => {
+          if (data.includes(chunk.chunkIndex)) {
+            chunk.status = Status.Success
+            chunk.progress = 1
+            chunk.fakeProgress = 1
           }
-        ).then(({ hash }) => {
-          this.hash = hash
-          this.createChunks()
-          resolve(this)
         })
-      } else {
-        this.createChunks()
-        resolve(this)
       }
+      if (status === CheckStatus.Success) {
+        this.success()
+        this.chunks.forEach((chunk) => {
+          chunk.status = Status.success
+        })
+        this.path = data
+      }
+    } catch {
+      //
+    }
+  }
+
+  computedHash() {
+    return new Promise((resolve, reject) => {
+      if (!this.opts.withHash) {
+        resolve()
+      }
+      this.status = Status.Reading
+      asyncComputedHash(
+        {
+          file: this.rawFile,
+          chunkSize: this.chunkSize,
+          inWorker: this.opts.computedHashWorker
+        },
+        ({ progress }) => {
+          this.readProgress = progress
+        }
+      ).then(({ hash }) => {
+        this.hash = hash
+        resolve()
+      })
     })
   }
 
@@ -100,6 +129,11 @@ export default class File {
   }
 
   uploadFile() {
+    if (this.status === Status.Success) {
+      this.success()
+      return
+    }
+
     const readyChunks = this.chunks.filter((chunk) => chunk.status === Status.Ready)
 
     each(readyChunks, () => {
@@ -148,6 +182,7 @@ export default class File {
 
   success() {
     this.status = Status.Success
+    this.progress = 1
     this.uploader.emit(Events.FileSuccess, this, this.uploader.fileList)
     this.uploader.upload()
   }
