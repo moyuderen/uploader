@@ -3,12 +3,12 @@ import { isFunction, generateUid, asyncComputedHash, isPromise, each } from '@/s
 import { Status, Events, CheckStatus } from './constans.js'
 
 export default class File {
-  constructor(uploader, file) {
-    this.uploader = uploader
-    this.opts = uploader.opts
+  constructor(file, uploader) {
+    this.uploader = uploader || { opts: {} }
+    this.opts = this.uploader.opts
 
     this.rawFile = file
-    if (this.opts && isFunction(this.opts.customGenerateUid)) {
+    if (isFunction(this.opts.customGenerateUid)) {
       this.uid = this.opts.customGenerateUid(file) || generateUid('fid')
     } else {
       this.uid = generateUid('fid')
@@ -17,7 +17,7 @@ export default class File {
     this.size = file.size
     this.name = file.name || file.fileName
     this.type = file.type
-    this.chunkSize = this.opts && this.opts.chunkSize
+    this.chunkSize = this.opts.chunkSize
 
     this.status = file.status || Status.Init
     this.progress = file.progress || 0

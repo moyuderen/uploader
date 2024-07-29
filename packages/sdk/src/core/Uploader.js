@@ -44,7 +44,7 @@ class Uploader {
       return
     }
 
-    const newFileList = originFileList.map((file) => new File(this, file))
+    const newFileList = originFileList.map((file) => new File(file, this))
     this.fileList = [...this.fileList, ...newFileList]
 
     if (beforeAdd) {
@@ -104,7 +104,11 @@ class Uploader {
   async submit() {
     const initedFileList = this.fileList.filter((file) => file.isInited())
     // 第一个file ready之后就开始上传，避免多个ready状态的file同时上传
-    await Promise.race(initedFileList.map((file) => file.start()))
+    try {
+      await Promise.race(initedFileList.map((file) => file.start()))
+    } catch (e) {
+      console.log(e)
+    }
     this.upload()
   }
 

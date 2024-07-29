@@ -15,7 +15,7 @@ export const defaults = {
   requestSucceed(xhr) {
     return [200, 201, 202].includes(xhr.status)
   },
-  retries: 3,
+  maxRetries: 3,
   retryInterval: 1000,
   async checkFileRequest(file) {
     await sleep(1000)
@@ -26,19 +26,20 @@ export const defaults = {
     // }
 
     // 没上传
-    // return {
-    //   status: CheckStatus.None
-    // }
+    return {
+      status: CheckStatus.None
+    }
 
     // 部分成功
-    return {
-      status: CheckStatus.Part,
-      data: [0, 1, 2, 3, 4, 5, 6]
-    }
+    // return {
+    //   status: CheckStatus.Part,
+    //   data: [0, 1, 2, 3, 4, 5, 6]
+    // }
   },
   mergeRequest: async (file) => {
-    await sleep(5000)
-    file.path = 'http://baidu.com'
+    // await sleep(5000)
+    // file.path = 'http://baidu.com'
+    return true
   },
 
   /**
