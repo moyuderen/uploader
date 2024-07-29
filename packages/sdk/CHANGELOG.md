@@ -1,5 +1,12 @@
 # @tinyuploader/sdk
 
+## 2.0.2
+
+### Patch Changes
+
+- 1. 优化默认参数
+  2. 更新 sdk 文档
+
 ## 2.0.1
 
 ### Patch Changes

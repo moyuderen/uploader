@@ -1,6 +1,6 @@
 {
   "name": "@tinyuploader/sdk",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "",
   "private": false,
   "publishConfig": {
@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "vite build --watch",
+    "dev": "vite",
+    "dev:play": "vite build --watch",
     "build": "vite build"
   },
   "keywords": [
@@ -32,10 +33,9 @@
       "import": "./dist/sdk.mjs"
     }
   },
-  "homepage": "https://github.com/moyuderen/uploader/tree/monorepo/sdk",
+  "homepage": "https://github.com/moyuderen/uploader/tree/main/packages/sdk",
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/moyuderen/uploader.git"
+    "url": "https://github.com/moyuderen/uploader"
   },
   "bugs": {
     "url": "https://github.com/moyuderen/uploader/issues"

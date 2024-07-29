@@ -7,6 +7,9 @@ export default defineConfig({
       '@': path.join(__dirname, 'src')
     }
   },
+  server: {
+    open: '/example/index.html'
+  },
   build: {
     lib: {
       entry: './src/index.js',

@@ -1,0 +1,50 @@
+:root {
+  --default-margin: 6px;
+  --default-padding: 8px;
+}
+
+.uploader-btn {
+  margin-right: var(--default-margin);
+}
+
+.file-list {
+  margin-top: 10px;
+  max-width: 660px;
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 var(--default-padding);
+  margin-bottom: var(--default-padding);
+  border: 1px darkgray solid;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.file-name {
+  width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: var(--default-margin);
+  white-space: nowrap;
+}
+
+.file-status {
+  width: 120px;
+  margin-right: var(--default-margin);
+}
+
+.file-progress {
+  width: 100px;
+}
+
+.action-container {
+  min-width: 200px;
+  text-align: right;
+}
+
+.action {
+  margin-right: var(--default-margin);
+}

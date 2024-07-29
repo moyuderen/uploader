@@ -114,14 +114,11 @@ export default {
     fileList: {
       handler(fileList) {
         this.files = fileList.map((item) => {
-          const file = new File(
-            {},
-            {
-              name: 'haha',
-              status: Status.Success,
-              progress: 1
-            }
-          )
+          const file = new File({
+            name: 'haha',
+            status: Status.Success,
+            progress: 1
+          })
           return file
         })
         this.uploader = new Uploader({
