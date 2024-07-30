@@ -24,6 +24,7 @@ export default class File {
     this.chunks = []
     this.uploadingQueue = new Set()
     this.readProgress = 0
+    this.path = file.path || ''
   }
 
   isInited() {

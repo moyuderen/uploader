@@ -8,16 +8,9 @@ const Events = Uploader.Events
 
 createApp({
   setup() {
-    const defaultFileList = [
-      new File({
-        path: 'http://baidu.com',
-        name: 'haha',
-        status: Status.Success,
-        progress: 1
-      })
-    ]
+    const defaultFileList = [{ path: 'http://baidu.com', name: 'haha' }]
     const uploader = ref(null)
-    const files = ref(defaultFileList)
+    const files = ref([])
 
     uploader.value = new Uploader({
       action: 'https://jsonplaceholder.typicode.com/posts',
@@ -25,6 +18,7 @@ createApp({
       chunkSize: 1024 * 1024 * 10, // 10M,
       maxRetries: 1
     })
+    files.value = uploader.value.fileList
 
     onMounted(() => {
       uploader.value.assignBrowse(document.querySelector('.uploader-btn'))

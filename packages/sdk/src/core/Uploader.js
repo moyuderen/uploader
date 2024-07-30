@@ -10,7 +10,19 @@ class Uploader {
     this.event = new Event()
 
     this.opts = extend({}, defaults, options)
-    this.fileList = this.opts.fileList || []
+    let fileList = []
+    if (this.opts.fileList && this.opts.fileList.length) {
+      fileList = this.opts.fileList.map(
+        (item) =>
+          new File({
+            name: item.name,
+            path: item.path,
+            status: Status.Success,
+            progress: 1
+          })
+      )
+    }
+    this.fileList = fileList
     this.status = Status.Init
     // 只注册一次
     this.listenerFiles()
