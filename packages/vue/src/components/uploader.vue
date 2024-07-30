@@ -22,8 +22,6 @@ import UploaderList from './uploader-list.vue'
 import UploaderFile from './uploader-file.vue'
 
 const Events = Uploader.Events
-const Status = Uploader.Status
-const File = Uploader.File
 
 export default {
   components: {
@@ -113,18 +111,13 @@ export default {
   watch: {
     fileList: {
       handler(fileList) {
-        this.files = fileList.map((item) => {
-          const file = new File({
-            name: 'haha',
-            status: Status.Success,
-            progress: 1
-          })
-          return file
-        })
         this.uploader = new Uploader({
           ...this._props,
-          fileList: this.files
+          fileList: fileList
         })
+
+        this.files = this.uploader.fileList
+
         this.uploader.on(Events.FilesAdded, (fileList) => {
           this.files = fileList
           this.$emit('onFilesAdded', fileList)

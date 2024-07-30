@@ -1,5 +1,11 @@
 # @tinyuploader/sdk
 
+## 2.0.3
+
+### Patch Changes
+
+- 优化默认值 fileList 传入方式
+
 ## 2.0.2
 
 ### Patch Changes

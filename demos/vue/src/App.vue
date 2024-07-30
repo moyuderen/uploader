@@ -25,7 +25,8 @@ export default {
     return {
       fileList: [
         {
-          url: 'http://baidu.com'
+          name: '哈哈',
+          path: 'http://baidu.com'
         }
       ]
     }
