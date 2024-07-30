@@ -60,7 +60,7 @@ jobs:
         run: pnpm install
 
       - name: Build with VitePress
-        run: pnpm --dir ./docs docs:build
+        run: pnpm build:docs
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
