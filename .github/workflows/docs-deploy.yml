@@ -58,11 +58,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd docs
+          cd ./docs
           pnpm install
 
       - name: Build with VitePress
         run: |
+          cd ./docs
           pnpm docs:build
 
       - name: Upload artifact
