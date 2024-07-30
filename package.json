@@ -15,7 +15,7 @@
     "build:package-vue": "pnpm -F @tinyuploader/vue run build",
     "dev:package-vuenext": "pnpm -F @tinyuploader/vuenext run dev",
     "build:package-vuenext": "pnpm -F @tinyuploader/vuenext run build",
-    "build:docs": "pnpm --dir ./docs docs:build",
+    "build:docs": "pnpm run -C docs docs:build",
     "play:vue": "npm-run-all -p dev:sdk dev:package-vue dev:vue",
     "play:vuenext": "node ./scripts/play-vuenext.js && pnpm run dev:vuenext",
     "dev:vue": "pnpm -F @demos/vue run dev",
