@@ -3,7 +3,8 @@
   "version": "1.0.3",
   "private": false,
   "scripts": {
-    "dev": "vite build --watch",
+    "dev": "vite",
+    "dev:play": "vite build --watch",
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"

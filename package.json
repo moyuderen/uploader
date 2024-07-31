@@ -11,7 +11,7 @@
     "build": "pnpm run --parallel --filter @tinyuploader/* build",
     "dev:sdk": "pnpm -F @tinyuploader/sdk run dev:play",
     "build:sdk": "pnpm -F @tinyuploader/sdk run build",
-    "dev:package-vue": "pnpm -F @tinyuploader/vue run dev",
+    "dev:package-vue": "pnpm -F @tinyuploader/vue dev:play",
     "build:package-vue": "pnpm -F @tinyuploader/vue run build",
     "dev:package-vuenext": "pnpm -F @tinyuploader/vuenext run dev",
     "build:package-vuenext": "pnpm -F @tinyuploader/vuenext run build",
