@@ -20,10 +20,11 @@
     "play:vuenext": "node ./scripts/play-vuenext.js && pnpm run dev:vuenext",
     "dev:vue": "pnpm -F @demos/vue run dev",
     "dev:vuenext": "pnpm -F @demos/vuenext run dev",
+    "dev:server": "pnpm run -C server start:debug",
     "change": "pnpm changeset",
     "change-version": "pnpm changeset version",
     "publish": "pnpm install && pnpm publish -F @tinyuploader/* ",
-    "clear": "rimraf node_modules & rimraf packages/**/node_modules & rimraf demos/**/node_modules rimraf docs/node_modules"
+    "clear": "rimraf node_modules & rimraf packages/**/node_modules & rimraf demos/**/node_modules & rimraf docs/node_modules & rimraf server/node_modules"
   },
   "keywords": [
     "uploader",

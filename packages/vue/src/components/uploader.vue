@@ -48,9 +48,9 @@ export default {
       type: Boolean,
       default: true
     },
-    accept: {
+    action: {
       type: String,
-      default: '*'
+      default: ''
     },
     target: {
       type: String

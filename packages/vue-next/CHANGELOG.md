@@ -1,5 +1,12 @@
 # @tinyuploader/vuenext
 
+## 1.1.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @tinyuploader/sdk@2.0.4
+
 ## 1.1.8
 
 ### Patch Changes

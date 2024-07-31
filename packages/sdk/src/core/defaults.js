@@ -18,7 +18,7 @@ export const defaults = {
   maxRetries: 3,
   retryInterval: 1000,
   async checkFileRequest(file) {
-    await sleep(1000)
+    // await sleep(1000)
     // 成功
     // return {
     //   status: 'success',

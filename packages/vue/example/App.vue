@@ -6,6 +6,7 @@
     <button @click="submit">Submit</button>
 
     <Uploader
+      action="http://localhost:3000/upload"
       style="margin-top: 10px"
       ref="uploaderRef"
       :fileList="fileList"
