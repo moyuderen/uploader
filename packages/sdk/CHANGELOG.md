@@ -1,5 +1,11 @@
 # @tinyuploader/sdk
 
+## 2.0.4
+
+### Patch Changes
+
+- 优化 sdk 暴露
+
 ## 2.0.3
 
 ### Patch Changes

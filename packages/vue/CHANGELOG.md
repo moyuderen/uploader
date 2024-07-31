@@ -1,5 +1,18 @@
 # @tinyuploader/vue
 
+## 1.1.0
+
+### Minor Changes
+
+- 增加 action 自定义接口暴露
+
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @tinyuploader/sdk@2.0.4
+
 ## 1.0.3
 
 ### Patch Changes

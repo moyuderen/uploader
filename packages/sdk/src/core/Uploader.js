@@ -2,7 +2,7 @@ import File from '@/core/File'
 import Container from '@/core/Container'
 import { Event, extend, isFunction, isPromise } from '@/shared'
 import { defaults } from '@/core/defaults'
-import { Status, Events } from '@/core/constans'
+import { Status, Events, CheckStatus } from '@/core/constans'
 
 class Uploader {
   constructor(options) {
@@ -222,6 +222,7 @@ class Uploader {
 Uploader.Status = Status
 Uploader.Events = Events
 Uploader.File = File
+Uploader.CheckStatus = CheckStatus
 Uploader.create = (options) => {
   return new Uploader(options)
 }

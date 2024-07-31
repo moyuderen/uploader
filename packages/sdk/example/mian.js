@@ -1,10 +1,7 @@
 const { createApp, ref, onMounted } = Vue
 
-// import Uploader from '../dist/sdk.mjs'
-import Uploader from '../src'
-const File = Uploader.File
-const Status = Uploader.Status
-const Events = Uploader.Events
+import { create, Status, Events, CheckStatus } from '../dist/sdk.mjs'
+// import { create, Status, Events, CheckStatus } from '../src'
 
 createApp({
   setup() {
@@ -12,11 +9,26 @@ createApp({
     const uploader = ref(null)
     const files = ref([])
 
-    uploader.value = new Uploader({
-      action: 'https://jsonplaceholder.typicode.com/posts',
+    uploader.value = create({
+      action: 'http://localhost:3000/upload',
       fileList: defaultFileList,
       chunkSize: 1024 * 1024 * 10, // 10M,
-      maxRetries: 1
+      // chunkSize: 1024 * 3, // 3k,
+      maxRetries: 0,
+      withCredentials: true,
+      async mergeRequest(file) {
+        const { hash, name } = file
+        const { data } = await axios.post('http://localhost:3000/merge', { name, hash })
+        file.path = data.data
+      },
+      async checkFileRequest(file) {
+        const { data } = await axios.post('http://localhost:3000/checkFile', {
+          // status: CheckStatus.Success
+          status: CheckStatus.Part
+          // status: CheckStatus.None
+        })
+        return data
+      }
     })
     files.value = uploader.value.fileList
 
