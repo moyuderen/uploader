@@ -171,6 +171,7 @@ export default {
       })
 
       this.uploader.on(Events.FilesAdded, (fileList) => {
+        this.files = fileList
         this.$emit('onFilesAdded', fileList)
         this.$emit('onChange', fileList, null)
       })
