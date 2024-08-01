@@ -23,7 +23,7 @@
     "dev:server": "pnpm run -C server start:debug",
     "change": "pnpm changeset",
     "change-version": "pnpm changeset version",
-    "publish": "pnpm install && pnpm publish -F @tinyuploader/* ",
+    "publish": "pnpm install && pnpm build && pnpm publish -F @tinyuploader/* ",
     "clear": "rimraf node_modules & rimraf packages/**/node_modules & rimraf demos/**/node_modules & rimraf docs/node_modules & rimraf server/node_modules"
   },
   "keywords": [

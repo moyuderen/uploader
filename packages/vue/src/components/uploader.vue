@@ -2,7 +2,7 @@
   <div class="uploader">
     <uploader-drop v-if="drag" :multiple="multiple" :accept="accept">
       <slot name="drop" v-bind:scope="{ multiple, accept }">
-        <upload-icon :size="40" color="#409eff" style="margin-bottom: 8px" />
+        <upload-icon :size="40" color="#409eff" style="margin-bottom: 6px" />
         <div>
           <span>Drop file here or</span>
           <uploader-btn> click to upload </uploader-btn>
