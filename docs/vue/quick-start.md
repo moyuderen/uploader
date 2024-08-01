@@ -177,6 +177,18 @@ export default {
 
 参考 [**AllFileSuccess**](/sdk/callbacks#allfilesuccess)
 
+#### onFail
+
+文件上传失败的回调,包括 chunk 失败（文件状态为`uploadFail`），或者 chunk 上传成功但是 merge 失败（文件状态为`fail`）。即`onFileUploadFail`和`FileFail`都会触发`onFail`
+
+`onFail(file, fileList)`
+
+#### onSuccess
+
+文件上传成功的回调，包括上传 chunk 完成，mergr 合并完成，与`onFileSuccess`是一样的
+
+`onSuccess(file, fileList)`
+
 #### onChange
 
 文件列表发生改变时调用
