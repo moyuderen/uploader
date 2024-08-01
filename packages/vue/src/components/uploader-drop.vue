@@ -1,5 +1,5 @@
 <template>
-  <div class="uploader-drop">
+  <div class="tiny-uploader-drop">
     <slot></slot>
   </div>
 </template>
@@ -8,38 +8,30 @@
 import { uploaderMixin } from '../common/mixins'
 export default {
   mixins: [uploaderMixin],
-  props: {
-    multiple: {
-      type: Boolean,
-      default: true
-    },
-    accept: {
-      type: String,
-      default: '*'
-    }
-  },
   mounted() {
     this.$nextTick(() => {
-      this.uploader.assignBrowse(document.querySelector('.uploader-drop'), {
-        multiple: this.multiple,
-        accept: this.accept
-      })
-      this.uploader.assignDrop(document.querySelector('.uploader-drop'))
+      this.uploader.assignBrowse(document.querySelector('.tiny-uploader-drop'))
+      this.uploader.assignDrop(document.querySelector('.tiny-uploader-drop'))
     })
   }
 }
 </script>
 
-<style scoped>
-.uploader-drop {
+<style>
+.tiny-uploader-drop {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   width: 350px;
   height: 150px;
   border: 1px dashed #dcdfe6;
   font-size: 14px;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.tiny-uploader-drop:hover {
+  border: 1px dashed #409eff;
 }
 </style>

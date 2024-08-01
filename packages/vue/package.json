@@ -1,6 +1,6 @@
 {
   "name": "@tinyuploader/vue",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": false,
   "scripts": {
     "dev": "vite",
@@ -8,6 +8,13 @@
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+  },
+  "homepage": "https://moyuderen.github.io/uploader/vue/quick-start.html",
+  "repository": {
+    "url": "https://github.com/moyuderen/uploader/tree/main/packages/vue"
+  },
+  "bugs": {
+    "url": "https://github.com/moyuderen/uploader/issues"
   },
   "files": [
     "dist"
@@ -33,6 +40,7 @@
     "eslint": "^8.5.0",
     "eslint-plugin-vue": "^9.0.0",
     "prettier": "^2.5.1",
+    "sass": "^1.77.8",
     "terser": "^5.14.2",
     "vite": "^3.0.2",
     "vite-plugin-vue2": "^2.0.3",

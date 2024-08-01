@@ -1,13 +1,24 @@
 <template>
   <div class="uploader">
-    <uploader-drop :multiple="multiple" :accept="accept">
-      <span style="margin-right: 6px">Drop file here or</span>
-      <uploader-btn> click to upload </uploader-btn>
+    <uploader-drop v-if="drag" :multiple="multiple" :accept="accept">
+      <slot name="drop" v-bind:scope="{ multiple, accept }">
+        <upload-icon :size="40" color="#409eff" style="margin-bottom: 8px" />
+        <div>
+          <span>Drop file here or</span>
+          <uploader-btn> click to upload </uploader-btn>
+        </div>
+      </slot>
     </uploader-drop>
-    <slot v-bind:fileList="files">
+
+    <div v-else class="trigger">
+      <slot name="trigger" v-bind:scope="{ multiple, accept }">
+        <button class="tiny__trigger-upload-btn">点击上传</button>
+      </slot>
+    </div>
+    <slot name="files" v-bind:fileList="files">
       <uploader-list :file-list="files">
         <template v-slot="slotProps">
-          <uploader-file :file="slotProps.file"></uploader-file>
+          <uploader-file :file="slotProps.file" @click="clickFile"></uploader-file>
         </template>
       </uploader-list>
     </slot>
@@ -20,6 +31,7 @@ import UploaderDrop from './uploader-drop.vue'
 import UploaderBtn from './uploader-btn.vue'
 import UploaderList from './uploader-list.vue'
 import UploaderFile from './uploader-file.vue'
+import UploadIcon from './upload-icon.vue'
 
 const Events = Uploader.Events
 
@@ -28,7 +40,8 @@ export default {
     UploaderDrop,
     UploaderBtn,
     UploaderList,
-    UploaderFile
+    UploaderFile,
+    UploadIcon
   },
   provide() {
     return {
@@ -36,6 +49,10 @@ export default {
     }
   },
   props: {
+    drag: {
+      type: Boolean,
+      default: true
+    },
     multiple: {
       type: Boolean,
       default: true
@@ -44,16 +61,30 @@ export default {
       type: String,
       default: '*'
     },
-    multiple: {
+    limit: {
+      type: Number,
+      default: 10
+    },
+    fileList: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    name: {
+      type: String,
+      default: 'file'
+    },
+    autoUpload: {
       type: Boolean,
       default: true
     },
     action: {
-      type: String,
-      default: ''
-    },
-    target: {
       type: String
+    },
+    fakeProgress: {
+      type: Boolean,
+      default: true
     },
     withCredentials: {
       type: Boolean,
@@ -61,28 +92,17 @@ export default {
     },
     headers: Object,
     data: Object,
-    maxConcurrency: {
-      type: Number,
-      default: 6
+    withHash: {
+      type: Boolean,
+      default: true
+    },
+    computedhashInWorker: {
+      type: Boolean,
+      default: true
     },
     chunkSize: {
       type: Number,
       default: 1024 * 4
-    },
-    autoUpload: {
-      type: Boolean,
-      default: true
-    },
-    name: {
-      type: String,
-      default: 'file'
-    },
-    customGenerateUid: {
-      type: [Function, null],
-      default: null
-    },
-    requestSucceed: {
-      type: Function
     },
     maxRetries: {
       type: Number,
@@ -92,13 +112,42 @@ export default {
       type: Number,
       default: 1000
     },
-    mergeRequest: {
-      type: Function
+    maxConcurrency: {
+      type: Number,
+      default: 6
     },
-    fileList: {
-      type: Array,
+    customGenerateUid: {
+      type: [Function, null],
+      default: null
+    },
+    beforeAdd: {
+      type: Function,
       default() {
-        return []
+        return () => true
+      }
+    },
+    beforeRemove: {
+      type: Function,
+      default() {
+        return () => true
+      }
+    },
+    checkFileRequest: {
+      type: Function,
+      default() {
+        return () => true
+      }
+    },
+    requestSucceed: {
+      type: Function,
+      default() {
+        return () => true
+      }
+    },
+    mergeRequest: {
+      type: Function,
+      default() {
+        return () => true
       }
     }
   },
@@ -108,72 +157,80 @@ export default {
       files: []
     }
   },
-  watch: {
-    fileList: {
-      handler(fileList) {
-        this.uploader = new Uploader({
-          ...this._props,
-          fileList: fileList
-        })
+  created() {
+    const init = (fileList) => {
+      this.uploader = new Uploader({
+        ...this._props,
+        fileList: fileList
+      })
 
-        this.files = this.uploader.fileList
+      this.files = this.uploader.fileList
 
-        this.uploader.on(Events.FilesAdded, (fileList) => {
-          this.files = fileList
-          this.$emit('onFilesAdded', fileList)
-          this.$emit('onChange', fileList)
-        })
+      this.uploader.on(Events.Exceed, (files, fileList) => {
+        this.$emit('onExceed', files, fileList)
+      })
 
-        this.uploader.on(Events.AllFileSuccess, (fileList) => {
-          this.files = fileList
-          this.$emit('onAllFileSuccess', fileList)
-          this.$emit('onChange', fileList)
-        })
+      this.uploader.on(Events.FilesAdded, (fileList) => {
+        this.$emit('onFilesAdded', fileList)
+        this.$emit('onChange', fileList, null)
+      })
 
-        this.uploader.on(Events.FileUploadSuccess, (file, fileList) => {
-          this.files = fileList
-          this.$emit('onFileUploadSuccess', file, fileList)
-          this.$emit('onChange', fileList)
-        })
+      this.uploader.on(Events.FileRemove, (file, fileList) => {
+        this.files = fileList
+        this.$emit('onFileRemove', file, fileList)
+        this.$emit('onChange', fileList, null)
+      })
 
-        this.uploader.on(Events.FileSuccess, (file, fileList) => {
-          this.files = fileList
-          this.$emit('onFileSuccess', file, fileList)
-          this.$emit('onChange', fileList)
-        })
+      this.uploader.on(Events.FileProgress, (progress, file, fileList) => {
+        this.$emit('onFileProgress', progress, file, fileList)
+      })
 
-        this.uploader.on(Events.FileFail, (file, fileList) => {
-          this.files = fileList
-          this.$emit('onFileFail', file, fileList)
-          this.$emit('onChange', fileList)
-        })
+      this.uploader.on(Events.FileFail, (file, fileList) => {
+        this.files = fileList
+        this.$emit('onFileFail', file, fileList)
+        this.$emit('onFile', file, fileList)
+        this.$emit('onChange', fileList, null)
+      })
 
-        this.uploader.on(Events.FileUploadFail, (file, fileList) => {
-          this.files = fileList
-          this.$emit('onFileUploadFail', file, fileList)
-        })
+      this.uploader.on(Events.FileUploadFail, (file, fileList) => {
+        this.files = fileList
+        this.$emit('onFileUploadFail', file, fileList)
+        this.$emit('onFile', file, fileList)
+        this.$emit('onChange', fileList, null)
+      })
 
-        this.uploader.on(Events.FileRemove, (file, fileList) => {
-          this.files = fileList
-          this.$emit('onFileRemove', file, fileList)
-          this.$emit('onChange', fileList)
-        })
+      this.uploader.on(Events.FileUploadSuccess, (file, fileList) => {
+        this.files = fileList
+        this.$emit('onFileUploadSuccess', file, fileList)
+      })
 
-        this.uploader.on(Events.FileProgress, (progress, file, fileList) => {
-          this.files = fileList
-          this.$emit('onFileProgress', file, fileList)
-        })
-      },
-      immediate: true
+      this.uploader.on(Events.FileSuccess, (file, fileList) => {
+        this.files = fileList
+        this.$emit('onFileSuccess', file, fileList)
+        this.$emit('onSuccess', file, fileList)
+        this.$emit('onChange', fileList, null)
+      })
+
+      this.uploader.on(Events.AllFileSuccess, (fileList) => {
+        this.files = fileList
+        this.$emit('onAllFileSuccess', fileList)
+        this.$emit('onChange', fileList, null)
+      })
     }
+    init(this.fileList)
+    this.$emit('onChange', this.fileList, null)
+  },
+  mounted() {
+    this.$nextTick(() => {
+      !this.drag && this.uploader.assignBrowse(document.querySelector('.trigger'))
+    })
   },
   methods: {
-    abort(file) {
-      if (file) {
-        this.uploader.remove(file)
-        return
-      }
-      this.uploader.remove()
+    clickFile(file) {
+      this.$emit('onClick', file)
+    },
+    clear() {
+      this.uploader.clear()
     },
     submit() {
       this.uploader.submit()
@@ -181,3 +238,26 @@ export default {
   }
 }
 </script>
+
+<style>
+.tiny__trigger-upload-btn {
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -webkit-user-select: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  transition: 0.1s;
+  font-weight: 500;
+  padding: 7px 15px;
+  font-size: 12px;
+  border-radius: 3px;
+  color: #fff;
+  background-color: #409eff;
+  border: 1px solid #409eff;
+}
+</style>

@@ -17,7 +17,7 @@ export default defineConfig({
       {
         text: '@tinyuploader/sdk',
         items: [
-          { text: 'Guide', link: '/sdk/' },
+          { text: 'Guide', link: '/sdk/quick-start' },
           {
             text: 'Repository',
             link: 'https://github.com/moyuderen/uploader/tree/main/packages/sdk'
@@ -31,7 +31,7 @@ export default defineConfig({
       {
         text: '@tinyuploader/vue',
         items: [
-          { text: 'Guide', link: '/vue/' },
+          { text: 'Guide', link: '/vue/quick-start' },
           {
             text: 'Repository',
             link: 'https://github.com/moyuderen/uploader/tree/main/packages/vue'
@@ -45,7 +45,7 @@ export default defineConfig({
       {
         text: '@tinyuploader/vuenext',
         items: [
-          { text: 'Guide', link: '/vuenext/' },
+          { text: 'Guide', link: '/vuenext/quick-start' },
           {
             text: 'Repository',
             link: 'https://github.com/moyuderen/uploader/tree/main/packages/vue-next'
@@ -67,14 +67,15 @@ export default defineConfig({
             { text: '参数配置', link: '/sdk/props' },
             { text: '回调', link: '/sdk/callbacks' },
             { text: '方法', link: '/sdk/functions' },
-            { text: '详细说明', link: '/sdk/details' }
+            { text: '实例、状态说明', link: '/sdk/details' }
           ]
         },
         {
           text: '问题',
-          items: []
+          link: '/sdk/questions'
         }
-      ]
+      ],
+      '/vue/': []
     },
 
     socialLinks: [{ icon: 'github', link: 'https://github.com/moyuderen/uploader' }],

@@ -1,5 +1,21 @@
 # @tinyuploader/vue
 
+## 1.2.0
+
+### Minor Changes
+
+- 1. 新增事件
+  2. 插槽功能
+  3. 优化属性传参
+  4. 样式 namespace
+
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @tinyuploader/sdk@2.0.5
+
 ## 1.1.0
 
 ### Minor Changes

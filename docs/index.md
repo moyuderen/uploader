@@ -9,13 +9,13 @@ hero:
   actions:
     - theme: brand
       text: '@tinyuploader/sdk'
-      link: /markdown-examples
+      link: /sdk/quick-start
     - theme: brand
       text: '@tinyuploader/vue'
-      link: /api-examples
+      link: /vue/quick-start
     - theme: alt
       text: '@tinyuploader/vuenext'
-      link: /api-examples
+      link: /vuenext/quick-start
 
 features:
   - title: 分片上传
@@ -32,4 +32,7 @@ features:
 
   - title: 丰富的配置
     details: 支持文件相关，请求的自定义参数，自定义headers, 是否启用文件的hash计算等
+
+  - title: 上传前的文件校验
+    details: 支持文件上传前校验通过接口判断，是已经上传、部分上传、未上传处理不同逻辑
 ---

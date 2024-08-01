@@ -1,7 +1,7 @@
 const { createApp, ref, onMounted } = Vue
 
-import { create, Status, Events, CheckStatus } from '../dist/sdk.mjs'
-// import { create, Status, Events, CheckStatus } from '../src'
+// import { create, Status, Events, CheckStatus } from '../dist/sdk.mjs'
+import { create, Status, Events, CheckStatus } from '../src'
 
 createApp({
   setup() {

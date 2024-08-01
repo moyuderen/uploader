@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
 import Uploader from '../src/index'
+// import Uploader from '../dist/tinyuploader-vue.mjs'
+// import '../dist/style.css'
 
 Vue.use(Uploader)
 
