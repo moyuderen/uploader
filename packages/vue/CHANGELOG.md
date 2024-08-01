@@ -1,5 +1,17 @@
 # @tinyuploader/vue
 
+## 1.3.0
+
+### Minor Changes
+
+- fix: fixbug 不显示上传进度的问题
+
+## 1.2.1
+
+### Patch Changes
+
+- 样式优化
+
 ## 1.2.0
 
 ### Minor Changes
