@@ -1,6 +1,6 @@
 {
   "name": "@tinyuploader/sdk",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "",
   "private": false,
   "publishConfig": {
@@ -33,9 +33,9 @@
       "import": "./dist/sdk.mjs"
     }
   },
-  "homepage": "https://github.com/moyuderen/uploader/tree/main/packages/sdk",
+  "homepage": "https://moyuderen.github.io/uploader/sdk/quick-start.html",
   "repository": {
-    "url": "https://github.com/moyuderen/uploader"
+    "url": "https://github.com/moyuderen/uploader/tree/main/packages/sdk"
   },
   "bugs": {
     "url": "https://github.com/moyuderen/uploader/issues"

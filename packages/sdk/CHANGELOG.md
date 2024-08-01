@@ -1,5 +1,11 @@
 # @tinyuploader/sdk
 
+## 2.0.5
+
+### Patch Changes
+
+- chore: package.json
+
 ## 2.0.4
 
 ### Patch Changes

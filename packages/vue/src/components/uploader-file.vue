@@ -1,44 +1,44 @@
 <template>
   <div class="uploader-file">
-    <div class="info-wrap">
-      <file-icon :size="14" class="file-icon" />
-      <div class="file-name" :title="file.name">
+    <div class="tiny-info-wrap">
+      <file-icon :size="14" class="tiny-file-icon" />
+      <div class="tiny-file-name" @click="$emit('click', file)" :title="file.name">
         {{ file.name }}
       </div>
       <div style="display: flex">
-        <div class="percent">{{ parseProgress(file.progress) }}%</div>
-        <div class="actions">
-          <span v-if="file.status === 'pause'" class="action" @click="resume(file)">
+        <div class="tiny-percent">{{ parseProgress(file.progress) }}%</div>
+        <div class="tiny-actions">
+          <span v-if="file.status === 'pause'" class="tiny-action" @click="resume(file)">
             <play-icon :size="14" />
           </span>
-          <span v-if="file.status === 'uploading'" class="action" @click="pause(file)">
+          <span v-if="file.status === 'uploading'" class="tiny-action" @click="pause(file)">
             <pause-icon :size="14" />
           </span>
           <span
             v-if="file.status === 'fail' || file.status === 'uploadFail'"
-            class="action"
+            class="tiny-action"
             @click="retry(file)"
           >
             <retry-icon :size="14" />
           </span>
-          <span class="action remove" @click="remove(file)">
+          <span class="tiny-action" @click="remove(file)">
             <remove-icon :size="14" />
           </span>
         </div>
       </div>
-      <div class="progress-wrap">
+      <div class="tiny-progress-wrap">
         <div
-          class="progress"
+          class="tiny-progress"
           :style="{ width: progressWidth }"
           :class="{
-            reading: file.status === 'reading',
-            uploading:
+            'tiny--reading': file.status === 'reading',
+            'tiny--uploading':
               file.status === 'uploading' ||
               file.status === 'pause' ||
               file.status === 'resume' ||
               file.status === 'uploadSuccess',
-            success: file.status === 'success',
-            fail: file.status === 'fail' || file.status === 'uploadFail'
+            'tiny--success': file.status === 'success',
+            'tiny--fail': file.status === 'fail' || file.status === 'uploadFail'
           }"
         ></div>
       </div>
@@ -101,8 +101,8 @@ export default {
 }
 </script>
 
-<style scoped>
-.info-wrap {
+<style>
+.tiny-info-wrap {
   position: relative;
   display: flex;
   justify-content: space-between;
@@ -116,11 +116,11 @@ export default {
   z-index: 0;
 }
 
-.info-wrap:hover .actions {
+.tiny-info-wrap:hover .tiny-actions {
   display: flex;
 }
 
-.file-name {
+.tiny-file-name {
   flex: 1;
   align-items: center;
   overflow: hidden;
@@ -130,11 +130,11 @@ export default {
   margin-right: 6px;
 }
 
-.file-icon {
+.tiny-file-icon {
   margin-right: 4px;
 }
 
-.progress-wrap {
+.tiny-progress-wrap {
   position: absolute;
   top: 0;
   left: 0;
@@ -144,34 +144,34 @@ export default {
   background-color: #f4f4f5;
   opacity: 0.8;
 }
-.progress {
+.tiny-progress {
   height: 28px;
   border-radius: 4px;
 }
 
-.percent {
+.tiny-percent {
   width: 50px;
   margin-right: 8px;
 }
 
-.uploading {
+.tiny--uploading {
   background-color: #d9ecff;
 }
 
-.success {
+.tiny--success {
   background-color: #f0f9eb;
 }
 
-.fail {
+.tiny--fail {
   background-color: #fef0f0;
 }
 
-.actions {
+.tiny-actions {
   display: none;
   align-items: center;
   margin-right: 8px;
 }
-.action {
+.tiny-action {
   display: flex;
   justify-content: center;
   align-items: center;

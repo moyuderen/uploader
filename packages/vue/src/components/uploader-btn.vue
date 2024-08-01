@@ -1,5 +1,5 @@
 <template>
-  <span class="uploader-btn">
+  <span class="tiny-uploader-btn">
     <slot></slot>
   </span>
 </template>
@@ -12,8 +12,8 @@ export default {
 }
 </script>
 
-<style scoped>
-.uploader-btn {
+<style>
+.tiny-uploader-btn {
   color: #409eff;
 }
 </style>
