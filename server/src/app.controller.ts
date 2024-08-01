@@ -9,6 +9,7 @@ import {
 import * as fs from 'fs';
 import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { sleep } from './utils';
 
 @Controller()
 export class AppController {
@@ -26,7 +27,7 @@ export class AppController {
       dest: 'uploads',
     }),
   )
-  uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body) {
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body) {
     const { filename, hash, index } = body;
     const chunkDir = `uploads/${hash}_${filename}`;
 
@@ -35,12 +36,12 @@ export class AppController {
     }
     fs.cpSync(file.path, chunkDir + '/' + index);
     fs.rmSync(file.path);
-
+    await sleep(1000);
     return { data: true };
   }
 
   @Post('merge')
-  merge(@Body() body) {
+  async merge(@Body() body) {
     const { hash, name: filename } = body;
     const chunkDir = `uploads/${hash}_${filename}`;
     const files = fs.readdirSync(chunkDir);
@@ -58,14 +59,16 @@ export class AppController {
       startPos += fs.statSync(filePath).size;
     });
 
+    await sleep(1000);
     return {
       data: `http://localhost:3000/static/${filename}`,
     };
   }
 
   @Post('checkFile')
-  checkFile(@Body() body) {
+  async checkFile(@Body() body) {
     const { status } = body;
+    await sleep(500);
     if (status === 'success') {
       return {
         status: 'success',
