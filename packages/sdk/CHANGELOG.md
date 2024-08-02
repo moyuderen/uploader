@@ -1,5 +1,11 @@
 # @tinyuploader/sdk
 
+## 2.0.6
+
+### Patch Changes
+
+- 增加 Events.Inited 回调
+
 ## 2.0.5
 
 ### Patch Changes

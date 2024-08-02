@@ -14,6 +14,7 @@ export const Status = {
 }
 
 export const Events = {
+  Inited: 'inited',
   Exceed: 'exceed',
   FilesAdded: 'filesAdded',
   FileRemove: 'fileRemove',

@@ -8,7 +8,6 @@ class Uploader {
   constructor(options) {
     this.container = new Container(this)
     this.event = new Event()
-
     this.opts = extend({}, defaults, options)
     let fileList = []
     if (this.opts.fileList && this.opts.fileList.length) {
@@ -26,6 +25,11 @@ class Uploader {
     this.status = Status.Init
     // 只注册一次
     this.listenerFiles()
+
+    const timer = setTimeout(() => {
+      this.clear(timer)
+      this.emit(Events.Inited, fileList)
+    }, 0)
   }
 
   on(name, func) {
