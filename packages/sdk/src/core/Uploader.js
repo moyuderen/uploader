@@ -25,11 +25,6 @@ class Uploader {
     this.status = Status.Init
     // 只注册一次
     this.listenerFiles()
-
-    const timer = setTimeout(() => {
-      this.clear(timer)
-      this.emit(Events.Inited, fileList)
-    }, 0)
   }
 
   on(name, func) {

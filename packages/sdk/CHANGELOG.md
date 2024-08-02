@@ -1,5 +1,11 @@
 # @tinyuploader/sdk
 
+## 2.0.7
+
+### Patch Changes
+
+- 删除 Inited 回调
+
 ## 2.0.6
 
 ### Patch Changes
