@@ -4,7 +4,6 @@
 
 ```javascript
 const Events = {
-  Inited: 'inited', // 2.0.6新增
   Exceed: 'exceed',
   FilesAdded: 'filesAdded',
   FileRemove: 'fileRemove',
@@ -17,17 +16,6 @@ const Events = {
   AllFileSuccess: 'allFilesSuccess',
   Change: 'change' // TODO
 }
-```
-
-## Inited <Badge type="tip" text=" 2.0.6 新增" />
-
-Uploader 初始化成功
-
-```js
-const uploader = new Uploader()
-uploader.on(Events.Inited, (fileList) => {
-  // ...
-})
 ```
 
 ## Exceed
