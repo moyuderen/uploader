@@ -6,6 +6,11 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@tinyuploader/vuenext": "workspace:^"
+    "@tinyuploader/vuenext": "workspace:^",
+    "vue": "^3.4.31"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.5",
+    "vite": "^5.3.2"
   }
 }

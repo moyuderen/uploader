@@ -1,16 +1,38 @@
-import Uploader from '@tinyuploader/sdk'
+import { CheckStatus } from '@tinyuploader/sdk'
 
 export const uploaderProps = {
-  multiple: {
-    type: Boolean,
-    default: true
-  },
   accept: {
     type: String,
     default: '*'
   },
-  target: {
+  multiple: {
+    type: Boolean,
+    default: true
+  },
+  limit: {
+    type: Number,
+    default: 10
+  },
+  fileList: {
+    type: Array,
+    default() {
+      return []
+    }
+  },
+  name: {
+    type: String,
+    default: 'file'
+  },
+  autoUpload: {
+    type: Boolean,
+    default: true
+  },
+  action: {
     type: String
+  },
+  fakeProgress: {
+    type: Boolean,
+    default: true
   },
   withCredentials: {
     type: Boolean,
@@ -18,30 +40,19 @@ export const uploaderProps = {
   },
   headers: Object,
   data: Object,
-  concurrency: {
-    type: Number,
-    default: 6
-  },
-  chunkSize: {
-    type: Number,
-    default: 1024 * 4
-  },
-  autoUpload: {
+  withHash: {
     type: Boolean,
     default: true
   },
-  name: {
-    type: String,
-    default: 'file'
+  computedhashInWorker: {
+    type: Boolean,
+    default: true
   },
-  generateUniqueIdentifier: {
-    type: [Function, null],
-    default: null
+  chunkSize: {
+    type: Number,
+    default: 1024 * 1024 * 2
   },
-  successStatuses: {
-    type: Function
-  },
-  retries: {
+  maxRetries: {
     type: Number,
     default: 3
   },
@@ -49,18 +60,49 @@ export const uploaderProps = {
     type: Number,
     default: 1000
   },
-  merge: {
+  maxConcurrency: {
+    type: Number,
+    default: 6
+  },
+  customGenerateUid: {
+    type: [Function, null],
+    default: null
+  },
+  beforeAdd: {
+    type: Function,
+    default() {
+      return true
+    }
+  },
+  beforeRemove: {
+    type: Function,
+    default() {
+      return true
+    }
+  },
+  checkFileRequest: {
+    type: Function,
+    default() {
+      return { status: CheckStatus.None }
+    }
+  },
+  requestSucceed: {
+    type: Function
+  },
+  mergeRequest: {
     type: Function
   }
 }
 
 export const uploaderEmits = [
+  'onExceed',
   'onFilesAdded',
+  'onFileChange',
   'onFileRemove',
   'onFileProgress',
   'onFileFail',
+  'onFileUploadFail',
   'onFileUploadSuccess',
   'onFileSuccess',
-  'onFileMergeFail',
   'onAllFileSuccess'
 ]

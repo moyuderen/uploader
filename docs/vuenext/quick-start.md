@@ -1,3 +1,8 @@
+---
+layout: doc
+outline: deep
+---
+
 # Quick Start
 
 ## 安装

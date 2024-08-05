@@ -8,16 +8,20 @@
       <div style="display: flex">
         <div class="percent">{{ parseProgress(file.progress) }}%</div>
         <div class="actions">
-          <span v-if="file.status === 'pause'" class="action" @click="resume(file.id)">
+          <span v-if="file.status === Status.Pause" class="action" @click="resume(file)">
             <play-icon :size="14" />
           </span>
-          <span v-if="file.status === 'uploading'" class="action" @click="pause(file.id)">
+          <span v-if="file.status === Status.Uploading" class="action" @click="pause(file)">
             <pause-icon :size="14" />
           </span>
-          <span v-if="file.status === 'fail'" class="action" @click="retry(file.id)">
+          <span
+            v-if="file.status === Status.Fail || file.status === Status.UploadFail"
+            class="action"
+            @click="retry(file)"
+          >
             <retry-icon :size="14" />
           </span>
-          <span class="action remove" @click="remove(file.id)">
+          <span class="action remove" @click="remove(file)">
             <remove-icon :size="14" />
           </span>
         </div>
@@ -28,12 +32,12 @@
           :style="{ width: progressWidth }"
           :class="{
             uploading:
-              file.status === 'uploading' ||
-              file.status === 'pause' ||
-              file.status === 'resume' ||
-              file.status === 'uploadSuccess',
-            success: file.status === 'success',
-            fail: file.status === 'fail'
+              file.status === Status.Uploading ||
+              file.status === Status.Pause ||
+              file.status === Status.Resume ||
+              file.status === Status.UploadSuccess,
+            success: file.status === Status.Success,
+            fail: file.status === Status.Fail || file.status === Status.UploadFail
           }"
         ></div>
       </div>
@@ -42,13 +46,13 @@
 </template>
 
 <script setup>
-import { computed, inject, onMounted, ref, watch } from 'vue'
-
-import fileIcon from './file-icon.vue'
-import playIcon from './play-icon.vue'
-import pauseIcon from './pause-icon.vue'
-import retryIcon from './retry-icon.vue'
-import removeIcon from './remove-icon.vue'
+import { inject, ref, watch } from 'vue'
+import { Status } from '@tinyuploader/sdk'
+import FileIcon from './file-icon.vue'
+import PlayIcon from './play-icon.vue'
+import PauseIcon from './pause-icon.vue'
+import RetryIcon from './retry-icon.vue'
+import RemoveIcon from './remove-icon.vue'
 
 const props = defineProps({
   file: Object
@@ -69,20 +73,20 @@ const parseProgress = (progress) => {
   return parseFloat(progress * 100).toFixed(2)
 }
 
-const remove = (id) => {
-  uploader.value.remove(id)
+const remove = (file) => {
+  uploader.value.remove(file)
 }
 
-const retry = (id) => {
-  uploader.value.retry(id)
+const retry = (file) => {
+  uploader.value.retry(file)
 }
 
-const resume = (id) => {
-  uploader.value.resume(id)
+const resume = (file) => {
+  uploader.value.resume(file)
 }
 
-const pause = (id) => {
-  uploader.value.pause(id)
+const pause = (file) => {
+  uploader.value.pause(file)
 }
 </script>
 
