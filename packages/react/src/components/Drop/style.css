@@ -14,3 +14,8 @@
 .tiny-uploader-drop:hover {
   border: 1px dashed #409eff;
 }
+
+.tiny-uploader-btn {
+  color: #409eff;
+  margin-left: 4px;
+}

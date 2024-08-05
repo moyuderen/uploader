@@ -1,15 +1,19 @@
-import { useEffect, useState, forwardRef } from 'react'
+import { useEffect, useState, forwardRef, useImperativeHandle } from 'react'
 import PropTypes from 'prop-types'
 import { UploaderContext } from '../UploaderContext'
 import { create, Events } from '@tinyuploader/sdk'
-import { Drop } from '../Drop'
+import Drop from '../Drop'
+import FileList from '../FileList'
+import FileItem from '../FileItem'
 
 const noop = () => {}
 
 const Uploader = forwardRef((props, ref) => {
   const {
-    defaultFileList = [],
-    onInited = noop,
+    fileList = [],
+    accept = '*',
+    multiple = true,
+    chunkSize = 1024 * 1024 * 2,
     onExceed = noop,
     onFilesAdded = noop,
     onFileRemove = noop,
@@ -23,27 +27,29 @@ const Uploader = forwardRef((props, ref) => {
     onSuccess = noop,
     onChange = noop
   } = props
-  const [uploader, setUploader] = useState(null)
+  const [uploader, setUploader] = useState()
   const [files, setFiles] = useState([])
 
   const createInstance = () => {
     const instance = create({
-      fileList: defaultFileList
+      fileList: fileList,
+      ...props,
+      accept,
+      multiple,
+      chunkSize
     })
 
     setFiles([...instance.fileList])
-
-    instance.on(Events.Inited, (fileList) => {
+    instance.on(Events.FileChange, (file, fileList) => {
       setFiles([...fileList])
-      onInited(fileList)
     })
 
     instance.on(Events.Exceed, (files, fileList) => {
+      setFiles([...fileList])
       onExceed(files, fileList)
     })
 
     instance.on(Events.FilesAdded, (fileList) => {
-      console.log(fileList)
       setFiles([...fileList])
       onFilesAdded(fileList)
       onChange(fileList, null)
@@ -56,7 +62,7 @@ const Uploader = forwardRef((props, ref) => {
     })
 
     instance.on(Events.FileProgress, (progress, file, fileList) => {
-      setFiles([...fileList])
+      // setFiles([...fileList])
       onFileProgress(progress, file, fileList)
     })
 
@@ -99,19 +105,34 @@ const Uploader = forwardRef((props, ref) => {
     setUploader(createInstance())
   }, [])
 
+  useEffect(() => {
+    console.log(1)
+  }, [uploader])
+
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        remove() {
+          uploader.remove()
+        },
+        submit() {
+          uploader.submit()
+        }
+      }
+    },
+    [uploader]
+  )
+
   return (
     <UploaderContext.Provider value={uploader}>
-      <Drop />
       <div ref={ref}>
-        {files.map((file) => {
-          return (
-            <div key={file.uid}>
-              {file.name}
-              {file.status}
-              {file.progress}
-            </div>
-          )
-        })}
+        <Drop />
+        {uploader && (
+          <FileList fileList={files}>
+            <FileItem />
+          </FileList>
+        )}
       </div>
     </UploaderContext.Provider>
   )
@@ -120,13 +141,34 @@ const Uploader = forwardRef((props, ref) => {
 Uploader.displayName = 'Uploader'
 
 Uploader.propTypes = {
-  defaultFileList: PropTypes.arrayOf(
+  accept: PropTypes.string,
+  multiple: PropTypes.bool,
+  limit: PropTypes.number,
+  fileList: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string,
       path: PropTypes.string
     })
   ),
-  onInited: PropTypes.func,
+  name: PropTypes.string,
+  autoUpload: PropTypes.bool,
+  action: PropTypes.string,
+  fakeProgress: PropTypes.bool,
+  withCredentials: PropTypes.bool,
+  headers: PropTypes.object,
+  data: PropTypes.object,
+  withHash: PropTypes.bool,
+  computedhashInWorker: PropTypes.bool,
+  chunkSize: PropTypes.number,
+  maxRetries: PropTypes.number,
+  retryInterval: PropTypes.number,
+  maxConcurrency: PropTypes.number,
+  customGenerateUid: PropTypes.oneOf([null, PropTypes.func]),
+  beforeAdd: PropTypes.func,
+  beforeRemove: PropTypes.func,
+  checkFileRequest: PropTypes.func,
+  requestSucceed: PropTypes.func,
+  mergeRequest: PropTypes.func,
   onExceed: PropTypes.func,
   onFilesAdded: PropTypes.func,
   onFileRemove: PropTypes.func,
