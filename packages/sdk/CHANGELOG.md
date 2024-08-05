@@ -1,5 +1,11 @@
 # @tinyuploader/sdk
 
+## 2.1.0
+
+### Minor Changes
+
+- 新增 FileChange 回调函数
+
 ## 2.0.7
 
 ### Patch Changes

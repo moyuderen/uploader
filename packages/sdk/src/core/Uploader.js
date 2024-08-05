@@ -88,7 +88,7 @@ class Uploader {
   }
 
   pauseUploadingFiles() {
-    const uploadingFiles = this.fileList.filter((file) => file.status === Status.Uploading)
+    const uploadingFiles = this.fileList.filter((file) => file.isUploading())
     uploadingFiles.forEach((file) => {
       file.pause()
     })
@@ -97,15 +97,15 @@ class Uploader {
   async upload() {
     for (let i = 0; i < this.fileList.length; i++) {
       const file = this.fileList[i]
-      if (file.status === Status.Uploading) {
+      if (file.isUploading()) {
         return
       }
-      if (file.status === Status.Resume) {
+      if (file.isResume()) {
         file.status = Status.Uploading
         file.uploadFile()
         return
       }
-      if (file.status === Status.Ready) {
+      if (file.isReady()) {
         file.uploadFile()
         return
       }

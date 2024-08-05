@@ -70,7 +70,7 @@ export default class Chunk {
         if (this.maxRetries <= 0) {
           this.file.removeUploadingQueue(this)
           this.status = Status.Fail
-          if (this.file.status === Status.Uploading) {
+          if (this.file.isUploading()) {
             this.file.uploadFile()
           }
 
@@ -87,7 +87,7 @@ export default class Chunk {
         if (this.uploader.opts.requestSucceed(this.xhr)) {
           this.status = Status.Success
           this.file.removeUploadingQueue(this)
-          if (this.file.status === Status.Uploading) {
+          if (this.file.isUploading()) {
             this.file.uploadFile()
           }
           resolve(this)
@@ -101,7 +101,7 @@ export default class Chunk {
         this.fakeProgress = Math.max(this.progress, this.fakeProgress)
 
         this.status = Status.Uploading
-        this.file.status = Status.Uploading
+        this.file.changeStatus(Status.Uploading)
         this.file.setProgress(this)
       }
 

@@ -42,7 +42,7 @@ uploader.on(Events.FilesAdded, (fileList) => {
 })
 ```
 
-## FileChange <Badge type="tip">2.1.7 新增</Badge>
+## FileChange <Badge type="tip">2.1.0 新增</Badge>
 
 文件`status`发生变化时触发
 
