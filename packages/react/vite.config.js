@@ -19,7 +19,7 @@ export default defineConfig({
     minify: true,
     cssCodeSplit: false,
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: ['react', 'react-dom', 'prop-types'],
       output: {
         globals: {
           react: 'React',

@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tinyuploader/react": "workspace:1.0.3-alpha.1",
+    "@tinyuploader/react": "workspace:^",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

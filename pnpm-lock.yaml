@@ -21,7 +21,7 @@ importers:
   demos/react:
     dependencies:
       '@tinyuploader/react':
-        specifier: workspace:1.0.3-alpha.1
+        specifier: workspace:^
         version: link:../../packages/react
       react:
         specifier: ^18.3.1
