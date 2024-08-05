@@ -1,5 +1,11 @@
 # @tinyuploader/vuenext
 
+## 1.2.0-beta
+
+### Minor Changes
+
+- 更新
+
 ## 1.1.13
 
 ### Patch Changes

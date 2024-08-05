@@ -1,8 +1,11 @@
 <template>
   <div class="uploader">
-    <uploader-drop :multiple="props.multiple" :accept="props.accept">
-      <span style="margin-right: 6px">Drop file here or</span>
-      <uploader-btn> click to upload </uploader-btn>
+    <uploader-drop>
+      <upload-icon :size="40" color="#409eff" style="margin-bottom: 6px" />
+      <div>
+        <span>Drop file here or</span>
+        <uploader-btn> click to upload </uploader-btn>
+      </div>
     </uploader-drop>
     <slot :file-list="files">
       <uploader-list :file-list="files" v-slot="{ file }">
@@ -14,15 +17,13 @@
 
 <script setup>
 import { onMounted, ref, provide } from 'vue'
-import Uploader from '@tinyuploader/sdk'
-import uploaderDrop from './uploader-drop.vue'
-import uploaderBtn from './uploader-btn.vue'
-import uploaderList from './uploader-list.vue'
-import uploaderFile from './uploader-file.vue'
+import { create, Events } from '@tinyuploader/sdk'
+import UploaderDrop from './uploader-drop.vue'
+import UploaderBtn from './uploader-btn.vue'
+import UploaderList from './uploader-list.vue'
+import UploaderFile from './uploader-file.vue'
+import UploadIcon from './upload-icon.vue'
 import { uploaderProps, uploaderEmits } from './uploader.js'
-
-const Status = Uploader.Status
-const Events = Uploader.Events
 
 const props = defineProps(uploaderProps)
 const emit = defineEmits(uploaderEmits)
@@ -30,18 +31,43 @@ const emit = defineEmits(uploaderEmits)
 const uploader = ref(null)
 const files = ref([])
 
-uploader.value = new Uploader(props)
+uploader.value = create(props)
+files.value = uploader.value.fileList
+
 provide('uploader', uploader)
 
 onMounted(() => {
+  uploader.value.on(Events.Exceed, (files, fileList) => {
+    emit('onExceed', files, fileList)
+  })
+
   uploader.value.on(Events.FilesAdded, (fileList) => {
     files.value = fileList
     emit('onFilesAdded', fileList)
   })
 
-  uploader.value.on(Events.AllFileSuccess, (fileList) => {
+  uploader.value.on(Events.FileChange, (file, fileList) => {
     files.value = fileList
-    emit('onAllFileSuccess', fileList)
+    emit('onFileChange', fileList)
+  })
+
+  uploader.value.on(Events.FileRemove, (file, fileList) => {
+    files.value = fileList
+    emit('onFileRemove', file, fileList)
+  })
+
+  uploader.value.on(Events.FileProgress, (progress, file, fileList) => {
+    emit('onFileProgress', progress, file, fileList)
+  })
+
+  uploader.value.on(Events.FileFail, (file, fileList) => {
+    files.value = fileList
+    emit('onFileFail', file, fileList)
+  })
+
+  uploader.value.on(Events.FileUploadFail, (file, fileList) => {
+    files.value = fileList
+    emit('onFileUploadFail', file, fileList)
   })
 
   uploader.value.on(Events.FileUploadSuccess, (file, fileList) => {
@@ -54,32 +80,14 @@ onMounted(() => {
     emit('onFileSuccess', file, fileList)
   })
 
-  uploader.value.on(Events.FileFail, (file, fileList) => {
+  uploader.value.on(Events.AllFileSuccess, (fileList) => {
     files.value = fileList
-    emit('onFileFail', file, fileList)
-  })
-
-  uploader.value.on(Events.FileMergeFail, (file, fileList) => {
-    files.value = fileList
-    emit('onFileMergeFail', file, fileList)
-  })
-
-  uploader.value.on(Events.FileRemove, (file, fileList) => {
-    files.value = fileList
-    emit('onFileRemove', file, fileList)
-  })
-
-  uploader.value.on(Events.FileProgress, (progress, file, fileList) => {
-    emit('onFileProgress', progress, file, fileList)
+    emit('onAllFileSuccess', fileList)
   })
 })
 
-const abort = (id) => {
-  if (id) {
-    uploader.value.remove(id)
-    return
-  }
-  uploader.value.remove()
+const clear = () => {
+  uploader.value.clear()
 }
 
 const submit = () => {
@@ -87,7 +95,7 @@ const submit = () => {
 }
 
 defineExpose({
-  abort,
+  clear,
   submit
 })
 </script>

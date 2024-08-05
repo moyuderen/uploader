@@ -1,5 +1,5 @@
 <template>
-  <div class="uploader-drop">
+  <div class="tiny-uploader-drop">
     <slot></slot>
   </div>
 </template>
@@ -7,30 +7,21 @@
 <script setup>
 import { inject, nextTick, onMounted } from 'vue'
 
-const props = defineProps({
-  multiple: {
-    type: Boolean,
-    default: true
-  },
-  accept: {
-    type: String,
-    default: '*'
-  }
-})
 onMounted(() => {
   const uploader = inject('uploader')
   nextTick(() => {
-    uploader.value.assignBrowse(document.querySelector('.uploader-drop'), props)
-    uploader.value.assignDrop(document.querySelector('.uploader-drop'))
+    uploader.value.assignBrowse(document.querySelector('.tiny-uploader-drop'))
+    uploader.value.assignDrop(document.querySelector('.tiny-uploader-drop'))
   })
 })
 </script>
 
 <style>
-.uploader-drop {
+.tiny-uploader-drop {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   width: 350px;
   height: 150px;
   border: 1px dashed #dcdfe6;
