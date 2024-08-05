@@ -6,6 +6,7 @@
 const Events = {
   Exceed: 'exceed',
   FilesAdded: 'filesAdded',
+  FileChange: 'fileChange',
   FileRemove: 'fileRemove',
   FileProgress: 'fileProgress',
   FileFail: 'fileFail',
@@ -37,6 +38,16 @@ uploader.on(Events.Exceed, (files, fileList) => {
 
 ```js
 uploader.on(Events.FilesAdded, (fileList) => {
+  // ...
+})
+```
+
+## FileChange <Badge type="tip">2.1.0 新增</Badge>
+
+文件`status`发生变化时触发
+
+```js
+uploader.on(Events.FileChange, (file, fileList) => {
   // ...
 })
 ```

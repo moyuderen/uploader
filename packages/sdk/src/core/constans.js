@@ -16,6 +16,7 @@ export const Status = {
 export const Events = {
   Exceed: 'exceed',
   FilesAdded: 'filesAdded',
+  FileChange: 'fileChange',
   FileRemove: 'fileRemove',
   FileProgress: 'fileProgress',
   FileFail: 'fileFail',

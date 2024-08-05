@@ -1,5 +1,23 @@
 # @tinyuploader/sdk
 
+## 2.1.0
+
+### Minor Changes
+
+- 新增 FileChange 回调函数
+
+## 2.0.7
+
+### Patch Changes
+
+- 删除 Inited 回调
+
+## 2.0.6
+
+### Patch Changes
+
+- 增加 Events.Inited 回调
+
 ## 2.0.5
 
 ### Patch Changes

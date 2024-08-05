@@ -18,29 +18,13 @@ export default class File {
     this.name = file.name || file.fileName
     this.type = file.type
     this.chunkSize = this.opts.chunkSize
+    this.changeStatus(file.status || Status.Init)
 
-    this.status = file.status || Status.Init
     this.progress = file.progress || 0
     this.chunks = []
     this.uploadingQueue = new Set()
     this.readProgress = 0
     this.path = file.path || ''
-  }
-
-  isInited() {
-    return this.status === Status.Init
-  }
-
-  isReady() {
-    return this.status === Status.Ready
-  }
-
-  isUploading() {
-    return this.status === Status.Uploading
-  }
-
-  isSuccess() {
-    return this.status === Status.Success
   }
 
   async start() {
@@ -53,8 +37,8 @@ export default class File {
 
   async checkRequest() {
     try {
-      const { status, data } = await this.opts.checkFileRequest(this)
-      if (status === CheckStatus.Part) {
+      const { status: checkStatus, data } = await this.opts.checkFileRequest(this)
+      if (checkStatus === CheckStatus.Part) {
         this.chunks.forEach((chunk) => {
           if (data.includes(chunk.chunkIndex)) {
             chunk.status = Status.Success
@@ -63,7 +47,7 @@ export default class File {
           }
         })
       }
-      if (status === CheckStatus.Success) {
+      if (checkStatus === CheckStatus.Success) {
         this.success()
         this.chunks.forEach((chunk) => {
           chunk.status = Status.success
@@ -80,7 +64,7 @@ export default class File {
       if (!this.opts.withHash) {
         resolve()
       }
-      this.status = Status.Reading
+      this.changeStatus(Status.Reading)
       asyncComputedHash(
         {
           file: this.rawFile,
@@ -102,7 +86,7 @@ export default class File {
     for (let i = 0; i < totalChunks; i++) {
       this.chunks.push(new Chunk(this, i))
     }
-    this.status = Status.Ready
+    this.changeStatus(Status.Ready)
   }
 
   setProgress() {
@@ -114,7 +98,7 @@ export default class File {
     // this.progress = Math.max(Math.min(progress, 1), this.progress)
     this.progress = Math.min(1, progress)
 
-    if (this.status === Status.UploadSuccess) {
+    if (this.isUploadSuccess()) {
       this.progress = 1
     }
 
@@ -130,7 +114,7 @@ export default class File {
   }
 
   uploadFile() {
-    if (this.status === Status.Success) {
+    if (this.isSuccess()) {
       this.success()
       return
     }
@@ -170,26 +154,34 @@ export default class File {
     }
   }
 
+  changeStatus(status) {
+    this.status = status
+    // 兼容默认值时没有uploader实例
+    if (this.uploader && this.uploader.emit) {
+      this.uploader.emit(Events.FileChange, this, this.uploader.fileList)
+    }
+  }
+
   uploadSuccess() {
-    this.status = Status.UploadSuccess
+    this.changeStatus(Status.UploadSuccess)
     this.uploader.emit(Events.FileUploadSuccess, this, this.uploader.fileList)
   }
 
   uploadFail() {
-    this.status = Status.UploadFail
+    this.changeStatus(Status.UploadFail)
     this.uploader.emit(Events.FileUploadFail, this, this.uploader.fileList)
     this.uploader.upload()
   }
 
   success() {
-    this.status = Status.Success
+    this.changeStatus(Status.Success)
     this.progress = 1
     this.uploader.emit(Events.FileSuccess, this, this.uploader.fileList)
     this.uploader.upload()
   }
 
   mergeFail() {
-    this.status = Status.Fail
+    this.changeStatus(Status.Fail)
     this.uploader.emit(Events.FileFail, this, this.uploader.fileList)
     this.uploader.upload()
   }
@@ -214,14 +206,14 @@ export default class File {
   }
 
   retry() {
-    if (this.status === Status.UploadSuccess || this.status === Status.Fail) {
+    if (this.isUploadSuccess() || this.isFail()) {
       this.merge()
       return
     }
-    if (this.status === Status.UploadFail) {
+    if (this.isUploadFail()) {
       each(this.chunks, (chunk) => {
         if (chunk.status === Status.Fail) {
-          chunk.status = Status.Ready
+          this.changeStatus(Status.Ready)
           chunk.maxRetries = this.opts.maxRetries
         }
       })
@@ -241,15 +233,51 @@ export default class File {
     this.uploadingQueue.forEach((chunk) => {
       chunk.abort()
     })
-    this.status = Status.Pause
+    this.changeStatus(Status.Pause)
     this.uploader.upload()
   }
 
   resume() {
-    if (this.status === Status.Pause) {
-      this.status = Status.Resume
+    if (this.isPause()) {
+      this.changeStatus(Status.Resume)
       this.uploader.pauseUploadingFiles()
       this.uploader.upload()
     }
+  }
+
+  isInited() {
+    return this.status === Status.Init
+  }
+
+  isReady() {
+    return this.status === Status.Ready
+  }
+
+  isUploading() {
+    return this.status === Status.Uploading
+  }
+
+  isPause() {
+    return this.status === Status.Pause
+  }
+
+  isResume() {
+    return this.status === Status.Resume
+  }
+
+  isUploadSuccess() {
+    return this.status === Status.UploadSuccess
+  }
+
+  isUploadFail() {
+    return this.status === Status.UploadFail
+  }
+
+  isFail() {
+    return this.status === Status.Fail
+  }
+
+  isSuccess() {
+    return this.status === Status.Success
   }
 }

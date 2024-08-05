@@ -1,0 +1,21 @@
+.tiny-uploader-drop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 350px;
+  height: 150px;
+  border: 1px dashed #dcdfe6;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tiny-uploader-drop:hover {
+  border: 1px dashed #409eff;
+}
+
+.tiny-uploader-btn {
+  color: #409eff;
+  margin-left: 4px;
+}
