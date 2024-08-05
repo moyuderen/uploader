@@ -1,17 +1,57 @@
 {
   "name": "@tinyuploader/react",
   "private": false,
-  "version": "1.0.3",
+  "version": "1.0.3-beta.1",
   "type": "module",
+  "author": "moyuderen",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
+  "keywords": [
+    "uploader",
+    "upload",
+    "上传",
+    "分片上传",
+    "大文件",
+    "并发",
+    "重试",
+    "断点续传",
+    "秒传"
+  ],
+  "sideEffects": [
+    "dist/*",
+    "es/**/style/*",
+    "lib/**/style/*"
+  ],
+  "main": "./dist/tinyuploader-react.umd.cjs",
+  "module": "./dist/tinyuploader-react.js",
+  "exports": {
+    ".": {
+      "require": "./dist/tinyuploader-react.umd.cjs",
+      "import": "./dist/tinyuploader-react.js"
+    },
+    "./dist/style.css": "./dist/style.css"
+  },
+  "homepage": "https://moyuderen.github.io/uploader/react/quick-start.html",
+  "repository": {
+    "url": "https://github.com/moyuderen/uploader/tree/main/packages/react"
+  },
+  "bugs": {
+    "url": "https://github.com/moyuderen/uploader/issues"
+  },
+  "files": [
+    "dist"
+  ],
   "peerDependencies": {
     "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "prop-types": "^15.8.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

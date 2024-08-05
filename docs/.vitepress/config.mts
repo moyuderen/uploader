@@ -43,6 +43,20 @@ export default defineConfig({
         ]
       },
       {
+        text: '@tinyuploader/react',
+        items: [
+          { text: 'Guide', link: '/react/quick-start' },
+          {
+            text: 'Repository',
+            link: 'https://github.com/moyuderen/uploader/tree/main/packages/react'
+          },
+          {
+            text: 'CHANGELOG',
+            link: 'https://github.com/moyuderen/uploader/blob/main/packages/react/CHANGELOG.md'
+          }
+        ]
+      },
+      {
         text: '@tinyuploader/vuenext',
         items: [
           { text: 'Guide', link: '/vuenext/quick-start' },

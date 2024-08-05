@@ -10,9 +10,15 @@ hero:
     - theme: brand
       text: '@tinyuploader/sdk'
       link: /sdk/quick-start
+
     - theme: brand
       text: '@tinyuploader/vue'
       link: /vue/quick-start
+
+    - theme: brand
+      text: '@tinyuploader/react'
+      link: /react/quick-start
+
     - theme: alt
       text: '@tinyuploader/vuenext'
       link: /vuenext/quick-start
