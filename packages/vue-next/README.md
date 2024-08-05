@@ -47,4 +47,4 @@ const submit = () => {
 
 属性、方法用法参考`@tinyuploader/vue`
 
-## [更新日志](https://github.com/moyuderen/uploader/blob/main/packages/vue/CHANGELOG.md)
+## [更新日志](https://github.com/moyuderen/uploader/blob/main/packages/vue-next/CHANGELOG.md)
