@@ -9,7 +9,7 @@ import RemoveIcon from '../RemoveIcon'
 import { UploaderContext } from '../UploaderContext'
 import './style.css'
 
-export default function FileItem({ file }) {
+export default function FileItem({ file, onClick = () => {} }) {
   const uploader = useContext(UploaderContext)
   const [progressWidth, setProgressWidth] = useState(0)
 
@@ -52,8 +52,9 @@ export default function FileItem({ file }) {
   return (
     <div className="tiny-info-wrap" ari-status={file.status} key={file.uid}>
       <FileIcon size={14} />
-      <div className="tiny-file-name" title={file.name}>
-        {file.status} {file.name}
+      <div className="tiny-file-name" title={file.name} onClick={() => onClick(file)}>
+        {/* {file.status}  */}
+        {file.name}
       </div>
       <div style={{ display: 'flex' }}>
         <div className="tiny-percent">{parseProgress(file.progress)}%</div>
@@ -101,5 +102,6 @@ export default function FileItem({ file }) {
 }
 
 FileItem.propTypes = {
-  file: PropTypes.object
+  file: PropTypes.object,
+  onClick: PropTypes.func
 }

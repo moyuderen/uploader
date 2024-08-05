@@ -1,6 +1,6 @@
 # @tinyuploader/react
 
-## 1.0.3
+## 1.0.3-beta.1
 
 ### Patch Changes
 

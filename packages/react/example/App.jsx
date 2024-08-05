@@ -1,5 +1,7 @@
 import { useRef } from 'react'
 import Uploader from '../src/index'
+// import Uploader from '../dist/tinyuploader-react.js'
+// import '../dist/style.css'
 
 function App() {
   const upladerRef = useRef(null)
@@ -16,11 +18,12 @@ function App() {
         name
       })
     })
-    return response.json()
+    const json = await response.json()
+    return json
   }
 
   const mergeRequest = async ({ hash, name }) => {
-    return fetch('http://localhost:3000/merge', {
+    const response = await fetch('http://localhost:3000/merge', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -30,15 +33,25 @@ function App() {
         name
       })
     })
+    const json = await response.json()
+    if (json.statusCode === 500) {
+      throw new Error('服务器错误')
+    }
+    return json
   }
 
   const requestSucceed = (xhr) => {
     return xhr.response.data === true
   }
 
+  const onClick = (file) => {
+    console.log(file)
+  }
+
   return (
     <>
       <button onClick={() => upladerRef.current.remove()}>删除所有</button>
+      <button onClick={() => upladerRef.current.submit()}>开始上传</button>
       <Uploader
         action="http://localhost:3000/upload"
         accept=".jpg, .png, .json, .dmg"
@@ -56,6 +69,7 @@ function App() {
         requestSucceed={requestSucceed}
         checkFileRequest={checkFileRequest}
         mergeRequest={mergeRequest}
+        onClick={onClick}
       />
     </>
   )

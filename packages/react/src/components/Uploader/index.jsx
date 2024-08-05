@@ -25,7 +25,8 @@ const Uploader = forwardRef((props, ref) => {
     onAllFileSuccess = noop,
     onFile = noop,
     onSuccess = noop,
-    onChange = noop
+    onChange = noop,
+    onClick = noop
   } = props
   const [uploader, setUploader] = useState()
   const [files, setFiles] = useState([])
@@ -105,10 +106,6 @@ const Uploader = forwardRef((props, ref) => {
     setUploader(createInstance())
   }, [])
 
-  useEffect(() => {
-    console.log(1)
-  }, [uploader])
-
   useImperativeHandle(
     ref,
     () => {
@@ -130,7 +127,7 @@ const Uploader = forwardRef((props, ref) => {
         <Drop />
         {uploader && (
           <FileList fileList={files}>
-            <FileItem />
+            <FileItem onClick={onClick} />
           </FileList>
         )}
       </div>
@@ -180,7 +177,8 @@ Uploader.propTypes = {
   onAllFileSuccess: PropTypes.func,
   onFile: PropTypes.func,
   onSuccess: PropTypes.func,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  onClick: PropTypes.func
 }
 
 export default Uploader
