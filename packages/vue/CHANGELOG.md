@@ -1,15 +1,12 @@
 # @tinyuploader/vue
 
-## 2.0.0
-
-### Major Changes
-
-- q
+## 1.3.4
 
 ### Patch Changes
 
+- fix: 重试机制
 - Updated dependencies
-  - @tinyuploader/sdk@3.0.0
+  - @tinyuploader/sdk@2.1.1
 
 ## 1.3.3
 

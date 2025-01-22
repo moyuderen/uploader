@@ -1,10 +1,10 @@
 # @tinyuploader/sdk
 
-## 3.0.0
+## 2.1.1
 
-### Major Changes
+### Patch Changes
 
-- q
+- fix: 重试机制
 
 ## 2.1.0
 
