@@ -212,8 +212,9 @@ export default class File {
     }
     if (this.isUploadFail()) {
       each(this.chunks, (chunk) => {
+        console.log(chunk)
         if (chunk.status === Status.Fail) {
-          this.changeStatus(Status.Ready)
+          chunk.status = Status.Ready
           chunk.maxRetries = this.opts.maxRetries
         }
       })

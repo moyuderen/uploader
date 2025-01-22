@@ -1,5 +1,16 @@
 # @tinyuploader/vuenext
 
+## 2.0.0
+
+### Major Changes
+
+- q
+
+### Patch Changes
+
+- Updated dependencies
+  - @tinyuploader/sdk@3.0.0
+
 ## 1.2.0-beta
 
 ### Minor Changes
