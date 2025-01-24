@@ -1,5 +1,13 @@
 # @tinyuploader/vuenext
 
+## 1.2.0
+
+### Patch Changes
+
+- fix: 重试机制
+- Updated dependencies
+  - @tinyuploader/sdk@2.1.1
+
 ## 1.2.0-beta
 
 ### Minor Changes
