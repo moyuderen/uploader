@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -40,11 +41,26 @@ export class AppController {
     return { data: true };
   }
 
-  @Post('merge')
-  async merge(@Body() body) {
-    const { hash, name: filename } = body;
+  @Get('merge')
+  async merge(
+    @Query('hash') hash: string,
+    @Query('filename') filename: string,
+  ) {
     const chunkDir = `uploads/${hash}_${filename}`;
     const files = fs.readdirSync(chunkDir);
+
+    // 按顺序合并
+    files.sort((aVal, bVal) => {
+      const a = parseInt(aVal);
+      const b = parseInt(bVal);
+      if (a > b) {
+        return 1;
+      }
+      if (a < b) {
+        return -1;
+      }
+      return 0;
+    });
 
     let startPos = 0;
     files.map((file) => {
@@ -65,9 +81,12 @@ export class AppController {
     };
   }
 
-  @Post('checkFile')
-  async checkFile(@Body() body) {
-    const { status } = body;
+  @Get('check')
+  async checkFile(
+    @Query('hash') hash: string,
+    @Query('filename') filename: string,
+    @Query('status') status: string,
+  ) {
     await sleep(500);
     if (status === 'success') {
       return {
