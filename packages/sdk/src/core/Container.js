@@ -7,6 +7,10 @@ class Container {
 
   assignBrowse(domNode, attributes) {
     let input
+    if (!domNode) {
+      console.warn('domNode is not exist')
+      return
+    }
     if (domNode.tagName === 'INPUT' && domNode.type === 'file') {
       input = domNode
     } else {

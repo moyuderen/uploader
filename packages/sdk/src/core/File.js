@@ -1,84 +1,132 @@
-import Chunk from './Chunk.js'
-import { isFunction, generateUid, asyncComputedHash, isPromise, each } from '@/shared'
-import { Status, Events, CheckStatus } from './constans.js'
+import Chunk from './Chunk'
+import { FileStatus, Callbacks, CheckStatus, ChunkStatus } from './constants'
+import {
+  generateUid,
+  isFunction,
+  asyncCancellableComputedHash,
+  each,
+  isPromise,
+  throttle
+} from '../shared'
 
 export default class File {
   constructor(file, uploader) {
-    this.uploader = uploader || { opts: {} }
-    this.opts = this.uploader.opts
+    this.uploader = uploader || { options: {} }
+    this.options = this.uploader.options
+    this.uid = this.generateId()
+
+    this.prevStatusLastRecord = []
+    // this.status - FileStatus.Init
 
     this.rawFile = file
-    if (isFunction(this.opts.customGenerateUid)) {
-      this.uid = this.opts.customGenerateUid(file) || generateUid('fid')
-    } else {
-      this.uid = generateUid('fid')
-    }
-    this.hash = ''
-    this.size = file.size
     this.name = file.name || file.fileName
+    this.size = file.size
     this.type = file.type
-    this.chunkSize = this.opts.chunkSize
-    this.changeStatus(file.status || Status.Init)
+    this.hash = ''
+    this.url = file.url || ''
 
     this.progress = file.progress || 0
+    this.chunkSize = this.options.chunkSize
     this.chunks = []
-    this.uploadingQueue = new Set()
+    this.totalChunks = 0
+    this.uploadingChunks = new Set()
     this.readProgress = 0
-    this.path = file.path || ''
+    this.errorMessage = ''
+
+    this.changeStatus(file.status || FileStatus.Init)
   }
 
-  async start() {
-    await this.computedHash()
-    this.createChunks()
-    if (this.opts.checkFileRequest) {
-      await this.checkRequest()
+  generateId() {
+    const customGenerateUid = this.options.customGenerateUid
+    if (!customGenerateUid) {
+      return generateUid()
+    }
+
+    if (!isFunction(customGenerateUid)) {
+      console.warn('customGenerateUid must be a function')
+      return generateUid()
+    }
+
+    return customGenerateUid(this) || generateUid()
+  }
+
+  setErrorMessage(message) {
+    this.errorMessage = message
+    return true
+  }
+
+  get renderSize() {
+    const value = this.size
+    const ONE_KB = 1024
+    if (null == value || value == '') {
+      return '0 Bytes'
+    }
+    var unitArr = new Array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB')
+    var index = 0
+    var srcsize = parseFloat(value)
+    index = Math.floor(Math.log(srcsize) / Math.log(ONE_KB))
+    var size = srcsize / Math.pow(ONE_KB, index)
+    size = size.toFixed(2) //保留的小数位数
+    return size + unitArr[index]
+  }
+
+  changeStatus(newStatus) {
+    if (newStatus !== this.status || newStatus === FileStatus.Reading) {
+      this.prevStatusLastRecord.push(this.status)
+      this.status = newStatus
+      // 兼容默认值时没有uploader实例
+      if (this.uploader && this.uploader.emitCallback) {
+        this.uploader.emitCallback(Callbacks.FileChange, this)
+      }
     }
   }
 
-  async checkRequest() {
-    try {
-      const { status: checkStatus, data } = await this.opts.checkFileRequest(this)
-      if (checkStatus === CheckStatus.Part) {
-        this.chunks.forEach((chunk) => {
-          if (data.includes(chunk.chunkIndex)) {
-            chunk.status = Status.Success
-            chunk.progress = 1
-            chunk.fakeProgress = 1
-          }
-        })
-      }
-      if (checkStatus === CheckStatus.Success) {
-        this.success()
-        this.chunks.forEach((chunk) => {
-          chunk.status = Status.success
-        })
-        this.path = data
-      }
-    } catch {
-      //
-    }
+  isInit() {
+    return this.status === FileStatus.Init
   }
 
-  computedHash() {
-    return new Promise((resolve, reject) => {
-      if (!this.opts.withHash) {
-        resolve()
-      }
-      this.changeStatus(Status.Reading)
-      asyncComputedHash(
-        {
-          file: this.rawFile,
-          chunkSize: this.chunkSize,
-          inWorker: this.opts.computedHashWorker
-        },
-        ({ progress }) => {
-          this.readProgress = progress
-        }
-      ).then(({ hash }) => {
-        this.hash = hash
-        resolve()
-      })
-    })
+  isAddFail() {
+    return this.status === FileStatus.AddFail
+  }
+
+  isReading() {
+    return this.status === FileStatus.Reading
+  }
+
+  isReady() {
+    return this.status === FileStatus.Ready
+  }
+
+  isCheckFail() {
+    return this.status === FileStatus.CheckFail
+  }
+
+  isUploading() {
+    return this.status === FileStatus.Uploading
+  }
+
+  isUploadSuccess() {
+    return this.status === FileStatus.UploadSuccess
+  }
+
+  isUploadFail() {
+    return this.status === FileStatus.UploadFail
+  }
+
+  isSuccess() {
+    return this.status === FileStatus.Success
+  }
+
+  isFail() {
+    return this.status === FileStatus.Fail
+  }
+
+  isPause() {
+    return this.status === FileStatus.Pause
+  }
+
+  isResume() {
+    return this.status === FileStatus.Resume
   }
 
   createChunks() {
@@ -86,65 +134,143 @@ export default class File {
     for (let i = 0; i < totalChunks; i++) {
       this.chunks.push(new Chunk(this, i))
     }
-    this.changeStatus(Status.Ready)
   }
 
-  setProgress() {
-    const progress = this.chunks.reduce((total, chunk) => {
-      const p = this.opts.fakeProgress ? chunk.fakeProgress : chunk.progress
-      return (total += p * (chunk.size / this.size))
-    }, 0)
+  async read() {
+    if (this.options.withHash) {
+      this.uploader.emitCallback(Callbacks.FileReadStart, this)
+      this.changeStatus(FileStatus.Reading)
+      try {
+        const startTime = Date.now()
+        const { hash } = await this.computedHash()
+        this.hash = hash
+        this.uploader.emitCallback(Callbacks.FileReadEnd, this)
+        this.abortRead = null
+        const endTime = Date.now()
+        console.log(
+          `${this.options.useWebWoker ? 'Web Worker' : 'Normal'} Read file cost`,
+          (endTime - startTime) / 1000,
+          's'
+        )
+      } catch (e) {
+        this.abortRead = null
+        this.changeStatus(FileStatus.Init)
+        throw new Error((e && e.message) || 'read file error')
+      }
+    }
+    this.createChunks()
+    this.changeStatus(FileStatus.Ready)
+  }
 
-    // this.progress = Math.max(Math.min(progress, 1), this.progress)
-    this.progress = Math.min(1, progress)
-
-    if (this.isUploadSuccess()) {
-      this.progress = 1
+  async computedHash() {
+    const updateReadProgress = (readProgress) => {
+      this.readProgress = readProgress
+      this.uploader.emitCallback(Callbacks.FileReadProgress, this)
     }
 
-    this.uploader.emit(Events.FileProgress, this.progress, this, this.uploader.fileList)
+    let throttlReadProgressleHandle = throttle(updateReadProgress, 100)
+
+    const { promise, abort } = asyncCancellableComputedHash(
+      {
+        file: this.rawFile,
+        chunkSize: this.chunkSize,
+        useWebWoker: this.options.useWebWoker
+      },
+      ({ progress: readProgress }) => {
+        throttlReadProgressleHandle(readProgress)
+      }
+    )
+    this.abortRead = abort
+    const hashResult = await promise
+    updateReadProgress(hashResult.progress)
+    return hashResult
   }
 
-  removeUploadingQueue(chunk) {
-    this.uploadingQueue.delete(chunk)
-  }
-
-  addUploadingQueue(chunk) {
-    this.uploadingQueue.add(chunk)
-  }
-
-  uploadFile() {
-    if (this.isSuccess()) {
-      this.success()
-      return
+  async checkRequest() {
+    const check = this.options.checkRequest
+    const checkStatusFn = (checkStatus, data, resolve) => {
+      if (checkStatus === CheckStatus.Part) {
+        this.chunks.forEach((chunk) => {
+          if (data.includes(chunk.chunkIndex)) {
+            chunk.status = ChunkStatus.Success
+            chunk.progress = 1
+            chunk.fakeProgress = 1
+          }
+        })
+      }
+      if (checkStatus === CheckStatus.Success) {
+        this.chunks.forEach((chunk) => {
+          chunk.status = ChunkStatus.success
+        })
+        this.path = data
+      }
+      resolve()
     }
 
-    const readyChunks = this.chunks.filter((chunk) => chunk.status === Status.Ready)
+    const rejectCheck = (reject) => {
+      this.changeStatus(FileStatus.CheckFail)
+      reject(new Error('checkRequest error'))
+    }
+
+    return new Promise(async (resolve, reject) => {
+      if (!isFunction(check)) {
+        resolve()
+      }
+
+      const result = check(this)
+
+      if (isPromise(result)) {
+        const data = await result
+        data ? checkStatusFn(data.status, data.data, resolve) : rejectCheck(reject)
+      } else {
+        result ? checkStatusFn(data.status, data.data, resolve) : rejectCheck(reject)
+      }
+    })
+  }
+
+  addUploadingChunk(chunk) {
+    this.uploadingChunks.add(chunk)
+  }
+
+  removeUploadingChunk(chunk) {
+    this.uploadingChunks.delete(chunk)
+  }
+
+  async upload() {
+    if (this.isInit()) {
+      await this.read()
+    }
+
+    if (this.isReady() && this.options.checkRequest) {
+      await this.checkRequest()
+    }
+
+    const readyChunks = this.chunks.filter((chunk) => chunk.status === ChunkStatus.Ready)
 
     each(readyChunks, () => {
-      if (this.uploadingQueue.size >= this.opts.maxConcurrency) {
-        return false // false时break;
+      if (this.uploadingChunks.size >= this.options.maxConcurrency) {
+        return false
       }
 
       const chunk = readyChunks.shift()
       if (chunk) {
-        this.addUploadingQueue(chunk)
+        this.addUploadingChunk(chunk)
       } else {
         return false
       }
     })
 
-    if (this.uploadingQueue.size) {
+    if (this.uploadingChunks.size > 0) {
       // 有的chunk处于pending状态，但是已经准备发起请求了，就不在后面调用其send方法
-      const readyInUploadQueue = [...this.uploadingQueue].filter(
-        (chunk) => chunk.status === Status.Ready
+      const readyInUploadQueue = [...this.uploadingChunks].filter(
+        (chunk) => chunk.status === ChunkStatus.Ready
       )
 
       Promise.race(readyInUploadQueue.map((chunk) => chunk.send()))
       return
     }
-
-    const hasErrorChunk = this.chunks.some((chunk) => chunk.status === Status.Fail)
+    // console.log('hasErrorChunk', readyChunks, this.uploadingChunks)
+    const hasErrorChunk = this.chunks.some((chunk) => chunk.status === ChunkStatus.Fail)
     if (hasErrorChunk) {
       this.uploadFail()
     } else {
@@ -154,40 +280,34 @@ export default class File {
     }
   }
 
-  changeStatus(status) {
-    this.status = status
-    // 兼容默认值时没有uploader实例
-    if (this.uploader && this.uploader.emit) {
-      this.uploader.emit(Events.FileChange, this, this.uploader.fileList)
-    }
-  }
+  setProgress() {
+    const progress = this.chunks.reduce((total, chunk) => {
+      const p = this.options.fakeProgress ? chunk.fakeProgress : chunk.progress
+      return (total += p * (chunk.size / this.size))
+    }, 0)
 
-  uploadSuccess() {
-    this.changeStatus(Status.UploadSuccess)
-    this.uploader.emit(Events.FileUploadSuccess, this, this.uploader.fileList)
+    this.progress = Math.min(1, progress)
+
+    if (this.isUploadSuccess() || this.isSuccess()) {
+      this.progress = 1
+    }
+
+    this.uploader.emitCallback(Callbacks.FileProgress, this)
   }
 
   uploadFail() {
-    this.changeStatus(Status.UploadFail)
-    this.uploader.emit(Events.FileUploadFail, this, this.uploader.fileList)
-    this.uploader.upload()
+    this.changeStatus(FileStatus.UploadFail)
+    this.uploader.emitCallback(Callbacks.FileUploadFail, this)
+    this.continueUpload()
   }
 
-  success() {
-    this.changeStatus(Status.Success)
-    this.progress = 1
-    this.uploader.emit(Events.FileSuccess, this, this.uploader.fileList)
-    this.uploader.upload()
-  }
-
-  mergeFail() {
-    this.changeStatus(Status.Fail)
-    this.uploader.emit(Events.FileFail, this, this.uploader.fileList)
-    this.uploader.upload()
+  uploadSuccess() {
+    this.changeStatus(FileStatus.UploadSuccess)
+    this.uploader.emitCallback(Callbacks.FileUploadSuccess, this)
   }
 
   merge() {
-    const merge = this.opts.mergeRequest
+    const merge = this.options.mergeRequest
     if (!isFunction(merge)) {
       this.success()
       return
@@ -197,7 +317,9 @@ export default class File {
 
     if (isPromise(result)) {
       result.then(
-        () => this.success(),
+        (data) => {
+          data === true ? this.success() : this.mergeFail()
+        },
         () => this.mergeFail()
       )
     } else {
@@ -205,80 +327,102 @@ export default class File {
     }
   }
 
-  retry() {
-    if (this.isUploadSuccess() || this.isFail()) {
-      this.merge()
-      return
-    }
-    if (this.isUploadFail()) {
-      each(this.chunks, (chunk) => {
-        console.log(chunk)
-        if (chunk.status === Status.Fail) {
-          chunk.status = Status.Ready
-          chunk.maxRetries = this.opts.maxRetries
-        }
-      })
-
-      this.uploadFile()
-    }
+  mergeFail() {
+    this.changeStatus(FileStatus.Fail)
+    this.uploader.emitCallback(Callbacks.FileFail, this)
+    this.continueUpload()
   }
 
-  remove() {
-    this.chunks = []
-    this.uploadingQueue.forEach((chunk) => {
+  success() {
+    this.changeStatus(FileStatus.Success)
+    this.progress = 1
+    this.uploader.emitCallback(Callbacks.FileSuccess, this)
+    this.continueUpload()
+  }
+
+  continueUpload() {
+    let firstPauseFile
+    for (let i = 0; i < this.uploader.fileList.length; i++) {
+      const file = this.uploader.fileList[i]
+      if (file.isPause()) {
+        firstPauseFile = file
+        break
+      }
+    }
+    if (firstPauseFile) {
+      firstPauseFile.resume()
+    }
+
+    this.uploader.upload()
+  }
+
+  cancel() {
+    this.uploadingChunks.forEach((chunk) => {
       chunk.abort()
     })
+    this.uploadingChunks.clear()
+  }
+
+  async remove() {
+    if (this.abortRead) {
+      this.abortRead()
+    }
+
+    setTimeout(() => {
+      this.cancel()
+      this.chunks = []
+      this.changeStatus('removed')
+
+      const index = this.uploader.fileList.indexOf(this)
+      if (index > -1) {
+        this.uploader.fileList.splice(index, 1)
+      }
+      this.uploader.emitCallback(Callbacks.FileRemove, this)
+      this.uploader.upload()
+    }, 0)
   }
 
   pause() {
-    this.uploadingQueue.forEach((chunk) => {
-      chunk.abort()
-    })
-    this.changeStatus(Status.Pause)
-    this.uploader.upload()
+    if (this.abortRead) {
+      this.abortRead()
+    }
+    setTimeout(() => {
+      this.cancel()
+      this.changeStatus(FileStatus.Pause)
+      this.uploader.emitCallback(Callbacks.FilePause, this)
+      this.uploader.upload()
+    }, 0)
   }
 
   resume() {
     if (this.isPause()) {
-      this.changeStatus(Status.Resume)
-      this.uploader.pauseUploadingFiles()
+      this.changeStatus(FileStatus.Resume)
+      this.uploader.emitCallback(Callbacks.FileResume, this)
       this.uploader.upload()
     }
   }
 
-  isInited() {
-    return this.status === Status.Init
-  }
+  retry() {
+    if (this.isCheckFail()) {
+      this.changeStatus(FileStatus.Ready)
+      this.upload()
+      return
+    }
 
-  isReady() {
-    return this.status === Status.Ready
-  }
+    if (this.isUploadSuccess() || this.isFail()) {
+      this.merge()
+      return
+    }
 
-  isUploading() {
-    return this.status === Status.Uploading
-  }
+    if (this.isUploadFail()) {
+      each(this.chunks, (chunk) => {
+        if (chunk.status === ChunkStatus.Fail) {
+          chunk.status = ChunkStatus.Ready
+          chunk.maxRetries = chunk.options.maxRetries
+        }
+      })
 
-  isPause() {
-    return this.status === Status.Pause
-  }
-
-  isResume() {
-    return this.status === Status.Resume
-  }
-
-  isUploadSuccess() {
-    return this.status === Status.UploadSuccess
-  }
-
-  isUploadFail() {
-    return this.status === Status.UploadFail
-  }
-
-  isFail() {
-    return this.status === Status.Fail
-  }
-
-  isSuccess() {
-    return this.status === Status.Success
+      this.upload()
+    }
   }
 }

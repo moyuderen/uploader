@@ -7,9 +7,19 @@
   margin-right: var(--default-margin);
 }
 
+.uploader-drag {
+  width: 300px;
+  height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed #000;
+  margin-top: 10px;
+  border-radius: 3px;
+}
+
 .file-list {
   margin-top: 10px;
-  max-width: 660px;
 }
 
 .file {
@@ -24,7 +34,7 @@
 }
 
 .file-name {
-  width: 200px;
+  width: 300px;
   overflow: hidden;
   text-overflow: ellipsis;
   margin-right: var(--default-margin);
@@ -37,14 +47,18 @@
 }
 
 .file-progress {
-  width: 100px;
+  width: 160px;
 }
 
 .action-container {
-  min-width: 200px;
+  min-width: 300px;
   text-align: right;
 }
 
 .action {
   margin-right: var(--default-margin);
+}
+
+.uploader-submit {
+  margin-right: 20px;
 }

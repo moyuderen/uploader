@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Start nest</title>
+    <link rel="stylesheet" type="text/css" href="../style.css" />
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/axios@0.24.0/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="uploader">
+        <button class="uploader-btn">点击上传</button>
+        <div class="uploader-drag">Uploader Drag</div>
+
+        <div class="file-list">
+          <div v-for="file in files" :key="file.uid" class="file">
+            <div class="file-name" :title="file.name">{{ file.name }}</div>
+            <div class="file-status">{{ file.status }}</div>
+            <div class="file-progress">Read {{ file.readProgress.toFixed(2) }}%</div>
+            <div class="file-progress">Upload {{ (file.progress * 100).toFixed(2) }}%</div>
+            <div class="file-progress">{{ file.renderSize }}</div>
+            <div class="action-container">
+              <button
+                class="action"
+                v-if="file.status === FileStatus.Reading || file.status === FileStatus.Ready || file.status === FileStatus.Uploading"
+                @click="pause(file)"
+              >
+                Pause
+              </button>
+              <button class="action" v-if="file.status === FileStatus.Pause" @click="resume(file)">
+                Resume
+              </button>
+              <button
+                class="action"
+                v-if="file.status === FileStatus.CheckFail || file.status === FileStatus.Fail || file.status === FileStatus.UploadFail"
+                @click="retry(file)"
+              >
+                重试
+              </button>
+              <button class="action" @click="remove(file)">X</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="uploader-submit" @click="submit">上传到服务器</button>
+        <button class="cancel-all" @click="clear">删除所有并且取消</button>
+      </div>
+    </div>
+    <script type="module" src="./quick-start.js"></script>
+  </body>
+</html>

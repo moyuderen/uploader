@@ -22,3 +22,7 @@ export const isArray =
 export const isPromise = (promise) => {
   return promise && isFunction(promise.then)
 }
+
+export const isString = function (a) {
+  return typeof a === 'string'
+}
