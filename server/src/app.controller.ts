@@ -11,6 +11,7 @@ import * as fs from 'fs';
 import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { sleep } from './utils';
+import { diskStorage } from 'multer';
 
 @Controller()
 export class AppController {
@@ -25,7 +26,9 @@ export class AppController {
   // file和前端上传的名称保持一致
   @UseInterceptors(
     FileInterceptor('file', {
-      dest: 'uploads',
+      storage: diskStorage({
+        destination: 'uploads/', // 设置文件保存位置为根目录下的 uploads 文件夹
+      }),
     }),
   )
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body) {
