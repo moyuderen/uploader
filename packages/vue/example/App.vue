@@ -38,14 +38,19 @@
 export default {
   data() {
     return {
-      fileList: [
+      fileList: []
+    }
+  },
+  created() {
+    setTimeout(() => {
+      this.fileList = [
         {
           id: '222',
           name: '哈哈',
           url: 'http://baidu.com'
         }
       ]
-    }
+    }, 500)
   },
   methods: {
     async checkRequest(file) {

@@ -167,6 +167,13 @@ export default {
       files: []
     }
   },
+  watch: {
+    fileList(newVal) {
+      if(this.uploader && newVal.length > 0) {
+        this.uploader.setDefaultFileList(newVal)
+      }
+    }
+  },
   created() {
     this.uploader = new Uploader({
       // input 属性相关
