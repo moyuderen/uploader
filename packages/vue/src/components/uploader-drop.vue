@@ -29,7 +29,9 @@ export default {
   font-size: 14px;
   border-radius: 4px;
   cursor: pointer;
+  background-color: rgb(247, 248, 250);
 }
+
 
 .tiny-uploader-drop:hover {
   border: 1px dashed #409eff;

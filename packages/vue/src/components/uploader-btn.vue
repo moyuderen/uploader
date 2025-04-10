@@ -1,19 +1,15 @@
 <template>
-  <span class="tiny-uploader-btn">
+  <span class="tiny-uploader-button">
     <slot></slot>
   </span>
 </template>
 
 <script>
-export default {
-  mounted() {
-    this.$nextTick(() => {})
-  }
-}
+
 </script>
 
 <style>
-.tiny-uploader-btn {
+.tiny-uploader-button {
   color: #409eff;
 }
 </style>
