@@ -10,8 +10,8 @@ import {
 } from '../shared'
 
 export default class File {
-  constructor(file, uploader) {
-    this.uploader = uploader || { options: {} }
+  constructor(file, uploader, defaults) {
+    this.uploader = uploader
     this.options = this.uploader.options
     this.uid = this.generateId()
 
@@ -23,9 +23,9 @@ export default class File {
     this.size = file.size
     this.type = file.type
     this.hash = ''
-    this.url = file.url || ''
+    this.url = ''
 
-    this.progress = file.progress || 0
+    this.progress = 0
     this.chunkSize = this.options.chunkSize
     this.chunks = []
     this.totalChunks = 0
@@ -33,7 +33,19 @@ export default class File {
     this.readProgress = 0
     this.errorMessage = ''
 
-    this.changeStatus(file.status || FileStatus.Init)
+    if (defaults) {
+      Object.keys(defaults).forEach((key) => {
+        this[key] = defaults[key]
+      })
+
+      this.name = defaults.name
+      this.url = defaults.url
+      this.readProgress = 1
+      this.progress = 1
+      this.changeStatus(FileStatus.Success)
+    } else {
+      this.changeStatus(FileStatus.Init)
+    }
   }
 
   generateId() {
@@ -59,7 +71,7 @@ export default class File {
     const value = this.size
     const ONE_KB = 1024
     if (null == value || value == '') {
-      return '0 Bytes'
+      return '0 B'
     }
     var unitArr = new Array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB')
     var index = 0
@@ -67,7 +79,7 @@ export default class File {
     index = Math.floor(Math.log(srcsize) / Math.log(ONE_KB))
     var size = srcsize / Math.pow(ONE_KB, index)
     size = size.toFixed(2) //保留的小数位数
-    return size + unitArr[index]
+    return size + ' ' + unitArr[index]
   }
 
   changeStatus(newStatus) {
@@ -209,6 +221,7 @@ export default class File {
 
     const rejectCheck = (reject) => {
       this.changeStatus(FileStatus.CheckFail)
+      this.uploader.upload()
       reject(new Error('checkRequest error'))
     }
 
@@ -220,8 +233,12 @@ export default class File {
       const result = check(this)
 
       if (isPromise(result)) {
-        const data = await result
-        data ? checkStatusFn(data.status, data.data, resolve) : rejectCheck(reject)
+        try {
+          const data = await result
+          data ? checkStatusFn(data.status, data.data, resolve) : rejectCheck(reject)
+        } catch {
+          rejectCheck(reject)
+        }
       } else {
         result ? checkStatusFn(data.status, data.data, resolve) : rejectCheck(reject)
       }
@@ -403,6 +420,10 @@ export default class File {
   }
 
   retry() {
+    if (this.isAddFail()) {
+      return
+    }
+
     if (this.isCheckFail()) {
       this.changeStatus(FileStatus.Ready)
       this.upload()

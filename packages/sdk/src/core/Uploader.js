@@ -75,18 +75,7 @@ export default class Uploader {
 
   setDefaultFileList(fileList) {
     fileList.forEach((file) => {
-      this.fileList.push(
-        new File(
-          {
-            ...file,
-            name: file.name,
-            readProgress: 1,
-            progress: 1,
-            status: FileStatus.Success
-          },
-          this
-        )
-      )
+      this.fileList.push(new File(file, this, file))
     })
   }
 
@@ -116,20 +105,10 @@ export default class Uploader {
       this.emitCallback(Callbacks.FileAdded, file)
     }
 
-    const fileRemove = (file) => {
-      newFileList = newFileList.filter((item) => item.uid !== file.uid)
-      this.emitCallback(Callbacks.FileRemove, file)
-    }
-
     const fileAddFail = (file) => {
-      if (this.options.addFailToRemove) {
-        this.emitCallback(Callbacks.FileAddFail, file)
-        fileRemove(file)
-      } else {
-        this.fileList.push(file)
-        file.changeStatus(FileStatus.AddFail)
-        this.emitCallback(Callbacks.FileAddFail, file)
-      }
+      this.fileList.push(file)
+      file.changeStatus(FileStatus.AddFail)
+      this.emitCallback(Callbacks.FileAddFail, file)
     }
 
     const handleBefore = async (file) => {
@@ -156,6 +135,15 @@ export default class Uploader {
 
     await Promise.all(newFileList.map((file) => handleBefore(file)))
 
+    this.fileList = this.fileList.filter((file) => {
+      if (file.isAddFail() && this.options.addFailToRemove === true) {
+        this.doRemove(file)
+        return false
+      } else {
+      }
+      return true
+    })
+
     if (newFileList.length > 0) {
       this.emitCallback(Callbacks.FilesAdded, this.fileList)
     }
@@ -170,7 +158,7 @@ export default class Uploader {
 
     for (let i = 0; i < this.fileList.length; i++) {
       const file = this.fileList[i]
-      if (file.isAddFail()) {
+      if (file.isAddFail() || file.isCheckFail()) {
         continue
       }
 
