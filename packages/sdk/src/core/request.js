@@ -1,6 +1,7 @@
 export function request(options) {
-  const { action, formData, data, headers, withCredentials, onSuccess, onFail, onProgress } =
-    options
+  const { action, data, headers, name, withCredentials, onSuccess, onFail, onProgress } = options
+
+  const formData = new FormData()
 
   Object.keys(data).forEach((key) => {
     formData.append(key, data[key])

@@ -14,6 +14,7 @@ export default class Chunk {
     this.filename = file.name
     this.totalSize = file.size
     this.chunkSize = this.options.chunkSize
+    this.totalChunks = file.totalChunks
 
     this.uid = generateUid()
     this.chunkIndex = index
@@ -77,33 +78,27 @@ export default class Chunk {
   }
 
   prepare() {
-    const formData = new FormData()
-    const blob = this.file.rawFile.slice(this.stardByte, this.endByte)
-
-    formData.append(this.options.name, blob)
-
-    if (this.fileHash) {
-      formData.append('hash', this.fileHash)
+    return {
+      [this.options.name]: this.file.rawFile.slice(this.stardByte, this.endByte),
+      hash: this.fileHash,
+      id: this.uid,
+      fileId: this.fileId,
+      index: this.chunkIndex,
+      filename: this.filename,
+      size: this.size,
+      totalSize: this.totalSize,
+      totalChunks: this.totalChunks,
+      ...this.options.data,
+      ...this.file.data
     }
-
-    formData.append('id', this.uid)
-    formData.append('fileId', this.fileId)
-    formData.append('index', this.chunkIndex)
-    formData.append('filename', this.filename)
-    formData.append('size', this.size)
-    formData.append('totalSize', this.totalSize)
-    formData.append('timestamp', Date.now())
-
-    return formData
   }
 
   send() {
     this.status = ChunkStatus.Pending
     return new Promise((resolve, reject) => {
       this.request = this.customRequest({
-        formData: this.prepare(),
         action: this.options.action,
-        data: { ...this.options.data, ...this.file.data },
+        data: this.prepare(),
         headers: this.options.headers,
         withCredentials: this.options.withCredentials,
         name: this.options.name,

@@ -17,11 +17,19 @@ export const requestSucceed = (response) => {
 }
 
 export const customRequest = (options) => {
-  const { action, formData, data, headers, withCredentials, onSuccess, onFail, onProgress } =
-    options
+  const { action, data, headers, name, withCredentials, onSuccess, onFail, onProgress } = options
+  const realData = {
+    fileHashCode: data.hash,
+    uploadId: data.fileId,
+    chunkNumber: data.index + 1,
+    chunkSize: data.size,
+    totalChunks: data.totalChunks,
+    [name]: data[name]
+  }
+  const formData = new FormData()
 
-  Object.keys(data).forEach((key) => {
-    formData.append(key, data[key])
+  Object.keys(realData).forEach((key) => {
+    formData.append(key, realData[key])
   })
   const CancelToken = axios.CancelToken
   const source = CancelToken.source()

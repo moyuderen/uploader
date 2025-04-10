@@ -20,7 +20,6 @@ createApp({
 
     uploader.value = create({
       limit: 5,
-      chunkSize: 1024 * 3,
       customRequest,
       requestSucceed,
       checkRequest,
