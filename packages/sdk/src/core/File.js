@@ -216,11 +216,15 @@ export default class File {
           }
         })
       }
-      if (checkStatus === CheckStatus.Success) {
+
+      if ([CheckStatus.Success, CheckStatus.WaitMerge].includes(checkStatus)) {
         this.chunks.forEach((chunk) => {
           chunk.status = ChunkStatus.success
         })
-        this.path = data
+      }
+
+      if (checkStatus === CheckStatus.Success) {
+        this.url = data
       }
       resolve()
     }

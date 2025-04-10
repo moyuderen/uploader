@@ -135,12 +135,15 @@ export const Callbacks = {
 
 // check 文件上传状态
 export const CheckStatus = {
+  // 文件还没上传
+  None: 'none',
+
   // 部分上传成功
   Part: 'part',
 
-  // 上传成功
-  Success: 'success',
+  // 准备合并
+  WaitMerge: 'waitMerge',
 
-  // 文件还没上传
-  None: 'none'
+  // 上传成功
+  Success: 'success'
 }
