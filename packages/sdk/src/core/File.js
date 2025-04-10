@@ -32,6 +32,7 @@ export default class File {
     this.uploadingChunks = new Set()
     this.readProgress = 0
     this.errorMessage = ''
+    this.data = {}
 
     if (defaults) {
       Object.keys(defaults).forEach((key) => {
@@ -64,6 +65,11 @@ export default class File {
 
   setErrorMessage(message) {
     this.errorMessage = message
+    return true
+  }
+
+  setData(data) {
+    this.data = data
     return true
   }
 

@@ -103,7 +103,7 @@ export default class Chunk {
       this.request = this.customRequest({
         formData: this.prepare(),
         action: this.options.action,
-        data: this.options.data,
+        data: { ...this.options.data, ...this.file.data },
         headers: this.options.headers,
         withCredentials: this.options.withCredentials,
         name: this.options.name,

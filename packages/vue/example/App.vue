@@ -56,6 +56,7 @@ export default {
     async checkRequest(file) {
       const { hash, name } = file
       const { data } = await axios.get(`http://localhost:3000/check?hash=${hash}&filename=${name}&status=none`)
+      file.setData({uploadId: file.uid})
       return data
     },
     async merge(file) {
