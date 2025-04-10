@@ -20,3 +20,6 @@ refs
 objects
 info
 hooks
+
+# server
+server/uploads
