@@ -98,6 +98,13 @@ export class AppController {
       };
     }
 
+    if (status === 'waitMerge') {
+      return {
+        status: 'waitMerge',
+        data: '',
+      };
+    }
+
     if (status === 'part') {
       return {
         status: 'part',

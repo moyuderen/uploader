@@ -24,7 +24,10 @@ export const customRequest = (options) => {
     chunkNumber: data.index + 1,
     chunkSize: data.size,
     totalChunks: data.totalChunks,
-    [name]: data[name]
+    [name]: data[name],
+    hash: data.hash,
+    filename: data.filename,
+    index: data.index
   }
   const formData = new FormData()
 
@@ -59,10 +62,11 @@ export const customRequest = (options) => {
 
 export const checkRequest = async (file) => {
   const data = await fetch(
-    `http://localhost:3000/check?hash=${file.hash}&filename=${file.name}&status=none`,
+    `http://localhost:3000/check?hash=${file.hash}&filename=${file.name}&status=part`,
     {}
   )
-  return data
+
+  return await data.json()
 }
 
 export const mergeRequest = async (file) => {

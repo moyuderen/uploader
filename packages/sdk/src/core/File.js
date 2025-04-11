@@ -217,13 +217,18 @@ export default class File {
         })
       }
 
-      if ([CheckStatus.Success, CheckStatus.WaitMerge].includes(checkStatus)) {
+      if (checkStatus === CheckStatus.WaitMerge) {
+        this.changeStatus(FileStatus.UploadSuccess)
         this.chunks.forEach((chunk) => {
           chunk.status = ChunkStatus.success
         })
       }
 
       if (checkStatus === CheckStatus.Success) {
+        this.changeStatus(FileStatus.Success)
+        this.chunks.forEach((chunk) => {
+          chunk.status = ChunkStatus.success
+        })
         this.url = data
       }
       resolve()
@@ -270,6 +275,16 @@ export default class File {
 
     if (this.isReady() && this.options.checkRequest) {
       await this.checkRequest()
+    }
+
+    if (this.isUploadSuccess()) {
+      this.merge()
+      return
+    }
+
+    if (this.isSuccess()) {
+      this.success()
+      return
     }
 
     const readyChunks = this.chunks.filter((chunk) => chunk.status === ChunkStatus.Ready)
