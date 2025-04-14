@@ -58,7 +58,7 @@ export default class Chunk {
       if (this.file.isUploading()) {
         this.file.upload()
       }
-      reject(this)
+      reject(e, this)
     } else {
       this.timer = setTimeout(() => {
         this.send()

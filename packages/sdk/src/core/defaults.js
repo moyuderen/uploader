@@ -27,6 +27,6 @@ export const defaultOptions = {
   maxConcurrency: 6,
   maxRetries: 3,
   retryInterval: 1000,
-  checkRequest: null,
+  checkRequest: (file) => true,
   mergeRequest: (file) => true
 }

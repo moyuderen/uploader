@@ -255,7 +255,7 @@ export default class File {
           rejectCheck(reject)
         }
       } else {
-        result ? checkStatusFn(data.status, data.data, resolve) : rejectCheck(reject)
+        result ? checkStatusFn(result.status, result.data, resolve) : rejectCheck(reject)
       }
     })
   }
