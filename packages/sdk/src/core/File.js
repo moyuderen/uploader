@@ -1,13 +1,6 @@
 import Chunk from './Chunk'
 import { FileStatus, Callbacks, CheckStatus, ChunkStatus } from './constants'
-import {
-  generateUid,
-  isFunction,
-  asyncCancellableComputedHash,
-  each,
-  isPromise,
-  throttle
-} from '../shared'
+import { generateUid, isFunction, asyncCancellableComputedHash, each, throttle } from '../shared'
 
 export default class File {
   constructor(file, uploader, defaults) {
@@ -205,9 +198,27 @@ export default class File {
   }
 
   async checkRequest() {
-    const check = this.options.checkRequest
-    const checkStatusFn = (checkStatus, data, resolve) => {
-      if (checkStatus === CheckStatus.Part) {
+    const { checkRequest: check } = this.options
+
+    // 提前处理非函数情况
+    if (!isFunction(check)) {
+      return Promise.resolve()
+    }
+
+    // 统一状态修改方法
+    const updateChunksStatus = (status) => {
+      this.chunks.forEach((chunk) => {
+        chunk.status = status
+        if (status === ChunkStatus.Success) {
+          chunk.progress = 1
+          chunk.fakeProgress = 1
+        }
+      })
+    }
+
+    // 状态处理策略模式
+    const statusHandlers = {
+      [CheckStatus.Part]: (data) => {
         this.chunks.forEach((chunk) => {
           if (data.includes(chunk.chunkIndex)) {
             chunk.status = ChunkStatus.Success
@@ -215,49 +226,44 @@ export default class File {
             chunk.fakeProgress = 1
           }
         })
-      }
-
-      if (checkStatus === CheckStatus.WaitMerge) {
+      },
+      [CheckStatus.WaitMerge]: () => {
         this.changeStatus(FileStatus.UploadSuccess)
-        this.chunks.forEach((chunk) => {
-          chunk.status = ChunkStatus.success
-        })
-      }
-
-      if (checkStatus === CheckStatus.Success) {
+        updateChunksStatus(ChunkStatus.Success)
+      },
+      [CheckStatus.Success]: (data) => {
         this.changeStatus(FileStatus.Success)
-        this.chunks.forEach((chunk) => {
-          chunk.status = ChunkStatus.success
-        })
+        updateChunksStatus(ChunkStatus.Success)
         this.url = data
-      }
-      resolve()
+      },
+      [CheckStatus.None]: () => {}
     }
 
-    const rejectCheck = (reject) => {
+    try {
+      const result = await Promise.resolve(check(this)) // 统一异步处理
+
+      // 验证响应格式
+      if (!result || !result.status) {
+        throw new Error('Invalid check response format')
+      }
+
+      const handler = statusHandlers[result.status]
+      if (!handler) {
+        throw new Error(`Unknown check status: ${result.status}`)
+      }
+
+      handler(result.data)
+      return Promise.resolve()
+    } catch (error) {
+      // 统一错误处理
       this.changeStatus(FileStatus.CheckFail)
       this.uploader.upload()
-      reject(new Error('checkRequest error'))
+
+      // 增强错误信息
+      const enhancedError = new Error(`Check request failed: ${error.message}`)
+      enhancedError.originalError = error
+      throw enhancedError
     }
-
-    return new Promise(async (resolve, reject) => {
-      if (!isFunction(check)) {
-        resolve()
-      }
-
-      const result = check(this)
-
-      if (isPromise(result)) {
-        try {
-          const data = await result
-          data ? checkStatusFn(data.status, data.data, resolve) : rejectCheck(reject)
-        } catch {
-          rejectCheck(reject)
-        }
-      } else {
-        result ? checkStatusFn(result.status, result.data, resolve) : rejectCheck(reject)
-      }
-    })
   }
 
   addUploadingChunk(chunk) {
@@ -348,24 +354,26 @@ export default class File {
     this.uploader.emitCallback(Callbacks.FileUploadSuccess, this)
   }
 
-  merge() {
-    const merge = this.options.mergeRequest
+  async merge() {
+    const { mergeRequest: merge } = this.options
+
+    // 非函数处理提前终止
     if (!isFunction(merge)) {
-      this.success()
-      return
+      return this.success()
     }
 
-    const result = merge(this)
-
-    if (isPromise(result)) {
-      result.then(
-        (data) => {
-          data === true ? this.success() : this.mergeFail()
-        },
-        () => this.mergeFail()
-      )
-    } else {
-      result ? this.success() : this.mergeFail()
+    try {
+      const result = merge(this)
+      const data = await Promise.resolve(result)
+      if (typeof data === 'boolean') {
+        data ? this.success() : this.mergeFail()
+      } else {
+        this.url = data
+        this.success()
+      }
+    } catch (error) {
+      console.log(error)
+      this.mergeFail()
     }
   }
 

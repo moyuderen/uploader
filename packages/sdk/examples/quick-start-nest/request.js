@@ -62,7 +62,7 @@ export const customRequest = (options) => {
 
 export const checkRequest = async (file) => {
   const data = await fetch(
-    `http://localhost:3000/check?hash=${file.hash}&filename=${file.name}&status=part`,
+    `http://localhost:3000/check?hash=${file.hash}&filename=${file.name}&status=none`,
     {}
   )
 
@@ -71,5 +71,5 @@ export const checkRequest = async (file) => {
 
 export const mergeRequest = async (file) => {
   await fetch(`http://localhost:3000/merge?hash=${file.hash}&filename=${file.name}`, {})
-  return true
+  return 'hshs'
 }
