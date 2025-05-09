@@ -1,58 +1,45 @@
+import { isFunction } from '../shared'
 export default class Event {
   constructor() {
-    this.event = {}
+    this.events = new Map()
   }
 
-  on(name, func) {
-    if (!this.event) {
-      this.event = {}
-    }
+  on(name, callback) {
+    if (!isFunction(callback)) return
 
-    if (!this.event[name]) {
-      this.event[name] = []
+    const callbacks = this.events.get(name) || []
+    if (!callbacks.includes(callback)) {
+      callbacks.push(callback)
+      this.events.set(name, callbacks)
     }
+  }
 
-    // 避免通过函数多次被调用
-    if (this.event[name].indexOf(func) > -1) {
+  off(name, callback) {
+    if (!this.events.has(name)) return
+
+    if (!callback) {
+      this.events.set(name, [])
       return
     }
 
-    this.event[name].push(func)
-  }
-
-  off(name, func) {
-    if (!func) {
-      this.event[name] = []
-      return
-    }
-    if (this.event && this.event[name]) {
-      for (let i = 0; i < this.event[name].length; i++) {
-        if (func === this.event[name]) {
-          this.event.splice(i, 1)
-          return
-        }
-      }
-    }
+    const callbacks = this.events.get(name).filter((cb) => cb !== callback)
+    this.events.set(name, callbacks)
   }
 
   emit(name, ...args) {
-    if (!this.event) {
-      this.event = {}
+    const callbacks = this.events.get(name)
+    if (callbacks && callbacks.length) {
+      callbacks.forEach((cb) => cb(...args))
     }
-    if (!this.event[name]) {
-      return
-    }
-    this.event[name].forEach((func) => {
-      func(...args)
-    })
   }
 
-  once(name, func) {
-    function on(...args) {
-      func.apply(this, ...args)
-      this.off(name, on)
+  once(name, callback) {
+    if (!isFunction(callback)) return
+
+    const onceCallback = (...args) => {
+      callback(...args)
+      this.off(name, onceCallback)
     }
-    on.func = func
-    this.on(name, on)
+    this.on(name, onceCallback)
   }
 }

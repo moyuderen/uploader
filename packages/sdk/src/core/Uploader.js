@@ -81,7 +81,7 @@ export default class Uploader {
 
   async addFiles(arrayLike, e) {
     const { limit, beforeAdd } = this.options
-    const originFiles = [...arrayLike]
+    let originFiles = [...arrayLike]
 
     if (limit > 0) {
       if (originFiles.length + this.fileList.length > limit) {
