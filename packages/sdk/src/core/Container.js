@@ -6,71 +6,73 @@ class Container {
   }
 
   assignBrowse(domNode, attributes) {
-    let input
     if (!domNode) {
-      console.warn('domNode is not exist')
+      console.warn('DOM 节点不存在')
       return
     }
-    if (domNode.tagName === 'INPUT' && domNode.type === 'file') {
-      input = domNode
-    } else {
-      input = document.createElement('input')
-      input.setAttribute('type', 'file')
 
-      extend(input.style, {
-        visibility: 'hidden',
-        position: 'absolute',
-        width: '1px',
-        height: '1px'
-      })
-
-      each(attributes, (val, key) => {
-        input.setAttribute(key, val)
-      })
-
-      if (attributes.multiple) {
-        input.setAttribute('multiple', 'multiple')
-      } else {
-        input.removeAttribute('multiple')
-      }
-
-      domNode.appendChild(input)
-      domNode.addEventListener(
-        'click',
-        () => {
-          input.click()
-        },
-        false
-      )
-
-      input.addEventListener(
-        'change',
-        (e) => {
-          this.uploader.addFiles(e.target.files, e)
-          e.target.value = ''
-        },
-        false
-      )
-    }
+    const input = this.createOrGetInput(domNode)
+    this.setInputAttributes(input, attributes)
+    this.attachBrowseEvents(domNode, input)
   }
 
   assignDrop(domNode) {
-    const preventEvent = (e) => {
-      e.preventDefault()
+    if (!domNode) {
+      console.warn('DOM 节点不存在')
+      return
     }
-    const handles = {
+
+    const preventEvent = (e) => e.preventDefault()
+    const eventHandlers = {
       dragover: preventEvent,
       dragenter: preventEvent,
       dragleave: preventEvent,
-      drop: (e) => {
-        e.stopPropagation()
-        e.preventDefault()
-        this.uploader.addFiles(e.dataTransfer.files, e)
-      }
+      drop: this.handleDrop.bind(this)
     }
-    each(handles, (handler, name) => {
-      domNode.addEventListener(name, handler, false)
+
+    each(eventHandlers, (handler, event) => {
+      domNode.addEventListener(event, handler, { passive: false })
     })
+  }
+
+  createOrGetInput(domNode) {
+    if (domNode.tagName === 'INPUT' && domNode.type === 'file') {
+      return domNode
+    }
+
+    const input = document.createElement('input')
+    input.type = 'file'
+    extend(input.style, {
+      visibility: 'hidden',
+      position: 'absolute',
+      width: '1px',
+      height: '1px'
+    })
+    domNode.appendChild(input)
+    return input
+  }
+
+  setInputAttributes(input, attributes) {
+    each(attributes, (value, key) => input.setAttribute(key, value))
+    input.toggleAttribute('multiple', !!attributes.multiple)
+  }
+
+  attachBrowseEvents(domNode, input) {
+    domNode.addEventListener('click', () => input.click(), { passive: true })
+    input.addEventListener(
+      'change',
+      (e) => {
+        this.uploader.addFiles(e.target.files, e)
+        e.target.value = ''
+      },
+      { passive: true }
+    )
+  }
+
+  handleDrop(e) {
+    e.preventDefault()
+    e.stopPropagation()
+    this.uploader.addFiles(e.dataTransfer.files, e)
   }
 }
 
