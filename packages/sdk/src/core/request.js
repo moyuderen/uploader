@@ -1,27 +1,41 @@
 export function request(options) {
-  const { action, data, headers, name, withCredentials, onSuccess, onFail, onProgress } = options
-
-  const formData = new FormData()
-
-  Object.keys(data).forEach((key) => {
-    formData.append(key, data[key])
-  })
+  const {
+    method = 'POST',
+    withCredentials = true,
+    responseType = 'json',
+    action,
+    data,
+    headers,
+    // name,
+    onSuccess,
+    onFail,
+    onProgress
+  } = options
 
   let xhr = new XMLHttpRequest()
-  xhr.responseType = 'json'
+  xhr.responseType = responseType
   xhr.withCredentials = withCredentials
-  xhr.open('POST', action, true)
+  xhr.open(method, action, true)
+
+  const formData = new FormData()
+  Object.entries(data).forEach(([key, value]) => formData.append(key, value))
 
   // 'setRequestHeader' on 'XMLHttpRequest': The object's state must be OPENED
   if ('setRequestHeader' in xhr) {
-    Object.keys(headers).forEach((key) => {
-      xhr.setRequestHeader(key, headers[key])
-    })
+    Object.entries(headers).forEach(([key, value]) => xhr.setRequestHeader(key, value))
   }
 
+  xhr.addEventListener('timeout', () => onFail(new Error('Request timed out'), xhr))
   xhr.upload.addEventListener('progress', onProgress)
-  xhr.addEventListener('load', (e) => onSuccess(e, xhr), false)
   xhr.addEventListener('error', onFail, false)
+  xhr.addEventListener('readystatechange', (e) => {
+    if (xhr.readyState !== 4) return
+    if (xhr.status < 200 || xhr.status >= 300) {
+      onFail(new Error(`xhr: status === ${xhr.status}`), xhr)
+      return
+    }
+    onSuccess(e, xhr)
+  })
   xhr.send(formData)
 
   return {
