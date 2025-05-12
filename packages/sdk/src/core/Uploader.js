@@ -33,7 +33,7 @@ export default class Uploader {
     return ''
   }
 
-  assignBrowse(domNode, userAttributes) {
+  assignBrowse(domNode, userAttributes = {}) {
     const { accept, ...attributes } = userAttributes
     const defaults = {
       multiple: this.options.multiple,
