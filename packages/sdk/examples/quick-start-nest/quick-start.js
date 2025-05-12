@@ -4,7 +4,7 @@ const { createApp, ref, onMounted } = Vue
 // import { create, FileStatus, ChunkStatus, CheckStatus, Callbacks } from '../dist/sdk.mjs'
 
 // dev
-import { create, FileStatus, ChunkStatus, CheckStatus, Callbacks } from '../../src/index.js'
+import { create, FileStatus, Callbacks } from '../../src/index.js'
 import { requestSucceed, customRequest, checkRequest, mergeRequest } from './request.js'
 
 createApp({
@@ -26,7 +26,7 @@ createApp({
       mergeRequest
     })
 
-    uploader.value.on(Callbacks.Exceed, (file, fileList) => {
+    uploader.value.on(Callbacks.Exceed, (file, _fileList) => {
       console.log(`Exceed ---- ${file.name} ---- ${file.status}`)
     })
 
@@ -35,7 +35,7 @@ createApp({
       files.value = fileList
     })
 
-    uploader.value.on(Callbacks.FileAdded, (file, fileList) => {
+    uploader.value.on(Callbacks.FileAdded, (file, _fileList) => {
       console.log(`FileAdded ---- ${file.name} ---- ${file.status}`)
     })
 
@@ -43,47 +43,47 @@ createApp({
       console.log(`FilesAdded ----`, fileList)
     })
 
-    uploader.value.on(Callbacks.FileReadStart, (file, fileList) => {
+    uploader.value.on(Callbacks.FileReadStart, (file, _fileList) => {
       console.log(`FileReadStart ---- ${file.name} ---- ${file.status}`)
     })
 
-    uploader.value.on(Callbacks.FileReadProgress, (file, fileList) => {
+    uploader.value.on(Callbacks.FileReadProgress, (file, _fileList) => {
       console.log(`FileReadProgress ---- ${file.name} ---- ${file.status}---- ${file.readProgress}`)
     })
 
-    uploader.value.on(Callbacks.FileReadEnd, (file, fileList) => {
+    uploader.value.on(Callbacks.FileReadEnd, (file, _fileList) => {
       console.log(`FileReadEnd ---- ${file.name} ---- ${file.status}`)
     })
 
-    uploader.value.on(Callbacks.FileRemove, (file, fileList) => {
+    uploader.value.on(Callbacks.FileRemove, (file, _fileList) => {
       console.log(`FileRemove ---- ${file.name} ---- ${file.status}`)
     })
 
-    uploader.value.on(Callbacks.FileProgress, (file, fileList) => {
+    uploader.value.on(Callbacks.FileProgress, (file, _fileList) => {
       console.log(`FileProgress ---- ${file.name} ---- ${file.status}---- ${file.progress}`)
     })
 
-    uploader.value.on(Callbacks.FileFail, (file, fileList) => {
+    uploader.value.on(Callbacks.FileFail, (file, _fileList) => {
       console.log(`FileFail ---- ${file.name} ---- ${file.status}`)
     })
 
-    uploader.value.on(Callbacks.FileUploadFail, (file, fileList) => {
+    uploader.value.on(Callbacks.FileUploadFail, (file, _fileList) => {
       console.log(`FileUploadFail ---- ${file.name} ---- ${file.status}`)
     })
 
-    uploader.value.on(Callbacks.FileUploadSuccess, (file, fileList) => {
+    uploader.value.on(Callbacks.FileUploadSuccess, (file, _fileList) => {
       console.log(`FileUploadSuccess ---- ${file.name} ---- ${file.status}`)
     })
 
-    uploader.value.on(Callbacks.FileSuccess, (file, fileList) => {
+    uploader.value.on(Callbacks.FileSuccess, (file, _fileList) => {
       console.log(`FileSuccess ---- ${file.name} ---- ${file.status}`)
     })
 
-    uploader.value.on(Callbacks.FilePause, (file, fileList) => {
+    uploader.value.on(Callbacks.FilePause, (file, _fileList) => {
       console.log(`FilePause ---- ${file.name} ---- ${file.status}`)
     })
 
-    uploader.value.on(Callbacks.FileResume, (file, fileList) => {
+    uploader.value.on(Callbacks.FileResume, (file, _fileList) => {
       console.log(`FileResume ---- ${file.name} ---- ${file.status}`)
     })
 
