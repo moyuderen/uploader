@@ -1,5 +1,6 @@
 <template>
   <div>
+    <input v-model="name" placeholder="自定义参数">
     <button @click="clear">取消所有上传</button>
     <button @click="submit">手动提交</button>
 
@@ -7,7 +8,7 @@
       style="margin-top: 10px"
       ref="uploaderRef"
       action="http://localhost:3000/upload"
-      :data="{ user: 'moyuderen' }"
+      :data="{ user: 'moyuderen', name }"
       :headers="{ token: 'xxxxxxxx' }"
       :customStatus="{
         Reading: '读取中',
@@ -18,6 +19,7 @@
       :addFailToRemove="true"
       :checkRequest="checkRequest"
       :mergeRequest="merge"
+      :processData="processData"
       @onExceed="onExceed"
       @onFileAdded="onFileAdded"
       @onFilesAdded="onFilesAdded"
@@ -38,6 +40,7 @@
 export default {
   data() {
     return {
+      name: 'moyuderen',
       fileList: []
     }
   },
@@ -53,7 +56,11 @@ export default {
     }, 500)
   },
   methods: {
-    async checkRequest(file) {
+    processData(data, type) {
+      return {...data, name: this.name}
+    },
+    async checkRequest(file, query) {
+      console.log(query)
       const { hash, name } = file
       const { data } = await axios.get(`http://localhost:3000/check?hash=${hash}&filename=${name}&status=none`)
       file.setData({uploadId: file.uid})

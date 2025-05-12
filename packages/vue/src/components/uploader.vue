@@ -156,6 +156,10 @@ export default {
         return () => true
       }
     },
+    processData: {
+      type: Function,
+      default: data => data
+    },
     customStatus: {
       type: Object,
       default: null
@@ -200,6 +204,7 @@ export default {
       withCredentials: this.withCredentials,
       headers: this.headers,
       data: this.data,
+      processData: this.processData,
       requestSucceed: this.requestSucceed,
       maxConcurrency: this.maxConcurrency,
       maxRetries: this.maxRetries,
