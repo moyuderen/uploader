@@ -19,8 +19,17 @@ createApp({
     })
 
     uploader.value = create({
+      action: 'http://localhost:3000/upload',
       limit: 5,
-      customRequest,
+      data: {
+        bucketName: 'bucketName',
+        filePath: 'filePath',
+        useHash: false
+      },
+      processData: (data, type) => {
+        console.log(data, type)
+      },
+      // customRequest,
       requestSucceed,
       checkRequest,
       mergeRequest

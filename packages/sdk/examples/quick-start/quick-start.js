@@ -22,6 +22,15 @@ createApp({
       action: 'https://jsonplaceholder.typicode.com/posts',
       limit: 5,
       chunkSize: 1024 * 3,
+      data: {
+        bucketName: 'bucketName',
+        filePath: 'filePath',
+        useHash: false
+      },
+      processData: (data, type) => {
+        console.log(data, type)
+        return data
+      },
       customRequest,
       requestSucceed,
       checkRequest,

@@ -1,5 +1,5 @@
 import Chunk from './Chunk'
-import { FileStatus, Callbacks, CheckStatus, ChunkStatus } from './constants'
+import { FileStatus, Callbacks, CheckStatus, ChunkStatus, ProcessType } from './constants'
 import {
   generateUid,
   isFunction,
@@ -188,6 +188,15 @@ export default class File {
     return hashResult
   }
 
+  _processData(processType) {
+    const { data: optionData, processData } = this.options
+    const defaults = { ...optionData, ...this.data }
+    if (!isFunction(processData)) {
+      return defaults
+    }
+    return processData(defaults, processType) || defaults
+  }
+
   async checkRequest() {
     const { checkRequest: check } = this.options
 
@@ -231,7 +240,7 @@ export default class File {
     }
 
     try {
-      const result = await Promise.resolve(check(this)) // 统一异步处理
+      const result = await Promise.resolve(check(this, this._processData(ProcessType.Check))) // 统一异步处理
 
       // 验证响应格式
       if (!result || !result.status) {
@@ -348,7 +357,7 @@ export default class File {
     }
 
     try {
-      const result = merge(this)
+      const result = merge(this, this._processData(ProcessType.Merge))
       const data = await Promise.resolve(result)
       if (isBoolean(data)) {
         data ? this.success() : this.mergeFail()

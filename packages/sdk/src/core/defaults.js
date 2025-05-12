@@ -28,5 +28,6 @@ export const defaultOptions = {
   maxRetries: 3,
   retryInterval: 1000,
   checkRequest: (_file) => true,
-  mergeRequest: (_file) => true
+  mergeRequest: (_file) => true,
+  processData: (data, _processType) => data
 }

@@ -149,3 +149,13 @@ export const CheckStatus = {
   // 上传成功
   Success: 'success'
 }
+
+// 文件上传进程
+export const ProcessType = {
+  // check接口
+  Check: 'check',
+  // upload chunk接口
+  Upload: 'upload',
+  // merge接口
+  Merge: 'merge'
+}

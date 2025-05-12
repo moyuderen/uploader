@@ -1,5 +1,5 @@
-import { generateUid } from '../shared'
-import { ChunkStatus, FileStatus } from './constants'
+import { generateUid, isFunction } from '../shared'
+import { ChunkStatus, FileStatus, ProcessType } from './constants'
 import { request } from './request'
 
 export default class Chunk {
@@ -78,8 +78,10 @@ export default class Chunk {
   }
 
   prepare() {
-    return {
-      [this.options.name]: this.file.rawFile.slice(this.startByte, this.endByte),
+    const { name, data, processData } = this.options
+    const { data: fileData } = this.file
+    const defaults = {
+      [name]: this.file.rawFile.slice(this.startByte, this.endByte),
       hash: this.fileHash,
       id: this.uid,
       fileId: this.fileId,
@@ -88,20 +90,26 @@ export default class Chunk {
       size: this.size,
       totalSize: this.totalSize,
       totalChunks: this.totalChunks,
-      ...this.options.data,
-      ...this.file.data
+      ...data,
+      ...fileData
     }
+    if (!isFunction(processData)) {
+      return defaults
+    }
+    return processData(defaults, ProcessType.Upload) || defaults
   }
 
   send() {
     this.status = ChunkStatus.Pending
+    const { action, headers, withCredentials, name } = this.options
+
     return new Promise((resolve, reject) => {
       this.request = this.customRequest({
-        action: this.options.action,
+        action,
+        name,
+        withCredentials,
+        headers,
         data: this.prepare(),
-        headers: this.options.headers,
-        withCredentials: this.options.withCredentials,
-        name: this.options.name,
         onSuccess: (e, response) => this.onSuccess(e, response, resolve),
         onFail: (e) => this.onFail(e, reject),
         onProgress: (e) => this.onProgress(e)
