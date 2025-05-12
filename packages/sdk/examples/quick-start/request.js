@@ -1,13 +1,5 @@
 import { CheckStatus } from '../../src/core/constants'
 
-const sleep = (time = 1000) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve()
-    }, time)
-  })
-}
-
 export const requestSucceed = (response) => {
   const { status } = response
   if (status >= 200 && status < 300) {
