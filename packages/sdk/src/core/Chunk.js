@@ -19,9 +19,9 @@ export default class Chunk {
     this.uid = generateUid()
     this.chunkIndex = index
     this.status = ChunkStatus.Ready
-    this.stardByte = this.chunkSize * index
-    this.endByte = Math.min(this.stardByte + this.chunkSize, this.totalSize)
-    this.size = this.endByte - this.stardByte
+    this.startByte = this.chunkSize * index
+    this.endByte = Math.min(this.startByte + this.chunkSize, this.totalSize)
+    this.size = this.endByte - this.startByte
 
     this.maxRetries = this.options.maxRetries
 
@@ -35,7 +35,7 @@ export default class Chunk {
 
   onSuccess(e, response, resolve) {
     if (this.options.requestSucceed(response, this)) {
-      this.status = Chunk.Success
+      this.status = ChunkStatus.Success
       this.file.removeUploadingChunk(this)
       if (this.file.isUploading()) {
         this.file.upload()
@@ -79,7 +79,7 @@ export default class Chunk {
 
   prepare() {
     return {
-      [this.options.name]: this.file.rawFile.slice(this.stardByte, this.endByte),
+      [this.options.name]: this.file.rawFile.slice(this.startByte, this.endByte),
       hash: this.fileHash,
       id: this.uid,
       fileId: this.fileId,
@@ -115,7 +115,6 @@ export default class Chunk {
     if (this.request) {
       this.request.canceled = true
       this.request.abort()
-      // this.request = null
     }
     if (this.timer) {
       clearTimeout(this.timer)
