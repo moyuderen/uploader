@@ -114,6 +114,8 @@ export const Callbacks = {
   // 文件hash计算完成
   FileReadEnd: 'fileReadEnd',
 
+  FileReadFail: 'fileReadFail',
+
   // 文件上传进度
   FileProgress: 'fileProgress',
 

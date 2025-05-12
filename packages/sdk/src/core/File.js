@@ -1,6 +1,14 @@
 import Chunk from './Chunk'
 import { FileStatus, Callbacks, CheckStatus, ChunkStatus } from './constants'
-import { generateUid, isFunction, asyncCancellableComputedHash, each, throttle } from '../shared'
+import {
+  generateUid,
+  isFunction,
+  isBoolean,
+  asyncCancellableComputedHash,
+  each,
+  throttle,
+  renderSize
+} from '../shared'
 
 export default class File {
   constructor(file, uploader, defaults) {
@@ -9,7 +17,6 @@ export default class File {
     this.uid = this.generateId()
 
     this.prevStatusLastRecord = []
-    // this.status - FileStatus.Init
 
     this.rawFile = file
     this.name = file.name || file.fileName
@@ -43,42 +50,23 @@ export default class File {
   }
 
   generateId() {
-    const customGenerateUid = this.options.customGenerateUid
-    if (!customGenerateUid) {
-      return generateUid()
-    }
-
-    if (!isFunction(customGenerateUid)) {
-      console.warn('customGenerateUid must be a function')
-      return generateUid()
-    }
-
+    const { customGenerateUid } = this.options
+    if (!isFunction(customGenerateUid)) return generateUid()
     return customGenerateUid(this) || generateUid()
   }
 
   setErrorMessage(message) {
-    this.errorMessage = message
-    return true
+    this.errorMessage = String(message)
+    return this
   }
 
   setData(data) {
-    this.data = data
-    return true
+    this.data = { ...this.data, ...data }
+    return this
   }
 
   get renderSize() {
-    const value = this.size
-    const ONE_KB = 1024
-    if (null == value || value == '') {
-      return '0 B'
-    }
-    var unitArr = new Array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB')
-    var index = 0
-    var srcsize = parseFloat(value)
-    index = Math.floor(Math.log(srcsize) / Math.log(ONE_KB))
-    var size = srcsize / Math.pow(ONE_KB, index)
-    size = size.toFixed(2) //保留的小数位数
-    return size + ' ' + unitArr[index]
+    return renderSize(this.size)
   }
 
   changeStatus(newStatus) {
@@ -141,45 +129,49 @@ export default class File {
   }
 
   createChunks() {
-    const totalChunks = (this.totalChunks = Math.ceil(this.size / this.chunkSize))
-    for (let i = 0; i < totalChunks; i++) {
-      this.chunks.push(new Chunk(this, i))
-    }
+    this.totalChunks = Math.ceil(this.size / this.chunkSize) || 1
+    this.chunks = Array.from({ length: this.totalChunks }, (_, i) => new Chunk(this, i))
   }
 
   async read() {
-    if (this.options.withHash) {
-      this.uploader.emitCallback(Callbacks.FileReadStart, this)
-      this.changeStatus(FileStatus.Reading)
-      try {
-        const startTime = Date.now()
-        const { hash } = await this.computedHash()
-        this.hash = hash
-        this.uploader.emitCallback(Callbacks.FileReadEnd, this)
-        this.abortRead = null
-        const endTime = Date.now()
-        console.log(
-          `${this.options.useWebWoker ? 'Web Worker' : 'Normal'} Read file cost`,
-          (endTime - startTime) / 1000,
-          's'
-        )
-      } catch (e) {
-        this.abortRead = null
-        this.changeStatus(FileStatus.Init)
-        throw new Error((e && e.message) || 'read file error')
-      }
+    if (!this.options.withHash) {
+      this.createChunks()
+      this.changeStatus(FileStatus.Ready)
+      return
     }
+
+    this.uploader.emitCallback(Callbacks.FileReadStart, this)
+    this.changeStatus(FileStatus.Reading)
+
+    try {
+      const startTime = Date.now()
+      const { hash, progress } = await this._computeHash()
+      this.hash = hash
+      this.readProgress = progress
+      this.uploader.emitCallback(Callbacks.FileReadEnd, this)
+      console.log(
+        `${this.options.useWebWoker ? 'Web Worker' : 'Main Thread'} read file took`,
+        (Date.now() - startTime) / 1000,
+        's'
+      )
+    } catch (error) {
+      this.setErrorMessage('File read failed')
+      this.changeStatus(FileStatus.Init)
+      this.uploader.emitCallback(Callbacks.FileReadFail, this)
+      throw error
+    } finally {
+      this.abortRead = null
+    }
+
     this.createChunks()
     this.changeStatus(FileStatus.Ready)
   }
 
-  async computedHash() {
-    const updateReadProgress = (readProgress) => {
-      this.readProgress = readProgress
+  async _computeHash() {
+    const updateReadProgress = throttle((progress) => {
+      this.readProgress = progress
       this.uploader.emitCallback(Callbacks.FileReadProgress, this)
-    }
-
-    let throttlReadProgressleHandle = throttle(updateReadProgress, 100)
+    }, 200)
 
     const { promise, abort } = asyncCancellableComputedHash(
       {
@@ -187,10 +179,9 @@ export default class File {
         chunkSize: this.chunkSize,
         useWebWoker: this.options.useWebWoker
       },
-      ({ progress: readProgress }) => {
-        throttlReadProgressleHandle(readProgress)
-      }
+      ({ progress: readProgress }) => updateReadProgress(readProgress)
     )
+
     this.abortRead = abort
     const hashResult = await promise
     updateReadProgress(hashResult.progress)
@@ -284,13 +275,11 @@ export default class File {
     }
 
     if (this.isUploadSuccess()) {
-      this.merge()
-      return
+      return this.merge()
     }
 
     if (this.isSuccess()) {
-      this.success()
-      return
+      return this.success()
     }
 
     const readyChunks = this.chunks.filter((chunk) => chunk.status === ChunkStatus.Ready)
@@ -317,7 +306,6 @@ export default class File {
       Promise.race(readyInUploadQueue.map((chunk) => chunk.send()))
       return
     }
-    // console.log('hasErrorChunk', readyChunks, this.uploadingChunks)
     const hasErrorChunk = this.chunks.some((chunk) => chunk.status === ChunkStatus.Fail)
     if (hasErrorChunk) {
       this.uploadFail()
@@ -333,20 +321,17 @@ export default class File {
       const p = this.options.fakeProgress ? chunk.fakeProgress : chunk.progress
       return (total += p * (chunk.size / this.size))
     }, 0)
-
     this.progress = Math.min(1, progress)
-
     if (this.isUploadSuccess() || this.isSuccess()) {
       this.progress = 1
     }
-
     this.uploader.emitCallback(Callbacks.FileProgress, this)
   }
 
   uploadFail() {
     this.changeStatus(FileStatus.UploadFail)
     this.uploader.emitCallback(Callbacks.FileUploadFail, this)
-    this.continueUpload()
+    this._continueUpload()
   }
 
   uploadSuccess() {
@@ -365,7 +350,7 @@ export default class File {
     try {
       const result = merge(this)
       const data = await Promise.resolve(result)
-      if (typeof data === 'boolean') {
+      if (isBoolean(data)) {
         data ? this.success() : this.mergeFail()
       } else {
         this.url = data
@@ -380,36 +365,26 @@ export default class File {
   mergeFail() {
     this.changeStatus(FileStatus.Fail)
     this.uploader.emitCallback(Callbacks.FileFail, this)
-    this.continueUpload()
+    this._continueUpload()
   }
 
   success() {
     this.changeStatus(FileStatus.Success)
     this.progress = 1
     this.uploader.emitCallback(Callbacks.FileSuccess, this)
-    this.continueUpload()
+    this._continueUpload()
   }
 
-  continueUpload() {
-    let firstPauseFile
-    for (let i = 0; i < this.uploader.fileList.length; i++) {
-      const file = this.uploader.fileList[i]
-      if (file.isPause()) {
-        firstPauseFile = file
-        break
-      }
-    }
+  _continueUpload() {
+    const firstPauseFile = this.uploader.fileList.find((file) => file.isPause())
     if (firstPauseFile) {
       firstPauseFile.resume()
     }
-
     this.uploader.upload()
   }
 
   cancel() {
-    this.uploadingChunks.forEach((chunk) => {
-      chunk.abort()
-    })
+    this.uploadingChunks.forEach((chunk) => chunk.abort())
     this.uploadingChunks.clear()
   }
 

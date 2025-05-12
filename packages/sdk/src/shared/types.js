@@ -26,3 +26,9 @@ export const isPromise = (promise) => {
 export const isString = function (a) {
   return typeof a === 'string'
 }
+
+export const isBoolean = function (a) {
+  return typeof a === 'boolean'
+}
+
+
