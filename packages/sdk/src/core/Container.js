@@ -1,4 +1,4 @@
-import { each, extend } from '@/shared'
+import { each, extend } from '../shared/index.js'
 
 class Container {
   constructor(uploader) {
