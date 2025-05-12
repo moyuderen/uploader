@@ -8,8 +8,8 @@ export const defaultOptions = {
   limit: 10,
   autoUpload: true,
   customGenerateUid: null,
-  beforeAdd: (file) => true,
-  beforeRemove: (file) => true,
+  beforeAdd: (_file) => true,
+  beforeRemove: (_file) => true,
   addFailToRemove: true,
   chunkSize: 2 * 1024 * 1024, // 2M
   fakeProgress: true,
@@ -27,6 +27,6 @@ export const defaultOptions = {
   maxConcurrency: 6,
   maxRetries: 3,
   retryInterval: 1000,
-  checkRequest: (file) => true,
-  mergeRequest: (file) => true
+  checkRequest: (_file) => true,
+  mergeRequest: (_file) => true
 }

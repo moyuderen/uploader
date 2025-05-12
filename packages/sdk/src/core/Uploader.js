@@ -12,38 +12,7 @@ export default class Uploader {
 
     this.options = extend(defaultOptions, options)
     this.fileList = this.options.fileList || []
-    this.listenerFiles()
-  }
-
-  assignBrowse(domNode, attributes) {
-    if (attributes) {
-      const { accept } = attributes
-      if (accept) {
-        if (isString(accept)) {
-          attributes.accept = accept
-        } else if (isArray(accept)) {
-          attributes.accept = accept.join(',')
-        }
-      }
-      extend(
-        {
-          multiple: this.options.multiple,
-          accept: this.options.accept
-        },
-        attributes
-      )
-    } else {
-      attributes = {
-        multiple: this.options.multiple,
-        accept: this.options.accept
-      }
-    }
-
-    this.container.assignBrowse(domNode, attributes)
-  }
-
-  assignDrop(domNode) {
-    this.container.assignDrop(domNode)
+    this._setupFileListeners()
   }
 
   on(name, fn) {
@@ -58,8 +27,27 @@ export default class Uploader {
     this.emit(name, ...args, this.fileList)
   }
 
-  listenerFiles() {
-    const emitAllSuccess = (file, fileList) => {
+  formatAccept(accept) {
+    if (isString(accept)) return accept
+    if (isArray(accept)) return accept.join(',')
+    return ''
+  }
+
+  assignBrowse(domNode, userAttributes) {
+    const { accept, ...attributes } = userAttributes
+    const defaults = {
+      multiple: this.options.multiple,
+      accept: this.formatAccept(accept || this.options.accept)
+    }
+    this.container.assignBrowse(domNode, extend({}, defaults, attributes))
+  }
+
+  assignDrop(domNode) {
+    this.container.assignDrop(domNode)
+  }
+
+  _setupFileListeners() {
+    const checkAllSuccess = (file, fileList) => {
       if (!fileList.length) {
         return
       }
@@ -69,8 +57,8 @@ export default class Uploader {
       }
     }
 
-    this.on(Callbacks.FileSuccess, emitAllSuccess)
-    this.on(Callbacks.FileRemove, emitAllSuccess)
+    this.on(Callbacks.FileSuccess, checkAllSuccess)
+    this.on(Callbacks.FileRemove, checkAllSuccess)
   }
 
   setDefaultFileList(fileList) {
@@ -79,67 +67,28 @@ export default class Uploader {
     })
   }
 
-  async addFiles(arrayLike, e) {
-    const { limit, beforeAdd } = this.options
+  async addFiles(arrayLike) {
+    const { limit, multiple, addFailToRemove, beforeAdd, autoUpload } = this.options
     let originFiles = [...arrayLike]
 
-    if (limit > 0) {
-      if (originFiles.length + this.fileList.length > limit) {
-        this.emitCallback(Callbacks.Exceed, originFiles)
-        return
-      }
-    }
+    if (originFiles.length === 0) return
 
-    if (originFiles.length === 0) {
+    if (limit > 0 && originFiles.length + this.fileList.length > limit) {
+      this.emitCallback(Callbacks.Exceed, originFiles)
       return
     }
 
-    if (!this.options.multiple) {
+    if (!multiple) {
       originFiles = originFiles.slice(0, 1)
     }
 
-    let newFileList = originFiles.map((file) => new File(file, this))
-
-    const fileAdd = (file) => {
-      this.fileList.push(file)
-      this.emitCallback(Callbacks.FileAdded, file)
-    }
-
-    const fileAddFail = (file) => {
-      this.fileList.push(file)
-      file.changeStatus(FileStatus.AddFail)
-      this.emitCallback(Callbacks.FileAddFail, file)
-    }
-
-    const handleBefore = async (file) => {
-      if (beforeAdd && isFunction(beforeAdd)) {
-        const before = beforeAdd(file)
-        if (isPromise(before)) {
-          try {
-            await before
-            fileAdd(file)
-          } catch (e) {
-            fileAddFail(file)
-          }
-        } else {
-          if (before !== false) {
-            fileAdd(file)
-          } else {
-            fileAddFail(file)
-          }
-        }
-      } else {
-        fileAdd(file)
-      }
-    }
-
-    await Promise.all(newFileList.map((file) => handleBefore(file)))
+    const newFileList = originFiles.map((file) => new File(file, this))
+    await Promise.all(newFileList.map((file) => this._handleFileAdd(file), beforeAdd))
 
     this.fileList = this.fileList.filter((file) => {
-      if (file.isAddFail() && this.options.addFailToRemove === true) {
+      if (file.isAddFail() && addFailToRemove) {
         this.doRemove(file)
         return false
-      } else {
       }
       return true
     })
@@ -148,9 +97,27 @@ export default class Uploader {
       this.emitCallback(Callbacks.FilesAdded, this.fileList)
     }
 
-    if (this.options.autoUpload) {
+    if (autoUpload) {
       this.submit()
     }
+  }
+
+  async _handleFileAdd(file, beforeAdd) {
+    try {
+      // 如果是函数则进行结果判断，否则认为校验通过
+      if (isFunction(beforeAdd)) {
+        const result = await beforeAdd(file)
+        // 如果返回的是false则失败，如果不返回或者返回为其他值如true则认为成功
+        if (result === false) {
+          throw new Error('Before add rejected')
+        }
+      }
+      this.emitCallback(Callbacks.FileAdded, file)
+    } catch {
+      file.changeStatus(FileStatus.AddFail)
+      this.emitCallback(Callbacks.FileAddFail, file)
+    }
+    this.fileList.push(file)
   }
 
   async upload() {
