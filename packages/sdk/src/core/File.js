@@ -7,7 +7,8 @@ import {
   asyncCancellableComputedHash,
   each,
   throttle,
-  renderSize
+  renderSize,
+  parseData
 } from '../shared'
 
 export default class File {
@@ -190,7 +191,7 @@ export default class File {
 
   _processData(processType) {
     const { data: optionData, processData } = this.options
-    const defaults = { ...optionData, ...this.data }
+    const defaults = { ...parseData(optionData), ...this.data }
     if (!isFunction(processData)) {
       return defaults
     }

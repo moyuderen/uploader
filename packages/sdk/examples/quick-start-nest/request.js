@@ -51,7 +51,7 @@ export const customRequest = (options) => {
 }
 
 export const checkRequest = async (file, datas) => {
-  console.log('check data', datas)
+  // console.log('check data', datas)
   const data = await fetch(
     `http://localhost:3000/check?hash=${file.hash}&filename=${file.name}&status=none`,
     {}
@@ -61,7 +61,7 @@ export const checkRequest = async (file, datas) => {
 }
 
 export const mergeRequest = async (file, datas) => {
-  console.log('merge data', datas)
+  // console.log('merge data', datas)
   await fetch(`http://localhost:3000/merge?hash=${file.hash}&filename=${file.name}`, {})
   return 'hshs'
 }

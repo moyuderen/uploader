@@ -1,4 +1,4 @@
-import { generateUid, isFunction } from '../shared'
+import { generateUid, isFunction, parseData } from '../shared'
 import { ChunkStatus, FileStatus, ProcessType } from './constants'
 import { request } from './request'
 
@@ -90,7 +90,7 @@ export default class Chunk {
       size: this.size,
       totalSize: this.totalSize,
       totalChunks: this.totalChunks,
-      ...data,
+      ...parseData(data),
       ...fileData
     }
     if (!isFunction(processData)) {
@@ -108,7 +108,7 @@ export default class Chunk {
         action,
         name,
         withCredentials,
-        headers,
+        headers: parseData(headers),
         data: this.prepare(),
         onSuccess: (e, response) => this.onSuccess(e, response, resolve),
         onFail: (e) => this.onFail(e, reject),

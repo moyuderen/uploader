@@ -27,6 +27,14 @@ export default class Uploader {
     this.emit(name, ...args, this.fileList)
   }
 
+  updateData(data) {
+    this.options.data = data
+  }
+
+  updateHeaders(headers) {
+    this.options.headers = headers
+  }
+
   formatAccept(accept) {
     if (isString(accept)) return accept
     if (isArray(accept)) return accept.join(',')

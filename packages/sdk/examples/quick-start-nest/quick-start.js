@@ -21,13 +21,15 @@ createApp({
     uploader.value = create({
       action: 'http://localhost:3000/upload',
       limit: 5,
-      data: {
-        bucketName: 'bucketName',
-        filePath: 'filePath',
-        useHash: false
+      data() {
+        return {
+          bucketName: 'bucketName',
+          filePath: 'filePath',
+          useHash: false
+        }
       },
-      processData: (data, type) => {
-        console.log(data, type)
+      processData: (data, _type) => {
+        return { ...data, test: 1 }
       },
       // customRequest,
       requestSucceed,
