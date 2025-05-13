@@ -1,11 +1,11 @@
 const { createApp, ref, reactive, onMounted, watch } = Vue
-const { VideoPause, VideoPlay, RefreshRight, CircleClose } = ElementPlusIconsVue
+// const { VideoPause, VideoPlay, RefreshRight, CircleClose } = ElementPlusIconsVue
 
 // dist
 // import { create, FileStatus, ChunkStatus, CheckStatus, Callbacks } from '../dist/sdk.mjs'
 
 // dev
-import { create, FileStatus, Callbacks } from '../../src/index.js'
+import { create, FileStatus, Callbacks, CheckStatus } from '../../src/index.js'
 import { requestSucceed, customRequest, checkRequest, mergeRequest } from './request.js'
 
 const app = createApp({
@@ -34,7 +34,8 @@ const app = createApp({
       withCredentials: true,
       data: {
         bucket: 'test-public',
-        filePath: 'files/test01/'
+        filePath: 'files/test01/',
+        status: CheckStatus.None
       },
       headers: {
         userauth: 'xxxxx-xxxx-xxxxx'
@@ -170,21 +171,18 @@ const app = createApp({
     }
 
     return {
+      FileStatus,
+      CheckStatus,
       actionList,
       drawer,
       options,
-      FileStatus,
       files,
       submit,
       clear,
       remove,
       pause,
       resume,
-      retry,
-      VideoPause,
-      VideoPlay,
-      RefreshRight,
-      CircleClose
+      retry
     }
   }
 })

@@ -16,9 +16,10 @@
       <el-button type="primary" style="float: right; margin: 10px;"  @click="drawer = true" >Set Option</el-button>
       <el-drawer v-model="drawer" :with-header="false" size="50%">
         <el-form
+          label-position="left"
           :model="options"
           ref="form"
-          label-width="120px"
+          label-width="180px"
           :inline="false"
         >
           <el-form-item label="drag">
@@ -78,6 +79,12 @@
                 <span>ms</span>
               </template>
             </el-input-number>
+          </el-form-item>
+          <el-divider content-position="left">Server</el-divider>
+          <el-form-item label="Check Response Status">
+            <el-radio-group v-model="options.data.status">
+              <el-radio v-for="(value, key) in CheckStatus" :value="value" ::key="key">{{key}}</el-radio>
+            </el-radio-group>
           </el-form-item>
         </el-form>
       </el-drawer>
