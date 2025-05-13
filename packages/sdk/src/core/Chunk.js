@@ -110,6 +110,10 @@ export default class Chunk {
         withCredentials,
         headers: parseData(headers),
         data: this.prepare(),
+        query: {
+          ...parseData(this.options.data),
+          ...this.file.data
+        },
         onSuccess: (e, response) => this.onSuccess(e, response, resolve),
         onFail: (e) => this.onFail(e, reject),
         onProgress: (e) => this.onProgress(e)

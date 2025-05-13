@@ -5,6 +5,7 @@ export function request(options) {
     responseType = 'json',
     action,
     data,
+    // query,
     headers,
     // name,
     onSuccess,
