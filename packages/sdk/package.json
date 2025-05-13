@@ -9,8 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
-    "dev:play": "vite build --watch",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite build --watch"
   },
   "keywords": [
     "uploader",
