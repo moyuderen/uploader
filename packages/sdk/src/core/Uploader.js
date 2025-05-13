@@ -35,6 +35,10 @@ export default class Uploader {
     this.options.headers = headers
   }
 
+  setOption(options) {
+    this.options = extend(this.options, options)
+  }
+
   formatAccept(accept) {
     if (isString(accept)) return accept
     if (isArray(accept)) return accept.join(',')

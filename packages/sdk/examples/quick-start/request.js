@@ -1,4 +1,10 @@
-import { CheckStatus } from '../../src/core/constants'
+const queryString = (object) => {
+  let str = ''
+  for (const [key, value] of Object.entries(object)) {
+    str += `&${key}=${value}`
+  }
+  return str
+}
 
 export const requestSucceed = (response) => {
   const { status } = response
@@ -9,17 +15,22 @@ export const requestSucceed = (response) => {
 }
 
 export const customRequest = (options) => {
-  const { action, data, headers, name, withCredentials, onSuccess, onFail, onProgress } = options
+  const { action, data, query, headers, name, withCredentials, onSuccess, onFail, onProgress } =
+    options
   const realData = {
     fileHashCode: data.hash,
     uploadId: data.fileId,
     chunkNumber: data.index + 1,
     chunkSize: data.size,
     totalChunks: data.totalChunks,
-    [name]: data[name]
+    [name]: data[name],
+    hash: data.hash,
+    filename: data.filename,
+    index: data.index,
+    ...query
   }
-
   const formData = new FormData()
+
   Object.keys(realData).forEach((key) => {
     formData.append(key, realData[key])
   })
@@ -27,7 +38,7 @@ export const customRequest = (options) => {
   const source = CancelToken.source()
 
   axios({
-    url: action,
+    url: 'http://localhost:3000/upload',
     method: 'POST',
     data: formData,
     headers: headers,
@@ -49,15 +60,25 @@ export const customRequest = (options) => {
   }
 }
 
-export const checkRequest = async (file) => {
-  const data = await fetch(`/api/check?hash=${file.hash}&filename=${file.name}`, {})
-  return {
-    status: CheckStatus.Part,
-    data: [0, 2, 4, 6, 8, 10] // data是已经上传成功chunk的chunkIndex
+export const checkRequest = async (file, query) => {
+  const params = {
+    hash: file.hash,
+    filename: file.name,
+    status: 'none',
+    ...query
   }
+  const data = await fetch(`http://localhost:3000/check?${queryString(params)}`)
+
+  return await data.json()
 }
 
-export const mergeRequest = async (file) => {
-  await fetch(`/api/merge?hash=${file.hash}&filename=${file.name}`, {})
-  return true
+export const mergeRequest = async (file, query) => {
+  const params = {
+    hash: file.hash,
+    filename: file.name,
+    ...query
+  }
+  const data = await fetch(`http://localhost:3000/merge?${queryString(params)}`)
+  const json = await data.json()
+  return json.data
 }

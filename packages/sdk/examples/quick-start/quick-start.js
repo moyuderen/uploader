@@ -1,4 +1,5 @@
-const { createApp, ref, onMounted } = Vue
+const { createApp, ref, reactive, onMounted, watch } = Vue
+const { VideoPause, VideoPlay, RefreshRight, CircleClose } = ElementPlusIconsVue
 
 // dist
 // import { create, FileStatus, ChunkStatus, CheckStatus, Callbacks } from '../dist/sdk.mjs'
@@ -7,8 +8,41 @@ const { createApp, ref, onMounted } = Vue
 import { create, FileStatus, Callbacks } from '../../src/index.js'
 import { requestSucceed, customRequest, checkRequest, mergeRequest } from './request.js'
 
-createApp({
+const app = createApp({
   setup() {
+    const drawer = ref(false)
+    const actionList = [
+      'http://localhost:3000/upload',
+      'https://jsonplaceholder.typicode.com/posts'
+    ]
+    const options = reactive({
+      drag: true,
+      // input相关
+      accept: '*',
+      multiple: true,
+      // 文件相关
+      limit: 10,
+      autoUpload: true,
+      addFailToRemove: true,
+      chunkSize: 2,
+      fakeProgress: true,
+      withHash: true,
+      useWebWoker: true,
+      // 上传相关
+      name: 'file',
+      action: 'http://localhost:3000/upload',
+      withCredentials: true,
+      data: {
+        bucket: 'test-public',
+        filePath: 'files/test01/'
+      },
+      headers: {
+        userauth: 'xxxxx-xxxx-xxxxx'
+      },
+      maxConcurrency: 6,
+      maxRetries: 3,
+      retryInterval: 1000
+    })
     const uploader = ref(null)
     const files = ref([])
 
@@ -19,18 +53,8 @@ createApp({
     })
 
     uploader.value = create({
-      action: 'https://jsonplaceholder.typicode.com/posts',
-      limit: 5,
-      chunkSize: 1024 * 3,
-      data: {
-        bucketName: 'bucketName',
-        filePath: 'filePath',
-        useHash: false
-      },
-      processData: (data, type) => {
-        console.log(data, type)
-        return data
-      },
+      ...options,
+      chunkSize: options.chunkSize * 1024 * 1024,
       customRequest,
       requestSucceed,
       checkRequest,
@@ -105,15 +129,21 @@ createApp({
     uploader.value.setDefaultFileList([
       {
         id: '1',
-        name: 'baidu.png',
+        name: 'default.png',
         url: 'http://baidu.com'
-      },
-      {
-        id: '2',
-        name: 'google.png',
-        url: 'http://google.com'
       }
     ])
+
+    watch(
+      () => options,
+      () => {
+        uploader.value.setOption({
+          ...options,
+          chunkSize: options.chunkSize * 1024 * 1024
+        })
+      },
+      { deep: true }
+    )
 
     const submit = () => {
       uploader.value.submit()
@@ -140,6 +170,9 @@ createApp({
     }
 
     return {
+      actionList,
+      drawer,
+      options,
       FileStatus,
       files,
       submit,
@@ -147,7 +180,13 @@ createApp({
       remove,
       pause,
       resume,
-      retry
+      retry,
+      VideoPause,
+      VideoPlay,
+      RefreshRight,
+      CircleClose
     }
   }
-}).mount('#app')
+})
+app.use(ElementPlus)
+app.mount('#app')
