@@ -63,5 +63,9 @@ export const parseData = (data) => {
     return data() || {}
   }
 
-  return data
+  if (isPlainObject(data)) {
+    return data
+  }
+
+  return {}
 }
