@@ -3,6 +3,8 @@ import { each, extend } from '../shared/index.js'
 class Container {
   constructor(uploader) {
     this.uploader = uploader
+    this.listeners = [] // 存储事件监听器
+    this.inputs = [] // 存储动态创建的 input 元素
   }
 
   assignBrowse(domNode, attributes) {
@@ -32,6 +34,7 @@ class Container {
 
     each(eventHandlers, (handler, event) => {
       domNode.addEventListener(event, handler, { passive: false })
+      this.listeners.push({ node: domNode, event, handler })
     })
   }
 
@@ -49,6 +52,7 @@ class Container {
       height: '1px'
     })
     domNode.appendChild(input)
+    this.inputs.push(input)
     return input
   }
 
@@ -58,14 +62,18 @@ class Container {
   }
 
   attachBrowseEvents(domNode, input) {
-    domNode.addEventListener('click', () => input.click(), { passive: true })
-    input.addEventListener(
-      'change',
-      (e) => {
-        this.uploader.addFiles(e.target.files, e)
-        e.target.value = ''
-      },
-      { passive: true }
+    const clickHandler = () => input.click()
+    const changeHandler = (e) => {
+      this.uploader.addFiles(e.target.files, e)
+      e.target.value = ''
+    }
+
+    domNode.addEventListener('click', clickHandler, { passive: true })
+    input.addEventListener('change', changeHandler, { passive: true })
+
+    this.listeners.push(
+      { node: domNode, event: 'click', handler: clickHandler },
+      { node: input, event: 'change', handler: changeHandler }
     )
   }
 
@@ -73,6 +81,22 @@ class Container {
     e.preventDefault()
     e.stopPropagation()
     this.uploader.addFiles(e.dataTransfer.files, e)
+  }
+
+  destroy() {
+    this.listeners.forEach(({ node, event, handler }) => {
+      node.removeEventListener(event, handler)
+    })
+    this.listeners = []
+
+    this.inputs.forEach((input) => {
+      if (input.parentNode) {
+        input.parentNode.removeChild(input)
+      }
+    })
+    this.inputs = []
+
+    return this
   }
 }
 

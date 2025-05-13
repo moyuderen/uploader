@@ -1,4 +1,4 @@
-import { isFunction } from '../shared'
+import { isFunction, isString } from '../shared'
 export default class Event {
   constructor() {
     this.events = new Map()
@@ -41,5 +41,14 @@ export default class Event {
       this.off(name, onceCallback)
     }
     this.on(name, onceCallback)
+  }
+
+  clear(name) {
+    if (name === undefined) {
+      this.events.clear()
+    } else if (isString(name) && this.events.has(name)) {
+      this.events.set(name, [])
+    }
+    return this
   }
 }

@@ -232,4 +232,10 @@ export default class Uploader {
       file.retry()
     }
   }
+
+  destroy() {
+    this.clear()
+    this.event.clear()
+    this.container.destroy()
+  }
 }
