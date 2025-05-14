@@ -1,7 +1,7 @@
 {
   "name": "@tinyuploader/sdk",
   "version": "2.1.1",
-  "description": "",
+  "description": "大文件分片上传解决方案sdk, 可用于各种UI框架",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -15,6 +15,11 @@
   "keywords": [
     "uploader",
     "upload",
+    "file",
+    "big file",
+    "retry",
+    "pause",
+    "resume",
     "上传",
     "分片上传",
     "大文件",
