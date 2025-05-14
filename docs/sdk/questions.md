@@ -20,7 +20,7 @@ pnpm run server:dev
 axios.get('http://localhost:3000/check', {
   params: {
     hash: 'xxxx-xxxx-xxxx',
-   filename: 'xxx.png',
+    filename: 'xxx.png',
     status: 'none' // none, part, waitMerge, success
   },
 })
@@ -48,7 +48,7 @@ axios.post('http://localhost:3000/upload', { data: formData })
 axios.get('http://localhost:3000/merge', {
   params: {
     hash: 'xxxx-xxxx-xxxx',
-   filename: 'xxx.png',
+    filename: 'xxx.png',
   },
 })
 ```
