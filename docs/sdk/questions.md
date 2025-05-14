@@ -14,7 +14,7 @@ outline: deep
 pnpm run server:dev
 ```
 
-1. check 接口
+1. `check` 接口
 
 ```js
 axios.get('http://localhost:3000/check', {
