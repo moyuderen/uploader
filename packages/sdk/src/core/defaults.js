@@ -1,3 +1,5 @@
+import { CheckStatus } from './constants.js'
+
 export const defaultOptions = {
   // input 属性相关
   accept: '*',
@@ -27,7 +29,7 @@ export const defaultOptions = {
   maxConcurrency: 6,
   maxRetries: 3,
   retryInterval: 1000,
-  checkRequest: (_file) => true,
+  checkRequest: (_file) => ({ status: CheckStatus.None }),
   mergeRequest: (_file) => true,
   processData: (data, _processType) => data
 }
