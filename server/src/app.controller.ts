@@ -17,8 +17,8 @@ import { join } from 'path';
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
-  private readonly storagePath = join(__dirname, '..', 'tmp');
-
+  private readonly storagePath =
+    process.env.TMP_DIR || join(__dirname, '..', 'public');
   @Get()
   getHello(): string {
     return this.appService.getHello();
@@ -29,7 +29,8 @@ export class AppController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: join(__dirname, '..', 'tmp') + '/', // 设置文件保存位置为根目录下的 public 文件夹
+        destination:
+          process.env.TMP_DIR || join(__dirname, '..', 'public') + '/',
       }),
     }),
   )

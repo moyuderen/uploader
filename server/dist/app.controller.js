@@ -23,7 +23,7 @@ const path_1 = require("path");
 let AppController = class AppController {
     constructor(appService) {
         this.appService = appService;
-        this.storagePath = (0, path_1.join)(__dirname, '..', 'tmp');
+        this.storagePath = process.env.TMP_DIR || (0, path_1.join)(__dirname, '..', 'public');
     }
     getHello() {
         return this.appService.getHello();
@@ -106,7 +106,7 @@ __decorate([
     (0, common_1.Post)('upload'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
         storage: (0, multer_1.diskStorage)({
-            destination: (0, path_1.join)(__dirname, '..', 'tmp') + '/',
+            destination: process.env.TMP_DIR || (0, path_1.join)(__dirname, '..', 'public') + '/',
         }),
     })),
     __param(0, (0, common_1.UploadedFile)()),

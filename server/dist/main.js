@@ -11,7 +11,8 @@ async function bootstrap() {
         },
         credentials: true,
     });
-    app.useStaticAssets((0, path_1.join)(__dirname, '..', 'tmp'), {
+    const storagePath = process.env.TMP_DIR || (0, path_1.join)(__dirname, '..', 'public');
+    app.useStaticAssets(storagePath, {
         prefix: '/static',
         setHeaders: (res, path) => {
             console.log(`[${new Date().toISOString()}] 提供静态文件: ${path}`);
