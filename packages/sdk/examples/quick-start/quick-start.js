@@ -58,7 +58,7 @@ const app = createApp({
       chunkSize: options.chunkSize * 1024 * 1024,
       customRequest,
       requestSucceed,
-      // checkRequest,
+      checkRequest,
       mergeRequest
     })
 

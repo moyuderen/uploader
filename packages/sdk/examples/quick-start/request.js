@@ -1,11 +1,3 @@
-const queryString = (object) => {
-  let str = ''
-  for (const [key, value] of Object.entries(object)) {
-    str += `&${key}=${value}`
-  }
-  return str
-}
-
 export const requestSucceed = (response) => {
   const { status } = response
   if (status >= 200 && status < 300) {
@@ -27,6 +19,7 @@ export const customRequest = (options) => {
     hash: data.hash,
     filename: data.filename,
     index: data.index,
+    // error: '1',
     ...query
   }
   const formData = new FormData()
@@ -61,24 +54,32 @@ export const customRequest = (options) => {
 }
 
 export const checkRequest = async (file, query) => {
-  const params = {
-    hash: file.hash,
-    filename: file.name,
-    status: 'none',
-    ...query
+  const { data, status } = await axios.get('http://localhost:3000/check', {
+    params: {
+      hash: file.hash,
+      filename: file.name,
+      status: 'none',
+      ...query
+      // error: '1'
+    }
+  })
+  if (status !== 200) {
+    throw new Error()
   }
-  const data = await fetch(`http://localhost:3000/check?${queryString(params)}`)
-
-  return await data.json()
+  return data
 }
 
 export const mergeRequest = async (file, query) => {
-  const params = {
-    hash: file.hash,
-    filename: file.name,
-    ...query
+  const { data, status } = await axios.get('http://localhost:3000/merge', {
+    params: {
+      hash: file.hash,
+      filename: file.name,
+      ...query
+      // error: '1'
+    }
+  })
+  if (status !== 200) {
+    throw new Error()
   }
-  const data = await fetch(`http://localhost:3000/merge?${queryString(params)}`)
-  const json = await data.json()
-  return json.data
+  return data.data
 }
