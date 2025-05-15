@@ -29,6 +29,7 @@ let AppController = class AppController {
         return this.appService.getHello();
     }
     async uploadFile(file, body) {
+        (0, utils_1.interceptRequest)();
         const { filename, hash, index } = body;
         const chunkDir = `${this.storagePath}/${hash}_${filename}`;
         if (!fs.existsSync(chunkDir)) {
@@ -40,6 +41,7 @@ let AppController = class AppController {
         return { data: true };
     }
     async merge(hash, filename) {
+        (0, utils_1.interceptRequest)();
         const chunkDir = `${this.storagePath}/${hash}_${filename}`;
         const files = fs.readdirSync(chunkDir);
         files.sort((aVal, bVal) => {
@@ -68,6 +70,7 @@ let AppController = class AppController {
         };
     }
     async checkFile(hash, filename, status) {
+        (0, utils_1.interceptRequest)();
         await (0, utils_1.sleep)(500);
         if (status === 'success') {
             return {

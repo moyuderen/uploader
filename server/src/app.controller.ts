@@ -10,7 +10,7 @@ import {
 import * as fs from 'fs';
 import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { sleep } from './utils';
+import { sleep, interceptRequest } from './utils';
 import { diskStorage } from 'multer';
 import { join } from 'path';
 
@@ -37,6 +37,7 @@ export class AppController {
     }),
   )
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body) {
+    interceptRequest();
     const { filename, hash, index } = body;
     const chunkDir = `${this.storagePath}/${hash}_${filename}`;
 
@@ -54,6 +55,7 @@ export class AppController {
     @Query('hash') hash: string,
     @Query('filename') filename: string,
   ) {
+    interceptRequest();
     const chunkDir = `${this.storagePath}/${hash}_${filename}`;
     const files = fs.readdirSync(chunkDir);
 
@@ -95,6 +97,7 @@ export class AppController {
     @Query('filename') filename: string,
     @Query('status') status: string,
   ) {
+    interceptRequest();
     await sleep(500);
     if (status === 'success') {
       return {
