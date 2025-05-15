@@ -11,7 +11,7 @@ export default class Uploader {
     this.event = new Event()
 
     this.options = extend(defaultOptions, options)
-    this.fileList = this.options.fileList || []
+    this.fileList = (this.options.fileList || []).map((file) => new File(file, this, file))
     this._setupFileListeners()
   }
 

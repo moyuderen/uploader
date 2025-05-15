@@ -55,6 +55,13 @@ const app = createApp({
 
     uploader.value = create({
       ...options,
+      fileList: [
+        {
+          id: '3',
+          name: 'default1.png',
+          url: 'http://baidu.com'
+        }
+      ],
       chunkSize: options.chunkSize * 1024 * 1024,
       customRequest,
       requestSucceed,
