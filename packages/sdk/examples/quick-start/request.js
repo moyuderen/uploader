@@ -6,6 +6,9 @@ export const requestSucceed = (response) => {
   return false
 }
 
+// const BASE_URL = 'http://localhost:3000'
+const BASE_URL = 'https://uploader-server-seven.vercel.app/file'
+
 export const customRequest = (options) => {
   const { action, data, query, headers, name, withCredentials, onSuccess, onFail, onProgress } =
     options
@@ -31,7 +34,7 @@ export const customRequest = (options) => {
   const source = CancelToken.source()
 
   axios({
-    url: 'http://localhost:3000/upload',
+    url: `${BASE_URL}/upload`,
     method: 'POST',
     data: formData,
     headers: headers,
@@ -53,15 +56,16 @@ export const customRequest = (options) => {
   }
 }
 
-export const checkRequest = async (file, query) => {
-  const { data, status } = await axios.get('http://localhost:3000/check', {
+export const checkRequest = async (file, query, headers) => {
+  const { data, status } = await axios.get(`${BASE_URL}/check`, {
     params: {
       hash: file.hash,
       filename: file.name,
       status: 'none',
       ...query
       // error: '1'
-    }
+    },
+    headers
   })
   if (status !== 200) {
     throw new Error()
@@ -69,14 +73,15 @@ export const checkRequest = async (file, query) => {
   return data
 }
 
-export const mergeRequest = async (file, query) => {
-  const { data, status } = await axios.get('http://localhost:3000/merge', {
+export const mergeRequest = async (file, query, headers) => {
+  const { data, status } = await axios.get(`${BASE_URL}/merge`, {
     params: {
       hash: file.hash,
       filename: file.name,
       ...query
       // error: '1'
-    }
+    },
+    headers
   })
   if (status !== 200) {
     throw new Error()

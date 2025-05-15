@@ -241,7 +241,9 @@ export default class File {
     }
 
     try {
-      const result = await Promise.resolve(check(this, this._processData(ProcessType.Check))) // 统一异步处理
+      const result = await Promise.resolve(
+        check(this, this._processData(ProcessType.Check), parseData(this.options.headers))
+      ) // 统一异步处理
 
       // 验证响应格式
       if (!result || !result.status) {
@@ -358,7 +360,11 @@ export default class File {
     }
 
     try {
-      const result = merge(this, this._processData(ProcessType.Merge))
+      const result = merge(
+        this,
+        this._processData(ProcessType.Merge),
+        parseData(this.options.headers)
+      )
       const data = await Promise.resolve(result)
       if (isBoolean(data)) {
         data ? this.success() : this.mergeFail()
