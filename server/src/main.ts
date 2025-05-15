@@ -6,9 +6,13 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({
-    // 前端withCredentials为true时需要这样设置
     origin(origin, callback) {
-      callback(null, true);
+      const allowedOrigins = ['http://localhost:5173'];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
     },
     credentials: true,
   });

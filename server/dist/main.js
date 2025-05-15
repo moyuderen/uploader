@@ -7,7 +7,13 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors({
         origin(origin, callback) {
-            callback(null, true);
+            const allowedOrigins = ['http://localhost:5173'];
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            }
+            else {
+                callback(new Error('Not allowed by CORS'));
+            }
         },
         credentials: true,
     });
