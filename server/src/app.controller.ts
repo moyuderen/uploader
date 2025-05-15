@@ -17,7 +17,7 @@ import { join } from 'path';
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
-  private readonly storagePath = join(__dirname, '..', 'public');
+  private readonly storagePath = join(__dirname, '..', 'tmp');
 
   @Get()
   getHello(): string {
@@ -29,7 +29,7 @@ export class AppController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: join(__dirname, '..', 'public') + '/', // 设置文件保存位置为根目录下的 public 文件夹
+        destination: join(__dirname, '..', 'tmp') + '/', // 设置文件保存位置为根目录下的 public 文件夹
       }),
     }),
   )

@@ -13,7 +13,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.useStaticAssets(join(__dirname, '..', 'public'), {
+  app.useStaticAssets(join(__dirname, '..', 'tmp'), {
     prefix: '/static',
     setHeaders: (res, path) => {
       console.log(`[${new Date().toISOString()}] 提供静态文件: ${path}`);
