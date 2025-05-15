@@ -23,4 +23,5 @@ hooks
 
 # server
 server/uploads
+server/public
 !server/dist

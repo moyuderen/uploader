@@ -12,10 +12,12 @@ import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { sleep } from './utils';
 import { diskStorage } from 'multer';
+import { join } from 'path';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
+  private readonly storagePath = join(__dirname, '..', 'public');
 
   @Get()
   getHello(): string {
@@ -27,13 +29,13 @@ export class AppController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: 'uploads/', // 设置文件保存位置为根目录下的 uploads 文件夹
+        destination: join(__dirname, '..', 'public') + '/', // 设置文件保存位置为根目录下的 public 文件夹
       }),
     }),
   )
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body) {
     const { filename, hash, index } = body;
-    const chunkDir = `uploads/${hash}_${filename}`;
+    const chunkDir = `${this.storagePath}/${hash}_${filename}`;
 
     if (!fs.existsSync(chunkDir)) {
       fs.mkdirSync(chunkDir);
@@ -49,7 +51,7 @@ export class AppController {
     @Query('hash') hash: string,
     @Query('filename') filename: string,
   ) {
-    const chunkDir = `uploads/${hash}_${filename}`;
+    const chunkDir = `${this.storagePath}/${hash}_${filename}`;
     const files = fs.readdirSync(chunkDir);
 
     // 按顺序合并
@@ -70,7 +72,7 @@ export class AppController {
       const filePath = chunkDir + '/' + file;
       const stream = fs.createReadStream(filePath);
       stream.pipe(
-        fs.createWriteStream('uploads/' + filename, {
+        fs.createWriteStream(`${this.storagePath}/` + filename, {
           start: startPos,
         }),
       );

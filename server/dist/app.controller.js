@@ -19,16 +19,18 @@ const app_service_1 = require("./app.service");
 const platform_express_1 = require("@nestjs/platform-express");
 const utils_1 = require("./utils");
 const multer_1 = require("multer");
+const path_1 = require("path");
 let AppController = class AppController {
     constructor(appService) {
         this.appService = appService;
+        this.storagePath = (0, path_1.join)(__dirname, '..', 'public');
     }
     getHello() {
         return this.appService.getHello();
     }
     async uploadFile(file, body) {
         const { filename, hash, index } = body;
-        const chunkDir = `uploads/${hash}_${filename}`;
+        const chunkDir = `${this.storagePath}/${hash}_${filename}`;
         if (!fs.existsSync(chunkDir)) {
             fs.mkdirSync(chunkDir);
         }
@@ -38,7 +40,7 @@ let AppController = class AppController {
         return { data: true };
     }
     async merge(hash, filename) {
-        const chunkDir = `uploads/${hash}_${filename}`;
+        const chunkDir = `${this.storagePath}/${hash}_${filename}`;
         const files = fs.readdirSync(chunkDir);
         files.sort((aVal, bVal) => {
             const a = parseInt(aVal);
@@ -55,7 +57,7 @@ let AppController = class AppController {
         files.map((file) => {
             const filePath = chunkDir + '/' + file;
             const stream = fs.createReadStream(filePath);
-            stream.pipe(fs.createWriteStream('uploads/' + filename, {
+            stream.pipe(fs.createWriteStream(`${this.storagePath}/` + filename, {
                 start: startPos,
             }));
             startPos += fs.statSync(filePath).size;
@@ -104,7 +106,7 @@ __decorate([
     (0, common_1.Post)('upload'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
         storage: (0, multer_1.diskStorage)({
-            destination: 'uploads/',
+            destination: (0, path_1.join)(__dirname, '..', 'public') + '/',
         }),
     })),
     __param(0, (0, common_1.UploadedFile)()),
