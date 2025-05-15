@@ -85,6 +85,10 @@ export default defineConfig({
           ]
         },
         {
+          text: 'Mock 接口',
+          link: '/sdk/server'
+        },
+        {
           text: '问题',
           link: '/sdk/questions'
         }
@@ -101,5 +105,8 @@ export default defineConfig({
     //   message: 'Released under the MIT License.',
     //   copyright: 'Copyright © 2024-present moyuderen'
     // }
+  },
+  markdown: {
+    lineNumbers: true
   }
 })
