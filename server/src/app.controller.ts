@@ -35,6 +35,7 @@ export class AppController {
     }),
   )
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body) {
+    console.log(process.env.TMP_DIR);
     const { filename, hash, index } = body;
     const chunkDir = `${this.storagePath}/${hash}_${filename}`;
 
