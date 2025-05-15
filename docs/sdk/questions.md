@@ -5,7 +5,7 @@ outline: deep
 
 # 问题
 
-## 模拟接口请求
+## 本地模拟接口请求
 
 在仓库 server 目录下有基于`NestJS`模拟的接口
 
@@ -42,7 +42,7 @@ axios.post('http://localhost:3000/upload', { data: formData })
 
 ```
 
-2. `merge`接口
+3. `merge`接口
 
 ```js
 axios.get('http://localhost:3000/merge', {
