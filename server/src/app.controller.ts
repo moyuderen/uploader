@@ -17,6 +17,7 @@ import { join } from 'path';
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
+  // vercel 只有/tmp目录下有read权限
   private readonly storagePath =
     process.env.TMP_DIR || join(__dirname, '..', 'public');
   @Get()
@@ -30,12 +31,12 @@ export class AppController {
     FileInterceptor('file', {
       storage: diskStorage({
         destination:
+          // vercel 只有/tmp目录下有read权限
           process.env.TMP_DIR || join(__dirname, '..', 'public') + '/',
       }),
     }),
   )
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body) {
-    console.log(process.env.TMP_DIR);
     const { filename, hash, index } = body;
     const chunkDir = `${this.storagePath}/${hash}_${filename}`;
 

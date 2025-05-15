@@ -29,7 +29,6 @@ let AppController = class AppController {
         return this.appService.getHello();
     }
     async uploadFile(file, body) {
-        console.log(process.env.TMP_DIR);
         const { filename, hash, index } = body;
         const chunkDir = `${this.storagePath}/${hash}_${filename}`;
         if (!fs.existsSync(chunkDir)) {

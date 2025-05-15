@@ -13,6 +13,7 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // vercel 只有/tmp目录下有read权限
   const storagePath = process.env.TMP_DIR || join(__dirname, '..', 'public');
   app.useStaticAssets(storagePath, {
     prefix: '/static',
