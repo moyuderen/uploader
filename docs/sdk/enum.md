@@ -1,4 +1,4 @@
-# 状态
+# 枚举
 
 ## Status {#status}
 
