@@ -33,7 +33,7 @@
 
 默认文件列表
 
-- **类型** `DefaultFile[]`, 类型[DefaultFile](./details/#defaultfile)
+- **类型** `DefaultFile[]`, 类型[DefaultFile](./interface/#default-file)
 - **默认值** `[]`
 
 ## limit
@@ -59,7 +59,7 @@
 
 **类型** `function | null`
 
-**参数** `file` [File](./details.md#file)的实例
+**参数** `file` [File](./instance.md#file)的实例
 **默认值** `null`
 **示例**
 
@@ -231,7 +231,7 @@ const uploader = new Uploader({
 
 **类型** `Function`
 
-**默认值** `(data, processType: ProcessType) => data`, [ProcessType](./details.md#processtype)
+**默认值** `(data, processType: ProcessType) => data`, [ProcessType](./enum.md#process-type)
 
 ## maxRetries
 
@@ -305,7 +305,7 @@ const checkRequest = (file) => {
 
 > [!NOTE]
 >
-> [CheckStatus.None](./details.md)
+> [CheckStatus.None](./enum.md#check-status)
 
 **示例**
 
@@ -380,7 +380,7 @@ const uploader = new Uploader({
 
 ## customRequest
 
-自定义上传接口, 默认为null,使用内置的[request](./details.md#request)请求
+自定义上传接口, 默认为null,使用内置的[request](./interface.md#request)请求
 
 **类型** `null | function`
 
@@ -389,7 +389,7 @@ const uploader = new Uploader({
 > [!WARNING]
 > 如果自定义customRequest, 需要返回一个`abort`方法来取消请求
 
-**示例** [CustomRequestOption](./details.md#customrequestoption)
+**示例** [CustomRequestOption](./interface.md#custom-request-option)
 
 ```ts
 const customRequest = (options: CustomRequestOption) => {
