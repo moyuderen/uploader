@@ -69,7 +69,7 @@ export const Events = {
   FileUploadFail: 'fileUploadFail',
   FileUploadSuccess: 'fileUploadSuccess',
   FileSuccess: 'fileSuccess',
-  // FileMergeFail: 'fileMergeFail',
+  // FileMergeFail: 'fileMergeFail', // 2.x版本删除 // [!code --]
   AllFileSuccess: 'allFilesSuccess',
   Change: 'change'
 }
@@ -231,5 +231,15 @@ enum ProcessType {
 
   /** 来自merge接口 */
   Merge = 'merge'
+}
+```
+
+## UserAttributes {#user-attributes}
+
+```typescript
+type UserAttributes = {
+  accept: string | string[]
+  multiple: boolean
+  [key: string]: any
 }
 ```

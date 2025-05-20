@@ -17,12 +17,6 @@ interface Uploader {
   clear: () => void
   destroy: () => void
 }
-
-type UserAttributes = {
-  accept: string | string[]
-  multiple: boolean
-  [key: string]: any
-}
 ```
 
 ## File {#file}
