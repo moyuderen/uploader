@@ -31,7 +31,7 @@ import UploaderDrop from './uploader-drop.vue'
 import UploaderBtn from './uploader-btn.vue'
 import UploaderList from './uploader-list.vue'
 import UploaderFile from './uploader-file.vue'
-import UploadIcon from './upload-icon.vue'
+import UploadIcon from '../icons/upload-icon.vue'
 
 export default {
   components: {

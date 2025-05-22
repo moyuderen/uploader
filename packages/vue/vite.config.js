@@ -11,6 +11,13 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "@/styles/var.scss";`
+      }
+    }
+  },
   build: {
     lib: {
       entry: './src/index.js',

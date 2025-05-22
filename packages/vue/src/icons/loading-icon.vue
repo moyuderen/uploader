@@ -1,7 +1,7 @@
 <template>
   <svg
     t="1744164716366"
-    class="tiny-uploader-icon tiny-uploader-icon-loading"
+    class="tiny-uploader-icon tiny-uploader-icon--loading"
     viewBox="0 0 1024 1024"
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"
@@ -22,14 +22,14 @@ export default {
   props: {
     size: {
       type: Number,
-      default: 12
+      default: 20
     }
   }
 }
 </script>
 
 <style lang="css">
-.tiny-uploader-icon-loading {
+.tiny-uploader-icon--loading {
   animation: tiny-circle infinite 0.75s linear;
   margin-right: 4px;
 }

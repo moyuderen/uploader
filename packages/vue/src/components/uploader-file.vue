@@ -61,12 +61,12 @@
 <script>
 import { uploaderMixin } from '../common/mixins'
 import { FileStatus } from '@tinyuploader/sdk'
-import FileIcon from './file-icon.vue'
-import PlayIcon from './play-icon.vue'
-import PauseIcon from './pause-icon.vue'
-import RetryIcon from './retry-icon.vue'
-import RemoveIcon from './remove-icon.vue'
-import LoadingIcon from './loading-icon.vue'
+import FileIcon from '../icons/file-icon.vue'
+import PlayIcon from '../icons/play-icon.vue'
+import PauseIcon from '../icons/pause-icon.vue'
+import RetryIcon from '../icons/retry-icon.vue'
+import RemoveIcon from '../icons/remove-icon.vue'
+import LoadingIcon from '../icons/loading-icon.vue'
 
 const customStatus = {
   Ready: 'Ready',
