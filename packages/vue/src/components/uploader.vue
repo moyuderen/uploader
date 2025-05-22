@@ -5,7 +5,7 @@
         <upload-icon :size="40" color="#409eff" style="margin-bottom: 6px" />
         <div>
           <span>Drop file here or</span>
-          <uploader-btn> click to upload </uploader-btn>
+          <uploader-button> click to upload </uploader-button>
         </div>
       </slot>
     </uploader-drop>
@@ -27,16 +27,16 @@
 
 <script>
 import Uploader, { Callbacks } from '@tinyuploader/sdk'
-import UploaderDrop from './uploader-drop.vue'
-import UploaderBtn from './uploader-btn.vue'
-import UploaderList from './uploader-list.vue'
-import UploaderFile from './uploader-file.vue'
 import UploadIcon from '../icons/upload-icon.vue'
+import UploaderButton from './uploader-button.vue'
+import UploaderDrop from './uploader-drop.vue'
+import UploaderFile from './uploader-file.vue'
+import UploaderList from './uploader-list.vue'
 
 export default {
   components: {
     UploaderDrop,
-    UploaderBtn,
+    UploaderButton,
     UploaderList,
     UploaderFile,
     UploadIcon

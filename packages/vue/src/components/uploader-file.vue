@@ -59,14 +59,14 @@
 </template>
 
 <script>
-import { uploaderMixin } from '../common/mixins'
 import { FileStatus } from '@tinyuploader/sdk'
+import { uploaderMixin } from '../common/mixins'
 import FileIcon from '../icons/file-icon.vue'
-import PlayIcon from '../icons/play-icon.vue'
-import PauseIcon from '../icons/pause-icon.vue'
-import RetryIcon from '../icons/retry-icon.vue'
-import RemoveIcon from '../icons/remove-icon.vue'
 import LoadingIcon from '../icons/loading-icon.vue'
+import PauseIcon from '../icons/pause-icon.vue'
+import PlayIcon from '../icons/play-icon.vue'
+import RemoveIcon from '../icons/remove-icon.vue'
+import RetryIcon from '../icons/retry-icon.vue'
 
 const customStatus = {
   Ready: 'Ready',
@@ -202,7 +202,7 @@ export default {
   width: 100%;
   border-radius: 3px;
   z-index: -1;
-  background-color: #f4f4f5;
+  background-color: var(--tiny-fill-color-light);
   opacity: 0.8;
 }
 
@@ -221,11 +221,11 @@ export default {
   width: 70px;
   text-align: left;
   margin-left: 8px;
-  color: rgb(204, 204, 204);
+  color: var(--tiny-text-color-secondary);
 }
 
 .tiny-uploader--reading {
-  background-color: #FAECD8;
+  background-color: var(--tiny-color-reading);
 }
 
 @keyframes glow {
@@ -235,16 +235,16 @@ export default {
 }
 
 .tiny-uploader--uploading {
-  background-color: #FAECD8;
+  background-color: var(--tiny-color-uploading);
 }
 
 .tiny-uploader--success {
-  background-color: #f0f9eb;
+  background-color: var(--tiny-color-success);
 }
 
 .tiny-uploader--fail {
   width: 100%!important;
-  background-color: #fef0f0;
+  background-color: var(--tiny-color-fail)
 }
 
 .tiny-uploader-actions {

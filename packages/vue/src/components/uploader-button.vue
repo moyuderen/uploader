@@ -4,12 +4,8 @@
   </span>
 </template>
 
-<script>
-
-</script>
-
-<style>
+<style lang="scss">
 .tiny-uploader-button {
-  color: #409eff;
+  color: var(--tiny-color-primary);
 }
 </style>
