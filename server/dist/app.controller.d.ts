@@ -7,10 +7,10 @@ export declare class AppController {
     uploadFile(file: Express.Multer.File, body: any): Promise<{
         data: boolean;
     }>;
-    merge(hash: string, filename: string): Promise<{
+    merge(hash: string, filename: string, error: string): Promise<{
         data: string;
     }>;
-    checkFile(hash: string, filename: string, status: string): Promise<{
+    checkFile(hash: string, filename: string, status: string, error: string): Promise<{
         status: string;
         data: string;
     } | {

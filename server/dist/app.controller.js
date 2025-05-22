@@ -30,8 +30,11 @@ let AppController = class AppController {
     }
     async uploadFile(file, body) {
         (0, utils_1.interceptRequest)();
-        const { filename, hash, index } = body;
+        const { filename, hash, index, error } = body;
         const chunkDir = `${this.storagePath}/${hash}_${filename}`;
+        if (error) {
+            throw new common_1.HttpException('Mock upload fail !', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         if (!fs.existsSync(chunkDir)) {
             fs.mkdirSync(chunkDir);
         }
@@ -40,8 +43,11 @@ let AppController = class AppController {
         await (0, utils_1.sleep)(1000);
         return { data: true };
     }
-    async merge(hash, filename) {
+    async merge(hash, filename, error) {
         (0, utils_1.interceptRequest)();
+        if (error) {
+            throw new common_1.HttpException('Mock merge fail !', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         const chunkDir = `${this.storagePath}/${hash}_${filename}`;
         const files = fs.readdirSync(chunkDir);
         files.sort((aVal, bVal) => {
@@ -69,8 +75,11 @@ let AppController = class AppController {
             data: `http://localhost:3000/static/${filename}`,
         };
     }
-    async checkFile(hash, filename, status) {
+    async checkFile(hash, filename, status, error) {
         (0, utils_1.interceptRequest)();
+        if (error) {
+            throw new common_1.HttpException('Mock check fail !', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         await (0, utils_1.sleep)(500);
         if (status === 'success') {
             return {
@@ -122,8 +131,9 @@ __decorate([
     (0, common_1.Get)('merge'),
     __param(0, (0, common_1.Query)('hash')),
     __param(1, (0, common_1.Query)('filename')),
+    __param(2, (0, common_1.Query)('error')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "merge", null);
 __decorate([
@@ -131,8 +141,9 @@ __decorate([
     __param(0, (0, common_1.Query)('hash')),
     __param(1, (0, common_1.Query)('filename')),
     __param(2, (0, common_1.Query)('status')),
+    __param(3, (0, common_1.Query)('error')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "checkFile", null);
 exports.AppController = AppController = __decorate([

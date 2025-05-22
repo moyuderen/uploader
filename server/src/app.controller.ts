@@ -6,6 +6,8 @@ import {
   Query,
   UploadedFile,
   UseInterceptors,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import * as fs from 'fs';
 import { AppService } from './app.service';
@@ -38,8 +40,15 @@ export class AppController {
   )
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body) {
     interceptRequest();
-    const { filename, hash, index } = body;
+    const { filename, hash, index, error } = body;
     const chunkDir = `${this.storagePath}/${hash}_${filename}`;
+
+    if (error) {
+      throw new HttpException(
+        'Mock upload fail !',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
 
     if (!fs.existsSync(chunkDir)) {
       fs.mkdirSync(chunkDir);
@@ -54,8 +63,16 @@ export class AppController {
   async merge(
     @Query('hash') hash: string,
     @Query('filename') filename: string,
+    @Query('error') error: string,
   ) {
     interceptRequest();
+    if (error) {
+      throw new HttpException(
+        'Mock merge fail !',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     const chunkDir = `${this.storagePath}/${hash}_${filename}`;
     const files = fs.readdirSync(chunkDir);
 
@@ -96,8 +113,15 @@ export class AppController {
     @Query('hash') hash: string,
     @Query('filename') filename: string,
     @Query('status') status: string,
+    @Query('error') error: string,
   ) {
     interceptRequest();
+    if (error) {
+      throw new HttpException(
+        'Mock check fail !',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
     await sleep(500);
     if (status === 'success') {
       return {
