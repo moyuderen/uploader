@@ -4,3 +4,9 @@ export declare class UploadFileDto {
     hash: string;
     error?: string;
 }
+export declare enum CheckStatus {
+    Success = "success",
+    WaitMerge = "waitMerge",
+    Part = "part",
+    None = "none"
+}

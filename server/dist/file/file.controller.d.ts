@@ -3,30 +3,26 @@ import { UploadFileDto } from './dto/upload-file.dto';
 export declare class FileController {
     private readonly fileService;
     constructor(fileService: FileService);
-    check(hash: string, filename: string, status: string, error: string): Promise<{
-        hash: string;
-        filename: string;
-        status: string;
+    check(hash: string, filename: string, status: string): Promise<{
+        status: import("./dto/upload-file.dto").CheckStatus;
         data: string;
-    } | {
-        hash: string;
         filename: string;
-        status: string;
+        hash: string;
+    } | {
+        status: import("./dto/upload-file.dto").CheckStatus;
         data: number[];
-    } | {
-        hash: string;
         filename: string;
-        status: string;
+        hash: string;
+    } | {
+        status: import("./dto/upload-file.dto").CheckStatus;
         data: boolean;
+        filename: string;
+        hash: string;
     }>;
     upload(file: Express.Multer.File, uploadFileDto: UploadFileDto): Promise<{
-        code: string;
         filename: string;
         hash: string;
         index: number;
     }>;
-    merge(hash: string, filename: string, error: string): {
-        code: string;
-        data: string;
-    };
+    merge(filename: string, hash: string): Promise<string>;
 }

@@ -2,9 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { FormatResponseInterceptor } from './format-response.interceptor';
+import { CustomExceptionFilter } from './custom-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
   app.enableCors({
     origin(origin, callback) {
       callback(null, true);
@@ -20,6 +23,9 @@ async function bootstrap() {
       console.log(`[${new Date().toISOString()}] 提供静态文件: ${path}`);
     },
   });
+
+  app.useGlobalInterceptors(new FormatResponseInterceptor());
+  app.useGlobalFilters(new CustomExceptionFilter());
   await app.listen(3000);
 }
 bootstrap();

@@ -8,103 +8,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
-const fs = require("fs");
 const app_service_1 = require("./app.service");
-const platform_express_1 = require("@nestjs/platform-express");
-const utils_1 = require("./utils");
-const multer_1 = require("multer");
-const path_1 = require("path");
 let AppController = class AppController {
     constructor(appService) {
         this.appService = appService;
-        this.storagePath = process.env.TMP_DIR || (0, path_1.join)(__dirname, '..', 'public');
     }
     getHello() {
         return this.appService.getHello();
-    }
-    async uploadFile(file, body) {
-        (0, utils_1.interceptRequest)();
-        const { filename, hash, index, error } = body;
-        const chunkDir = `${this.storagePath}/${hash}_${filename}`;
-        if (error) {
-            throw new common_1.HttpException('Mock upload fail !', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        if (!fs.existsSync(chunkDir)) {
-            fs.mkdirSync(chunkDir);
-        }
-        fs.cpSync(file.path, chunkDir + '/' + index);
-        fs.rmSync(file.path);
-        await (0, utils_1.sleep)(1000);
-        return { data: true };
-    }
-    async merge(hash, filename, error) {
-        (0, utils_1.interceptRequest)();
-        if (error) {
-            throw new common_1.HttpException('Mock merge fail !', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        const chunkDir = `${this.storagePath}/${hash}_${filename}`;
-        const files = fs.readdirSync(chunkDir);
-        files.sort((aVal, bVal) => {
-            const a = parseInt(aVal);
-            const b = parseInt(bVal);
-            if (a > b) {
-                return 1;
-            }
-            if (a < b) {
-                return -1;
-            }
-            return 0;
-        });
-        let startPos = 0;
-        files.map((file) => {
-            const filePath = chunkDir + '/' + file;
-            const stream = fs.createReadStream(filePath);
-            stream.pipe(fs.createWriteStream(`${this.storagePath}/` + filename, {
-                start: startPos,
-            }));
-            startPos += fs.statSync(filePath).size;
-        });
-        await (0, utils_1.sleep)(1000);
-        return {
-            data: `http://localhost:3000/static/${filename}`,
-        };
-    }
-    async checkFile(hash, filename, status, error) {
-        (0, utils_1.interceptRequest)();
-        if (error) {
-            throw new common_1.HttpException('Mock check fail !', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        await (0, utils_1.sleep)(500);
-        if (status === 'success') {
-            return {
-                status: 'success',
-                data: 'https://baidu.com',
-            };
-        }
-        if (status === 'waitMerge') {
-            return {
-                status: 'waitMerge',
-                data: '',
-            };
-        }
-        if (status === 'part') {
-            return {
-                status: 'part',
-                data: [0, 2, 4, 6, 8, 10],
-            };
-        }
-        if (status === 'none') {
-            return {
-                status: 'none',
-                data: false,
-            };
-        }
     }
 };
 exports.AppController = AppController;
@@ -114,38 +27,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)
 ], AppController.prototype, "getHello", null);
-__decorate([
-    (0, common_1.Post)('upload'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
-        storage: (0, multer_1.diskStorage)({
-            destination: process.env.TMP_DIR || (0, path_1.join)(__dirname, '..', 'public') + '/',
-        }),
-    })),
-    __param(0, (0, common_1.UploadedFile)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], AppController.prototype, "uploadFile", null);
-__decorate([
-    (0, common_1.Get)('merge'),
-    __param(0, (0, common_1.Query)('hash')),
-    __param(1, (0, common_1.Query)('filename')),
-    __param(2, (0, common_1.Query)('error')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
-    __metadata("design:returntype", Promise)
-], AppController.prototype, "merge", null);
-__decorate([
-    (0, common_1.Get)('check'),
-    __param(0, (0, common_1.Query)('hash')),
-    __param(1, (0, common_1.Query)('filename')),
-    __param(2, (0, common_1.Query)('status')),
-    __param(3, (0, common_1.Query)('error')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String]),
-    __metadata("design:returntype", Promise)
-], AppController.prototype, "checkFile", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService])
