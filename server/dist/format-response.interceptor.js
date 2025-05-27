@@ -23,9 +23,7 @@ let FormatResponseInterceptor = class FormatResponseInterceptor {
             code = '00003';
             message = 'mock error';
         }
-        console.log(request.path + ' :body', request.body);
         const format = (data) => {
-            console.log('format response', data);
             return {
                 code,
                 statusCode: response.statusCode,

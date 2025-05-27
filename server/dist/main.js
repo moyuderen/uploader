@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@nestjs/core");
 const app_module_1 = require("./app.module");
 const path_1 = require("path");
-const format_response_interceptor_1 = require("./format-response.interceptor");
 const custom_exception_filter_1 = require("./custom-exception.filter");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
@@ -20,7 +19,6 @@ async function bootstrap() {
             console.log(`[${new Date().toISOString()}] 提供静态文件: ${path}`);
         },
     });
-    app.useGlobalInterceptors(new format_response_interceptor_1.FormatResponseInterceptor());
     app.useGlobalFilters(new custom_exception_filter_1.CustomExceptionFilter());
     await app.listen(3000);
 }

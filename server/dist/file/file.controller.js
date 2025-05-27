@@ -19,6 +19,7 @@ const multer_1 = require("multer");
 const path_1 = require("path");
 const file_service_1 = require("./file.service");
 const upload_file_dto_1 = require("./dto/upload-file.dto");
+const format_response_interceptor_1 = require("../format-response.interceptor");
 let FileController = class FileController {
     constructor(fileService) {
         this.fileService = fileService;
@@ -38,6 +39,7 @@ let FileController = class FileController {
 exports.FileController = FileController;
 __decorate([
     (0, common_1.Get)('check'),
+    (0, common_1.UseInterceptors)(format_response_interceptor_1.FormatResponseInterceptor),
     __param(0, (0, common_1.Query)('hash')),
     __param(1, (0, common_1.Query)('filename')),
     __param(2, (0, common_1.Query)('status')),
@@ -51,7 +53,7 @@ __decorate([
         storage: (0, multer_1.diskStorage)({
             destination: process.env.TMP_DIR || (0, path_1.join)(__dirname, '..', '..', 'public') + '/',
         }),
-    })),
+    }), format_response_interceptor_1.FormatResponseInterceptor),
     __param(0, (0, common_1.UploadedFile)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -59,6 +61,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FileController.prototype, "upload", null);
 __decorate([
+    (0, common_1.UseInterceptors)(format_response_interceptor_1.FormatResponseInterceptor),
     (0, common_1.Get)('merge'),
     __param(0, (0, common_1.Query)('filename')),
     __param(1, (0, common_1.Query)('hash')),

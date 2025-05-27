@@ -12,12 +12,14 @@ import { diskStorage } from 'multer';
 import { join } from 'path';
 import { FileService } from './file.service';
 import { UploadFileDto } from './dto/upload-file.dto';
+import { FormatResponseInterceptor } from '../format-response.interceptor';
 
 @Controller('file')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
   @Get('check')
+  @UseInterceptors(FormatResponseInterceptor)
   async check(
     @Query('hash') hash: string,
     @Query('filename') filename: string,
@@ -40,6 +42,7 @@ export class FileController {
           process.env.TMP_DIR || join(__dirname, '..', '..', 'public') + '/',
       }),
     }),
+    FormatResponseInterceptor,
   )
   async upload(
     @UploadedFile() file: Express.Multer.File,
@@ -48,6 +51,7 @@ export class FileController {
     return await this.fileService.saveChunk(file, uploadFileDto);
   }
 
+  @UseInterceptors(FormatResponseInterceptor)
   @Get('merge')
   async merge(
     @Query('filename') filename: string,

@@ -33,9 +33,7 @@ export class FormatResponseInterceptor implements NestInterceptor {
       message = 'mock error';
     }
 
-    console.log(request.path + ' :body', request.body);
     const format = (data) => {
-      console.log('format response', data);
       return {
         code,
         statusCode: response.statusCode,

@@ -24,7 +24,7 @@ async function bootstrap() {
     },
   });
 
-  app.useGlobalInterceptors(new FormatResponseInterceptor());
+  // app.useGlobalInterceptors(new FormatResponseInterceptor());
   app.useGlobalFilters(new CustomExceptionFilter());
   await app.listen(3000);
 }
