@@ -2,7 +2,7 @@
   <div class="tiny-uploader">
     <uploader-drop v-if="drag">
       <slot name="drop" v-bind:scope="{ multiple, accept }">
-        <upload-icon :size="40" color="#409eff" style="margin-bottom: 6px" />
+        <upload-icon :size="40" :color="primaryColor" style="margin-bottom: 6px" />
         <div>
           <span>Drop file here or</span>
           <uploader-button> click to upload </uploader-button>
@@ -15,10 +15,11 @@
         <button class="tiny-uploader__trigger-upload-btn">Click to Upload</button>
       </slot>
     </div>
+
     <slot name="files" v-bind:fileList="files">
       <uploader-list :file-list="files">
         <template v-slot="slotProps">
-          <uploader-file :customStatus="customStatus" :file="slotProps.file" @click="clickFile"></uploader-file>
+          <uploader-file :customStatus="customStatus" :file="slotProps.file" @click="handleClick"></uploader-file>
         </template>
       </uploader-list>
     </slot>
@@ -59,7 +60,7 @@ export default {
       type: String,
       default: '*'
     },
-    fileList: {
+    defaultFileList: {
       type: Array,
       default() {
         return []
@@ -120,8 +121,8 @@ export default {
       type: Boolean,
       default: true
     },
-    headers: Object,
-    data: Object,
+    headers: [Object, Function],
+    data: [Object, Function],
     customRequest: {
       type: [Function, null],
       default: null
@@ -158,27 +159,32 @@ export default {
     },
     processData: {
       type: Function,
-      default: data => data
+      default: (data) => data
     },
     customStatus: {
       type: Object,
       default: null
-    },
+    }
   },
   data() {
     return {
       uploader: null,
-      files: []
+      files: [],
+      primaryColor: ''
     }
   },
   watch: {
-    fileList(newVal) {
-      if(this.uploader && newVal.length > 0) {
+    defaultFileList(newVal) {
+      if (this.uploader && newVal.length > 0) {
         this.uploader.setDefaultFileList(newVal)
       }
     }
   },
   created() {
+    this.primaryColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--tiny-color-primary')
+      .trim()
+
     this.uploader = new Uploader({
       // input 属性相关
       accept: this.accept,
@@ -210,12 +216,15 @@ export default {
       maxRetries: this.maxRetries,
       retryInterval: this.retryInterval,
       checkRequest: this.checkRequest,
-      mergeRequest: this.mergeRequest,
+      mergeRequest: this.mergeRequest
     })
 
     this.uploader.on(Callbacks.FileChange, (file, fileList) => {
-      console.log('file change', file, fileList)
       this.files = fileList
+      const timer = setTimeout(() => {
+        clearTimeout(timer)
+        this.$emit('onChange', file, fileList)
+      }, 0)
     })
 
     this.uploader.on(Callbacks.Exceed, (files, fileList) => {
@@ -254,11 +263,15 @@ export default {
       this.$emit('onFail', file, fileList)
     })
 
+    this.uploader.on(Callbacks.FileSuccess, (file, fileList) => {
+      this.$emit('onSuccess', file, fileList)
+    })
+
     this.uploader.on(Callbacks.AllFileSuccess, (fileList) => {
       this.$emit('onAllFileSuccess', fileList)
     })
 
-    this.uploader.setDefaultFileList(this.fileList)
+    this.uploader.setDefaultFileList(this.defaultFileList)
   },
   mounted() {
     this.$nextTick(() => {
@@ -266,8 +279,8 @@ export default {
     })
   },
   methods: {
-    clickFile(file) {
-      this.$emit('onPreview', file)
+    handleClick(file) {
+      this.$emit('onClick', file)
     },
     clear() {
       this.uploader.clear()
@@ -286,6 +299,7 @@ export default {
   white-space: nowrap;
   cursor: pointer;
   -webkit-appearance: none;
+  user-select: none;
   -webkit-user-select: none;
   text-align: center;
   box-sizing: border-box;
