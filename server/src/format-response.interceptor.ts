@@ -24,7 +24,7 @@ export class FormatResponseInterceptor implements NestInterceptor {
     ) {
       throw new HttpException(
         request.path + ' mock error !',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
 
@@ -38,7 +38,7 @@ export class FormatResponseInterceptor implements NestInterceptor {
         code,
         statusCode: response.statusCode,
         message,
-        data,
+        data: code === '00000' ? data : null,
       };
     };
 

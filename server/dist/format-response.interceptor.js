@@ -17,7 +17,7 @@ let FormatResponseInterceptor = class FormatResponseInterceptor {
         let message = 'success';
         if (request.query.status_error ||
             (request.body && request.body.status_error)) {
-            throw new common_1.HttpException(request.path + ' mock error !', common_1.HttpStatus.BAD_REQUEST);
+            throw new common_1.HttpException(request.path + ' mock error !', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if (request.query.code_error || (request.body && request.body.code_error)) {
             code = '00003';
@@ -28,7 +28,7 @@ let FormatResponseInterceptor = class FormatResponseInterceptor {
                 code,
                 statusCode: response.statusCode,
                 message,
-                data,
+                data: code === '00000' ? data : null,
             };
         };
         return next.handle().pipe((0, rxjs_1.map)(format));
