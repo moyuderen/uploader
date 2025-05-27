@@ -15,7 +15,7 @@ pnpm run server:dev
 ```
 
 ```js
-const BASE_URL = 'http://localhost:3000'
+const BASE_URL = 'http://localhost:3000/file'
 ```
 
 ## 远程 mock 接口请求
@@ -24,13 +24,9 @@ const BASE_URL = 'http://localhost:3000'
 const BASE_URL = 'https://uploader-server-seven.vercel.app/file'
 ```
 
-> [!TIP]
-> 每个请求中添加`error`参数，则接口会`500`报错，用来模拟请求失败的场景;
-> eg: `{error: '1'}`
-
 ## 请求示例
 
-1. `check` 接口
+### `check`
 
 ```js {1}
 axios.get(`${BASE_URL}/check`, {
@@ -42,7 +38,104 @@ axios.get(`${BASE_URL}/check`, {
 })
 ```
 
-2. `upload`接口
+::: info 返回结果1：
+
+```json
+{
+    "code": "00000",
+    "statusCode": 200,
+    "message": "success",
+    "data": {
+        "filename": "xxxx-xxxx-xxxx",
+        "hash": "xxx.png",
+        "status": "none",
+        "data": false
+    }
+}
+```
+
+:::
+
+::: details 返回结果2： 文件status为`part`
+
+```json
+{
+    "code": "00000",
+    "statusCode": 200,
+    "message": "success",
+    "data": {
+        "filename": "xxxx-xxxx-xxxx",
+        "hash": "xxx.png",
+        "status": "part",
+        "data": [0, 2, 4, 6, 8, 10] // 已经上传成功chunk的索引值
+    }
+}
+```
+
+:::
+
+::: details 返回结果3： 文件status为`waitMerge`
+
+```json
+{
+    "code": "00000",
+    "statusCode": 200,
+    "message": "success",
+    "data": {
+        "filename": "xxxx-xxxx-xxxx",
+        "hash": "xxx.png",
+        "status": "waitMerge",
+        "data": ""
+    }
+}
+```
+
+:::
+
+::: details 返回结果3： 文件status为`success`
+
+```json
+{
+    "code": "00000",
+    "statusCode": 200,
+    "message": "success",
+    "data": {
+        "filename": "xxxx-xxxx-xxxx",
+        "hash": "xxx.png",
+        "status": "success",
+        "data": "https://baidu.com"
+    }
+}
+```
+
+:::
+
+::: details http状态码异常`500`
+
+```json
+{
+  "statusCode":500,
+  "message":"/file/check mock error !",
+  "data":null
+}
+```
+
+:::
+
+::: details code码异常`00003`
+
+```json
+{
+    "code": "00003",
+    "statusCode": 200,
+    "message": "mock error",
+    "data": null
+}
+```
+
+:::
+
+### `upload`
 
 ```js {10}
 const data = {
@@ -57,7 +150,49 @@ Object.entries(data).forEach(([key, value]) => formData.append(key, value))
 axios.post(`${BASE_URL}/upload`, { data: formData })
 ```
 
-3. `merge`接口
+::: info 返回结果
+
+```json
+{
+    "code": "00000",
+    "statusCode": 201,
+    "message": "success",
+    "data": {
+        "filename": "xxx.png",
+        "hash": "xxxx-xxxx-xxxx",
+        "index": "2"
+    }
+}
+```
+
+:::
+
+::: details http状态码异常`500`
+
+```json
+{
+  "statusCode":500,
+  "message":"/file/upload mock error !",
+  "data":null
+}
+```
+
+:::
+
+::: details code码异常`00003`
+
+```json
+{
+    "code": "00003",
+    "statusCode": 200,
+    "message": "mock error",
+    "data": null
+}
+```
+
+:::
+
+### `merge`
 
 ```js {1}
 axios.get(`${BASE_URL}/merge`, {
@@ -67,3 +202,54 @@ axios.get(`${BASE_URL}/merge`, {
   }
 })
 ```
+
+::: info 返回结果
+
+```json
+{
+    "code": "00000",
+    "statusCode": 200,
+    "message": "success",
+    "data": "http://localhost:3000/static/xxx.png"
+}
+```
+
+:::
+
+::: details http状态码异常`500`
+
+```json
+{
+  "statusCode":500,
+  "message":"/file/merge mock error !",
+  "data":null
+}
+```
+
+:::
+
+::: details code码异常`00003`
+
+```json
+{
+    "code": "00003",
+    "statusCode": 200,
+    "message": "mock error",
+    "data": null
+}
+```
+
+:::
+
+## mock接口异常
+
+> [!TIP]
+> 接口参数中添加下面两个参数来模拟接口异常的情况
+
+### status_error
+
+有值时来模拟返回接口错误,返回`http`请求status状态码为`500`; 正常返回为`200`
+
+### code_error
+
+有值时来模拟返回接口错误,返回`http`请求status状态码为`200`, 返回结果code码`00003`; 正常返回`00000`
