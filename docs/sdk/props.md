@@ -33,7 +33,7 @@
 
 默认文件列表
 
-- **类型** `DefaultFile[]`, 类型[DefaultFile](/sdk/interface/#default-file)
+- **类型** `DefaultFile[]`, 类型[DefaultFile](/sdk/interface.md#default-file)
 - **默认值** `[]`
 
 ## limit
