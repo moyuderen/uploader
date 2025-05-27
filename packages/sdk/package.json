@@ -1,7 +1,7 @@
 {
   "name": "@tinyuploader/sdk",
   "version": "2.1.1",
-  "description": "",
+  "description": "大文件分片上传解决方案sdk, 可用于各种UI框架",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -9,12 +9,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
-    "dev:play": "vite build --watch",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite build --watch"
   },
   "keywords": [
     "uploader",
     "upload",
+    "file",
+    "big file",
+    "retry",
+    "pause",
+    "resume",
     "上传",
     "分片上传",
     "大文件",

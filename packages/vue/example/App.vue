@@ -1,31 +1,36 @@
 <template>
   <div>
-    <h2>Dev pkg vue2</h2>
-
+    <input v-model="name" placeholder="自定义参数">
     <button @click="clear">取消所有上传</button>
     <button @click="submit">手动提交</button>
-    <button @click="viewFileList">查看文件列表</button>
 
     <Uploader
       style="margin-top: 10px"
       ref="uploaderRef"
       action="http://localhost:3000/upload"
-      :data="{ user: 'moyuderen' }"
+      :data="{ user: 'moyuderen', name }"
       :headers="{ token: 'xxxxxxxx' }"
-      accept=".jpg,.json,.png,.dmg"
+      :customStatus="{
+        Reading: '读取中',
+      }"
+      accept="*"
       :fileList="fileList"
-      :chunkSize="1024 * 1024 * 10"
-      :checkFileRequest="checkFileRequest"
+      :beforeAdd="beforeAdd"
+      :addFailToRemove="true"
+      :checkRequest="checkRequest"
       :mergeRequest="merge"
+      :processData="processData"
       @onExceed="onExceed"
+      @onFileAdded="onFileAdded"
       @onFilesAdded="onFilesAdded"
-      @onFileProgress="onProgress"
-      @onFileRemove="onRemove"
-      @onFail="onFail"
-      @onSuccess="onSuccess"
-      @onAllFileSuccess="onAllFileSuccess"
       @onChange="onChange"
-      @onClick="onClick"
+      @onFileRemove="onFileRemove"
+      @onFileProgress="onFileProgress"
+      @onFileUploadSuccess="onFileUploadSuccess"
+      @onSuccess="onSuccess"
+      @onFail="onFail"
+      @onAllSuccess="onAllSuccess"
+      @onPreview="onPreview"
     >
     </Uploader>
   </div>
@@ -35,58 +40,43 @@
 export default {
   data() {
     return {
-      fileList: [
-        {
-          name: '哈哈',
-          path: 'http://baidu.com'
-        }
-      ]
+      name: 'moyuderen',
+      fileList: []
     }
   },
+  created() {
+    setTimeout(() => {
+      this.fileList = [
+        {
+          id: '222',
+          name: '哈哈',
+          url: 'http://baidu.com'
+        }
+      ]
+    }, 500)
+  },
   methods: {
-    onExceed() {
-      console.log('超出最大上传次数了')
+    processData(data, type) {
+      return {...data, name: this.name}
     },
-    onFilesAdded(fileList) {
-      console.log('添加文件成功', fileList)
-    },
-    onRemove(file, fileList) {
-      console.log('删除文件成功', file, fileList)
-    },
-    onProgress(p, file, fileList) {
-      // console.log('上传中', p, file, fileList)
-    },
-    onFail(file, fileList) {
-      console.log('上传失败', file, fileList)
-    },
-    onSuccess(file, fileList) {
-      console.log('上传成功', file, fileList)
-    },
-    onAllFileSuccess(fileList) {
-      console.log('全部上传成功', fileList)
-    },
-    onChange(fileList) {
-      console.log('change', fileList)
-
-      this.fileList = fileList
-    },
-    onClick(file) {
-      console.log(file)
-    },
-
-    async checkFileRequest(file) {
+    async checkRequest(file, query) {
+      console.log(query)
       const { hash, name } = file
-      const { data } = await axios.post('http://localhost:3000/checkFile', {
-        hash,
-        name,
-        status: 'none'
-      })
+      const { data } = await axios.get(`http://localhost:3000/check?hash=${hash}&filename=${name}&status=none`)
+      file.setData({uploadId: file.uid})
       return data
     },
     async merge(file) {
       const { hash, name } = file
-      const { data } = await axios.post('http://localhost:3000/merge', { hash, name })
-      file.path = data.data
+      const { data } = await axios.get(`http://localhost:3000/merge?hash=${hash}&filename=${name}`)
+      file.url = data.data
+      return true
+    },
+    beforeAdd(file) {
+      if(file.name.endsWith('.js')) {
+        file.setErrorMessage('不允许上传js文件')
+        return false
+      }
     },
     clear() {
       this.$refs.uploaderRef.clear()
@@ -94,8 +84,37 @@ export default {
     submit() {
       this.$refs.uploaderRef.submit()
     },
-    viewFileList() {
-      console.log(this.fileList)
+    onChange(fileList) {
+      console.log('change', fileList)
+      this.fileList = fileList
+    },
+    onExceed(files, fileList)  {
+      console.log('onExceed', files, fileList)
+    },
+    onFileAdded(file, fileList)  {
+      console.log('onFileAdded', file, fileList)
+    },
+    onFilesAdded(fileList)  {
+      console.log('onFilesAdded', fileList)
+    },
+    onFileRemove(file, fileList)  {
+      console.log('onFileRemove', file, fileList)
+    },
+    onFileProgress(file, fileList)  {
+      console.log('onFileProgress', file.name, file.progress, fileList)
+    },
+    onFileUploadSuccess() {},
+    onSuccess(file, fileList)  {
+      console.log('onSuccess', file, fileList)
+    },
+    onFail(file, fileList)  {
+      console.log('onFail', file, fileList)
+    },
+    onAllSuccess(fileList) {
+      console.log('onAllSuccess', fileList)
+    },
+    onPreview(file) {
+      console.log('onPreview', file.name, file.url)
     }
   }
 }

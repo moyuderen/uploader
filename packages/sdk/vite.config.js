@@ -8,12 +8,11 @@ export default defineConfig({
     }
   },
   server: {
-    open: '/example/index.html'
+    open: '/examples/quick-start/index.html'
   },
   build: {
     lib: {
       entry: './src/index.js',
-      // formats: ['es', 'umd'],
       name: 'UploaderSdk',
       fileName: 'sdk'
     },

@@ -1,170 +1,175 @@
-import File from '@/core/File'
-import Container from '@/core/Container'
-import { Event, extend, isFunction, isPromise } from '@/shared'
-import { defaults } from '@/core/defaults'
-import { Status, Events, CheckStatus } from '@/core/constans'
+import Container from './Container'
+import Event from './Event'
+import File from './File'
+import { defaultOptions } from './defaults'
+import { Callbacks, FileStatus } from './constants'
+import { extend, isString, isArray, isFunction, isPromise } from '../shared'
 
-class Uploader {
+export default class Uploader {
   constructor(options) {
     this.container = new Container(this)
     this.event = new Event()
-    this.opts = extend({}, defaults, options)
-    let fileList = []
-    if (this.opts.fileList && this.opts.fileList.length) {
-      fileList = this.opts.fileList.map(
-        (item) =>
-          new File({
-            name: item.name,
-            path: item.path,
-            status: Status.Success,
-            progress: 1
-          })
-      )
-    }
-    this.fileList = fileList
-    this.status = Status.Init
-    // 只注册一次
-    this.listenerFiles()
+
+    this.options = extend(defaultOptions, options)
+    this.fileList = (this.options.fileList || []).map((file) => new File(file, this, file))
+    this._setupFileListeners()
   }
 
-  on(name, func) {
-    this.event.on(name, func)
+  on(name, fn) {
+    this.event.on(name, fn)
   }
 
   emit(name, ...args) {
     this.event.emit(name, ...args)
   }
 
-  async addFiles(files) {
-    const { limit, beforeAdd, attributes } = this.opts
-
-    if (limit > 0) {
-      if (files.length + this.fileList.length > limit) {
-        this.emit(Events.Exceed, files, this.fileList)
-        return
-      }
-    }
-
-    let originFileList = [...files]
-
-    if (!this.opts.multiple) {
-      originFileList = originFileList.slice(0, 1)
-    }
-
-    if (originFileList.length === 0) {
-      return
-    }
-
-    const newFileList = originFileList.map((file) => new File(file, this))
-    this.fileList = [...this.fileList, ...newFileList]
-
-    if (beforeAdd) {
-      if (isFunction(beforeAdd)) {
-        for (let i = 0; i < newFileList.length; i++) {
-          const file = newFileList[i]
-          const before = beforeAdd(file)
-          if (isPromise(before)) {
-            before.then(
-              () => {},
-              () => {
-                this.doRemove(file)
-              }
-            )
-          } else if (before !== false) {
-            //
-          } else {
-            this.doRemove(file)
-          }
-        }
-      }
-    }
-
-    this.emit(Events.FilesAdded, this.fileList)
-    this.status = Status.Ready
-
-    if (this.opts.autoUpload) {
-      this.submit()
-    }
+  emitCallback(name, ...args) {
+    this.emit(name, ...args, this.fileList)
   }
 
-  pauseUploadingFiles() {
-    const uploadingFiles = this.fileList.filter((file) => file.isUploading())
-    uploadingFiles.forEach((file) => {
-      file.pause()
-    })
+  updateData(data) {
+    this.options.data = data
   }
 
-  async upload() {
-    for (let i = 0; i < this.fileList.length; i++) {
-      const file = this.fileList[i]
-      if (file.isUploading()) {
-        return
-      }
-      if (file.isResume()) {
-        file.status = Status.Uploading
-        file.uploadFile()
-        return
-      }
-      if (file.isReady()) {
-        file.uploadFile()
-        return
-      }
+  updateHeaders(headers) {
+    this.options.headers = headers
+  }
+
+  setOption(options) {
+    this.options = extend(this.options, options)
+  }
+
+  formatAccept(accept) {
+    if (isString(accept)) return accept
+    if (isArray(accept)) return accept.join(',')
+    return ''
+  }
+
+  assignBrowse(domNode, userAttributes = {}) {
+    const { accept, ...attributes } = userAttributes
+    const defaults = {
+      multiple: this.options.multiple,
+      accept: this.formatAccept(accept || this.options.accept)
     }
+    this.container.assignBrowse(domNode, extend({}, defaults, attributes))
   }
 
-  async submit() {
-    const initedFileList = this.fileList.filter((file) => file.isInited())
-    // 第一个file ready之后就开始上传，避免多个ready状态的file同时上传
-    try {
-      await Promise.race(initedFileList.map((file) => file.start()))
-    } catch (e) {
-      console.log(e)
-    }
-    this.upload()
+  assignDrop(domNode) {
+    this.container.assignDrop(domNode)
   }
 
-  listenerFiles() {
-    const emitAllSuccess = (fiel, fileList) => {
+  _setupFileListeners() {
+    const checkAllSuccess = (file, fileList) => {
       if (!fileList.length) {
         return
       }
       const allSuccess = fileList.every((file) => file.isSuccess())
       if (allSuccess) {
-        this.emit(Events.AllFileSuccess, this.fileList)
-        this.status = Status.Success
+        this.emit(Callbacks.AllFileSuccess, this.fileList)
       }
     }
 
-    this.on(Events.FileSuccess, emitAllSuccess)
-    this.on(Events.FileRemove, emitAllSuccess)
+    this.on(Callbacks.FileSuccess, checkAllSuccess)
+    this.on(Callbacks.FileRemove, checkAllSuccess)
   }
 
-  doRemove(file) {
-    if (!file) {
-      this.clear()
+  setDefaultFileList(fileList) {
+    fileList.forEach((file) => {
+      this.fileList.push(new File(file, this, file))
+    })
+  }
+
+  async addFiles(arrayLike) {
+    const { limit, multiple, addFailToRemove, beforeAdd, autoUpload } = this.options
+    let originFiles = [...arrayLike]
+
+    if (originFiles.length === 0) return
+
+    if (limit > 0 && originFiles.length + this.fileList.length > limit) {
+      this.emitCallback(Callbacks.Exceed, originFiles)
       return
     }
-    const index = this.fileList.indexOf(file)
-    if (index > -1) {
-      file.remove()
-      this.fileList.splice(index, 1)
-      this.emit(Events.FileRemove, file, this.fileList)
-      this.upload()
+
+    if (!multiple) {
+      originFiles = originFiles.slice(0, 1)
+    }
+
+    const newFileList = originFiles.map((file) => new File(file, this))
+    await Promise.all(newFileList.map((file) => this._handleFileAdd(file, beforeAdd)))
+
+    this.fileList = this.fileList.filter((file) => {
+      if (file.isAddFail() && addFailToRemove) {
+        this.doRemove(file)
+        return false
+      }
+      return true
+    })
+
+    if (newFileList.length > 0) {
+      this.emitCallback(Callbacks.FilesAdded, this.fileList)
+    }
+
+    if (autoUpload) {
+      this.submit()
     }
   }
 
-  clear() {
+  async _handleFileAdd(file, beforeAdd) {
+    try {
+      // 如果是函数则进行结果判断，否则认为校验通过
+      if (isFunction(beforeAdd)) {
+        const result = await beforeAdd(file)
+        // 如果返回的是false则失败，如果不返回或者返回为其他值如true则认为成功
+        if (result === false) {
+          throw new Error('Before add rejected')
+        }
+      }
+      this.emitCallback(Callbacks.FileAdded, file)
+    } catch {
+      file.changeStatus(FileStatus.AddFail)
+      this.emitCallback(Callbacks.FileAddFail, file)
+    }
+    this.fileList.push(file)
+  }
+
+  async upload() {
+    if (this.fileList.length === 0) return
+
     for (let i = 0; i < this.fileList.length; i++) {
       const file = this.fileList[i]
-      file.remove()
-      this.emit(Events.FileRemove, file, this.fileList)
+      if (file.isAddFail() || file.isCheckFail()) {
+        continue
+      }
+
+      if (file.isUploading() || file.isReading()) {
+        return
+      }
+
+      if (file.isResume()) {
+        // console.log(file.prevStatusLastRecord)
+        // [uploading, pause, resume]  回到pause之前的状态
+        const prevStatus = file.prevStatusLastRecord[file.prevStatusLastRecord.length - 2]
+
+        if (prevStatus) {
+          file.changeStatus(prevStatus)
+        }
+        file.upload()
+        return
+      }
+
+      if (file.isReady() || file.isInit()) {
+        file.upload()
+        return
+      }
     }
-    this.fileList = []
-    this.emit(Events.FileRemove, null, [])
+  }
+
+  submit() {
+    this.upload()
   }
 
   remove(file) {
-    const { beforeRemove } = this.opts
+    const { beforeRemove } = this.options
     if (!beforeRemove) {
       this.doRemove(file)
     } else if (isFunction(beforeRemove)) {
@@ -179,15 +184,26 @@ class Uploader {
     }
   }
 
-  retry(file) {
-    const index = this.fileList.indexOf(file)
-    if (index > -1) {
-      file.retry()
-      this.upload()
+  clear() {
+    // 倒序删除
+    for (let i = this.fileList.length - 1; i >= 0; i--) {
+      const file = this.fileList[i]
+      file.remove()
     }
+    this.fileList = []
+  }
+
+  doRemove(file) {
+    if (!file) {
+      this.clear()
+      return
+    }
+
+    file.remove()
   }
 
   pause(file) {
+    if (!file) return
     const index = this.fileList.indexOf(file)
     if (index > -1) {
       file.pause()
@@ -195,35 +211,35 @@ class Uploader {
   }
 
   resume(file) {
+    if (!file) return
+    const uploadingFiles = this.fileList.filter((file) => {
+      return file.isUploading() || file.isReading()
+    })
+
+    uploadingFiles.forEach((item) => {
+      item.pause()
+    })
+    file.resume()
+  }
+
+  retry(file) {
+    if (!file) return
+    const uploadingFiles = this.fileList.filter((file) => {
+      return file.isUploading() || file.isReading()
+    })
+
+    uploadingFiles.forEach((item) => {
+      item.pause()
+    })
     const index = this.fileList.indexOf(file)
     if (index > -1) {
-      file.resume()
+      file.retry()
     }
   }
 
-  assignBrowse(domNode, attributes = {}) {
-    const attrs = extend(
-      {},
-      {
-        accept: this.opts.accept,
-        multiple: this.opts.multiple
-      },
-      attributes
-    )
-    this.container.assignBrowse(domNode, attrs)
-  }
-
-  assignDrop(domNode) {
-    this.container.assignDrop(domNode)
+  destroy() {
+    this.clear()
+    this.event.clear()
+    this.container.destroy()
   }
 }
-
-Uploader.Status = Status
-Uploader.Events = Events
-Uploader.File = File
-Uploader.CheckStatus = CheckStatus
-Uploader.create = (options) => {
-  return new Uploader(options)
-}
-
-export default Uploader

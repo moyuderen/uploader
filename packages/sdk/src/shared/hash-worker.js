@@ -731,7 +731,7 @@ const md5 = `
 export const workerCode = `self.onmessage = (e) => {
   const { file, chunkSize, type } = e.data
   if(type === 'DONE') {
-    // console.log('worker closed !')
+    console.log('Hash calculation closed !')
     self.close()
     return
   }
@@ -743,7 +743,18 @@ export const workerCode = `self.onmessage = (e) => {
   const startTime = Date.now()
   let currentChunk = 0
 
+  // 创建 AbortController 用于中断
+  const controller = new AbortController()
+  const signal = controller.signal
+
+  signal.addEventListener('abort', () => {
+    fileReader.abort() // 中断 FileReader
+    self.postMessage({ error: new Error('Hash calculation cancelled'), progress: 0 })
+  })
+
   fileReader.onload = (e) => {
+    if (signal.aborted) return
+
     spark.append(e.target.result)
     currentChunk++
 
@@ -762,11 +773,13 @@ export const workerCode = `self.onmessage = (e) => {
   }
 
   fileReader.onerror = (error) => {
+    if (signal.aborted) return
     console.warn('oops, something went wrong.')
-    self.postMessage({ error })
+    self.postMessage({ error, progress: 0 })
   }
 
   function loadNext() {
+    if (signal.aborted) return
     const start = currentChunk * chunkSize
     const end = start + chunkSize >= file.size ? file.size : start + chunkSize
 
@@ -774,33 +787,53 @@ export const workerCode = `self.onmessage = (e) => {
   }
 
   loadNext()
+
+  return {
+    abort: () => controller.abort()
+  }
 }
 `
 export const isSupportWorker = !!window.Worker
 
 export const computedHashWorker = ({ file, chunkSize }, callback) => {
   console.log('In Web Worker')
-  const worker = new Worker(URL.createObjectURL(new Blob([workerCode])))
+  let abortComputedHash
 
+  const worker = new Worker(URL.createObjectURL(new Blob([workerCode])))
   const close = () => {
     worker.postMessage({ type: 'DONE' })
     worker.terminate()
   }
 
-  worker.postMessage({ file, chunkSize })
+  const promise = new Promise((resolve, reject) => {
+    worker.postMessage({ file, chunkSize })
 
-  worker.onmessage = (e) => {
-    const { error, progress, hash, time } = e.data
-    if (error) {
-      callback(error)
-      close()
-      return
+    worker.onmessage = (e) => {
+      const { error, progress, hash, time } = e.data
+      if (error) {
+        callback(error)
+        close()
+        reject(error)
+        return
+      }
+      if (progress === 100) {
+        close()
+        resolve({ progress, hash, time })
+        callback(null, { progress, hash, time })
+        return
+      }
+      callback(null, { progress })
     }
-    if (progress === 100) {
-      close()
-      callback(null, { progress, hash, time })
-      return
+
+    abortComputedHash = { reject }
+  })
+
+  return {
+    promise,
+    abort: () => {
+      if (!abortComputedHash) return
+      worker.terminate()
+      abortComputedHash.reject()
     }
-    callback(null, { progress })
   }
 }

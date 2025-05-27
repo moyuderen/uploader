@@ -1,0 +1,66 @@
+:root {
+  --default-margin: 6px;
+  --default-padding: 8px;
+}
+
+.uploader-btn {
+  margin-right: var(--default-margin);
+}
+
+.uploader-drag {
+  width: 300px;
+  height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border: 1px dashed #000;
+  margin-top: 10px;
+  border-radius: 3px;
+}
+
+.file-list {
+  margin-top: 10px;
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 var(--default-padding);
+  margin-bottom: var(--default-padding);
+  border: 1px darkgray solid;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.file-name {
+  width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: var(--default-margin);
+  white-space: nowrap;
+}
+
+.file-status {
+  width: 120px;
+  margin-right: var(--default-margin);
+}
+
+.file-progress {
+  width: 160px;
+}
+
+.action-container {
+  min-width: 300px;
+  text-align: right;
+}
+
+.action {
+  margin-right: var(--default-margin);
+}
+
+.uploader-submit {
+  margin-right: 20px;
+}

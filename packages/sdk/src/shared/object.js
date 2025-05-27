@@ -57,3 +57,15 @@ export function extend() {
   }
   return target
 }
+
+export const parseData = (data) => {
+  if (isFunction(data)) {
+    return data() || {}
+  }
+
+  if (isPlainObject(data)) {
+    return data
+  }
+
+  return {}
+}

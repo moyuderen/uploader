@@ -40,7 +40,7 @@ uploader.assignBrowse(document.querySelector('.uploader-btn'))
 
 - [具体代码](https://codepen.io/moyuderen/pen/KKjaqJK)
 
-## [mock 接口](/sdk/questions.html#模拟接口请求)
+## [mock 接口](/sdk/server.html#模拟接口请求)
 
 ## [阅读文档](https://moyuderen.github.io/uploader/sdk/quick-start.html)
 

@@ -17,7 +17,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .tiny-uploader-drop {
   display: flex;
   align-items: center;
@@ -25,13 +25,15 @@ export default {
   flex-direction: column;
   width: 350px;
   height: 150px;
-  border: 1px dashed #dcdfe6;
+  border: 1px dashed var(--tiny-border-color);
   font-size: 14px;
   border-radius: 4px;
   cursor: pointer;
+  background-color: var(--tiny-fill-color-extra-light);
 }
 
+
 .tiny-uploader-drop:hover {
-  border: 1px dashed #409eff;
+  border: 1px dashed var(--tiny-color-primary);
 }
 </style>

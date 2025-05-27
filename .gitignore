@@ -20,3 +20,9 @@ refs
 objects
 info
 hooks
+
+# server
+server/uploads
+server/public
+server/tmp
+!server/dist

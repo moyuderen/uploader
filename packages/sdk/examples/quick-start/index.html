@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Start</title>
+    <link rel="stylesheet" type="text/css" href="../style.css" />
+    <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />
+    <script src="//unpkg.com/vue@3"></script>
+    <script src="https://unpkg.com/axios@0.24.0/dist/axios.min.js"></script>
+    <script src="//unpkg.com/element-plus"></script>
+    <script src="//unpkg.com/@element-plus/icons-vue"></script>
+  </head>
+  <body>
+    <div id="app">
+      <el-button type="primary" style="float: right; margin: 10px;"  @click="drawer = true" >Set Option</el-button>
+      <el-drawer v-model="drawer" :with-header="false" size="50%">
+        <el-form
+          label-position="left"
+          :model="options"
+          ref="form"
+          label-width="180px"
+          :inline="false"
+        >
+          <el-form-item label="drag">
+            <el-switch v-model="options.drag" />
+          </el-form-item>
+          <el-form-item label="accept">
+            <el-input v-model="options.accept"></el-input>
+          </el-form-item>
+          <el-form-item label="multiple">
+            <el-switch v-model="options.multiple" />
+          </el-form-item>
+          <el-form-item label="limit">
+            <el-input-number v-model="options.limit" :step="1" :controls="true"></el-input-number>
+          </el-form-item>
+          <el-form-item label="autoUpload">
+            <el-switch v-model="options.autoUpload" />
+          </el-form-item>
+          <el-form-item label="addFailToRemove">
+            <el-switch v-model="options.addFailToRemove" />
+          </el-form-item>
+          <el-form-item label="chunkSize">
+            <el-input-number v-model="options.chunkSize" :min="0.1" :controls="true" style="width: 210px">
+              <template #prefix>
+                <span>1024 x 1024 x</span>
+              </template>
+            </el-input-number>
+          </el-form-item>
+          <el-form-item label="withCredentials">
+            <el-switch v-model="options.withCredentials" />
+          </el-form-item>
+          <el-form-item label="name">
+            <el-input v-model="options.name"></el-input>
+          </el-form-item>
+          <el-form-item label="action">
+            <el-select v-model="options.action">
+              <el-option v-for="item in actionList" :label="item" :value="item" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="data:bucket">
+            <el-input v-model="options.data.bucket"></el-input>
+          </el-form-item>
+          <el-form-item label="data:filePath">
+            <el-input v-model="options.data.filePath"></el-input>
+          </el-form-item>
+          <el-form-item label="headers:userauth">
+            <el-input v-model="options.headers.userauth"></el-input>
+          </el-form-item>
+          <el-form-item label="maxConcurrency">
+            <el-input-number v-model="options.maxConcurrency" :step="1" :controls="true"></el-input-number>
+          </el-form-item>
+          <el-form-item label="maxRetries">
+            <el-input-number v-model="options.maxRetries" :step="1" :controls="true"></el-input-number>
+          </el-form-item>
+          <el-form-item label="retryInterval">
+            <el-input-number v-model="options.retryInterval" :step="1" :controls="true">
+              <template #suffix>
+                <span>ms</span>
+              </template>
+            </el-input-number>
+          </el-form-item>
+          <el-divider content-position="left">Server</el-divider>
+          <el-form-item label="Check Response Status">
+            <el-radio-group v-model="options.data.status">
+              <el-radio v-for="(value, key) in CheckStatus" :value="value" ::key="key">{{key}}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-form>
+      </el-drawer>
+
+      <div class="uploader">
+        <div v-show="options.drag" class="uploader-drag">
+          <div>
+            Uploader Drag
+          </div>
+        </div>
+        <el-button v-show="!options.drag" type="primary" class="uploader-btn">点击上传</el-button>
+
+        <div class="file-list">
+          <div v-for="file in files" :key="file.uid" class="file">
+            <div class="file-name" :title="file.name">
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="file.url"
+                placement="top-start"
+              >
+                {{ file.name }}
+              </el-tooltip>
+            </div>
+            <div class="file-status">{{ file.status }}</div>
+            <div class="file-progress">Read {{ file.readProgress.toFixed(2) }}%</div>
+            <div class="file-progress">Upload {{ (file.progress * 100).toFixed(2) }}%</div>
+            <div class="file-progress">{{ file.renderSize }}</div>
+            <div class="action-container">
+              <el-button
+                class="action"
+                type="primary"
+                size="small"
+                v-if="file.status === FileStatus.Reading || file.status === FileStatus.Ready || file.status === FileStatus.Uploading"
+                @click="pause(file)"
+              >
+                Pause
+              </el-button>
+              <el-button
+                class="action"
+                type="primary"
+                size="small"
+                v-if="file.status === FileStatus.Pause" @click="resume(file)"
+              >
+                Resume
+              </el-button>
+              <el-button
+                class="action"
+                type="primary"
+                size="small"
+                v-if="file.status === FileStatus.CheckFail || file.status === FileStatus.Fail || file.status === FileStatus.UploadFail"
+                @click="retry(file)"
+              >
+                Retry
+              </el-button>
+              <el-button class="action" type="primary" size="small" @click="remove(file)">X</el-button>
+            </div>
+          </div>
+        </div>
+
+        <el-button type="primary" size="default" @click="submit" v-if="!options.autoUpload">上传到服务器</el-button>
+        <el-button type="primary" size="default" @click="clear">Uploader clear</el-button>
+      </div>
+    </div>
+    <script type="module" setup src="./quick-start.js"></script>
+  </body>
+</html>

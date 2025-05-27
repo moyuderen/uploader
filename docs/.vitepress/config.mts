@@ -80,9 +80,21 @@ export default defineConfig({
             { text: '开始', link: '/sdk/quick-start' },
             { text: '参数配置', link: '/sdk/props' },
             { text: '回调', link: '/sdk/callbacks' },
-            { text: '方法', link: '/sdk/functions' },
-            { text: '实例、状态说明', link: '/sdk/details' }
+            { text: '方法', link: '/sdk/functions' }
           ]
+        },
+        {
+          text: '其他',
+          collapsed: false,
+          items: [
+            { text: '实例', link: '/sdk/instance' },
+            { text: '枚举', link: '/sdk/enum' },
+            { text: 'interface', link: '/sdk/interface' }
+          ]
+        },
+        {
+          text: 'Mock 接口',
+          link: '/sdk/server'
         },
         {
           text: '问题',
@@ -94,12 +106,16 @@ export default defineConfig({
 
     socialLinks: [{ icon: 'github', link: 'https://github.com/moyuderen/uploader' }],
     outline: {
-      label: '页面导航'
+      level: 'deep',
+      label: 'On this page'
     }
 
     // footer: {
     //   message: 'Released under the MIT License.',
     //   copyright: 'Copyright © 2024-present moyuderen'
     // }
+  },
+  markdown: {
+    lineNumbers: true
   }
 })
