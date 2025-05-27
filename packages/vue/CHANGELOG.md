@@ -1,5 +1,16 @@
 # @tinyuploader/vue
 
+## 1.4.0
+
+### Minor Changes
+
+- 重构项目
+
+### Patch Changes
+
+- Updated dependencies
+  - @tinyuploader/sdk@2.2.0
+
 ## 1.3.4
 
 ### Patch Changes

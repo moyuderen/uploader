@@ -77,7 +77,7 @@ export default {
 
 默认上传文件列表
 
-**类型** `Defaultfile[]`, [Defaultfile](../sdk/interface.md#defaultfile)
+**类型** `Defaultfile[]`, [Defaultfile](/sdk/interface.md#defaultfile)
 
 **默认值** `[]`
 

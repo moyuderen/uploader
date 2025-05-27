@@ -1,58 +1,98 @@
 <template>
   <div class="tiny-uploader-file">
     <div class="tiny-uploader-info-wrap">
-      <file-icon :size="14" class="tiny-uploader-file-icon" />
-      <div class="tiny-uploader-filename-container" @click="$emit('click', file)" :title="file.name">
-        <div class="tiny-uploader-filename">
+      <file-icon class="tiny-uploader-file-icon" />
+      <div
+        class="tiny-uploader-filename-container"
+        @click="$emit('click', file)"
+        :title="file.name"
+      >
+        <div
+          class="tiny-uploader-filename"
+          :class="{
+            'tiny-uploader-name-fail':
+              file.status === FileStatus.AddFail ||
+              file.status === FileStatus.CheckFail ||
+              file.status === FileStatus.Fail ||
+              file.status === FileStatus.UploadFail
+          }"
+        >
           {{ file.name }}
           <span class="tiny-uploader-size" v-if="file.size > 0">{{ `(${file.renderSize})` }}</span>
         </div>
       </div>
-      <div style="display: flex">
+      <div style="display: flex; align-items: center">
         <div class="tiny-uploader-status">
-          <LoadingIcon v-if="file.status === FileStatus.Ready || file.status === FileStatus.Reading"/>
-          <div v-else>{{ file.errorMessage || statusMap[file.status] }}</div>
+          <LoadingIcon
+            v-if="file.status === FileStatus.Ready || file.status === FileStatus.Reading"
+          />
+          <div v-else-if="file.errorMessage" class="tiny-uploader-error-meessage">
+            {{ file.errorMessage }}
+          </div>
+          <div v-else>{{ statusMap[file.status] }}</div>
         </div>
-        <div class="tiny-uploader-percent">{{ parseProgress(file.progress) }}%</div>
+        <div class="tiny-uploader-percent">
+          <success-icon v-if="file.status === FileStatus.Success"></success-icon>
+          <span v-else>{{ parseProgress(file.progress) }}%</span>
+        </div>
         <div class="tiny-uploader-actions">
           <span
-            v-if="file.status === FileStatus.Uploading || file.status === FileStatus.Ready || file.status===FileStatus.Reading"
+            v-if="
+              file.status === FileStatus.Uploading ||
+              file.status === FileStatus.Ready ||
+              file.status === FileStatus.Reading
+            "
             class="tiny-uploader-action"
-            @click="pause(file)">
-            <pause-icon :size="14" />
-          </span>
-          <span v-if="file.status === FileStatus.Pause" class="tiny-action" @click="resume(file)">
-            <play-icon :size="14" />
+            @click="pause(file)"
+          >
+            <pause-icon />
           </span>
           <span
-            v-if="file.status === FileStatus.CheckFail || file.status === FileStatus.Fail || file.status === FileStatus.UploadFail"
+            v-if="file.status === FileStatus.Pause"
+            class="tiny-uploader-action"
+            @click="resume(file)"
+          >
+            <play-icon />
+          </span>
+          <span
+            v-if="
+              file.status === FileStatus.CheckFail ||
+              file.status === FileStatus.Fail ||
+              file.status === FileStatus.UploadFail
+            "
             class="tiny-uploader-action"
             @click="retry(file)"
           >
-            <retry-icon :size="14" />
+            <retry-icon />
           </span>
           <span class="tiny-uploader-action" @click="remove(file)">
-            <remove-icon :size="14" />
+            <remove-icon />
           </span>
         </div>
       </div>
-      <div class="tiny-uploader-progress-wrap">
+      <div
+        class="tiny-uploader-progress-wrap"
+        v-if="
+          file.status === FileStatus.Uploading ||
+          file.status === FileStatus.Pause ||
+          file.status === FileStatus.Resume ||
+          file.status === FileStatus.UploadSuccess ||
+          file.status === FileStatus.UploadFail
+        "
+      >
         <div
           class="tiny-uploader-progress"
-          :style="{ width: progressWidth }"
           :class="{
-            'tiny-uploader--reading': file.status === FileStatus.Reading,
             'tiny-uploader--uploading':
               file.status === FileStatus.Uploading ||
               file.status === FileStatus.Pause ||
-              file.status === FileStatus.Resume ||
-              file.status === FileStatus.UploadSuccess,
-            'tiny-uploader--success': file.status === FileStatus.Success,
-            'tiny-uploader--fail': file.status === FileStatus.AddFail || file.status === FileStatus.CheckFail || file.status === FileStatus.Fail || file.status === FileStatus.UploadFail
+              file.status === FileStatus.Resume,
+            'tiny-uploader--success': file.status === FileStatus.UploadSuccess,
+            'tiny-uploader--fail':
+              file.status === FileStatus.Fail || file.status == FileStatus.UploadFail
           }"
-        >
-          <div class="glow-effect"></div>
-        </div>
+          :style="{ width: progressWidth }"
+        ></div>
       </div>
     </div>
   </div>
@@ -67,15 +107,16 @@ import PauseIcon from '../icons/pause-icon.vue'
 import PlayIcon from '../icons/play-icon.vue'
 import RemoveIcon from '../icons/remove-icon.vue'
 import RetryIcon from '../icons/retry-icon.vue'
+import SuccessIcon from '../icons/success-icon.vue'
 
 const customStatus = {
-  Ready: 'Ready',
-  Reading: 'Reading',
-  Uploading: 'Uploading',
-  Pause: 'Pause',
-  Resume: 'Resume',
-  Success: 'Success',
-  Fail: 'Fail',
+  Ready: '',
+  Reading: '',
+  Uploading: '',
+  Pause: '',
+  Resume: '',
+  Success: '',
+  Fail: ''
 }
 
 export default {
@@ -85,7 +126,8 @@ export default {
     PauseIcon,
     RetryIcon,
     RemoveIcon,
-    LoadingIcon
+    LoadingIcon,
+    SuccessIcon
   },
   props: {
     file: {
@@ -102,12 +144,14 @@ export default {
   data() {
     return {
       FileStatus,
-      progressWidth: 0,
+      progressWidth: 0
     }
   },
   computed: {
     statusMap() {
-      const status  = this.customStatus ? Object.assign(customStatus, this.customStatus) : customStatus
+      const status = this.customStatus
+        ? Object.assign(customStatus, this.customStatus)
+        : customStatus
 
       return {
         [FileStatus.Ready]: status['Ready'],
@@ -120,7 +164,7 @@ export default {
         [FileStatus.Fail]: status['Fail'],
         [FileStatus.UploadFail]: status['Fail'],
         [FileStatus.AddFail]: status['Fail'],
-        [FileStatus.CheckFail]: status['Fail'],
+        [FileStatus.CheckFail]: status['Fail']
       }
     }
   },
@@ -134,7 +178,7 @@ export default {
   },
   methods: {
     parseProgress(progress) {
-      return parseFloat(progress * 100).toFixed(2)
+      return parseFloat(progress * 100).toFixed(0)
     },
     remove(file) {
       this.uploader.remove(file)
@@ -152,21 +196,32 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .tiny-uploader-info-wrap {
   position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 28px;
+  height: 22px;
   margin: 6px 0;
   padding: 0px 6px;
-  cursor: pointer;
   color: #606266;
   font-size: 14px;
+  border-radius: 2px;
   z-index: 0;
 }
 
+.tiny-uploader-info-wrap:hover {
+  background-color: var(--tiny-fill-color-lighter);
+
+  .tiny-uploader-filename {
+    color: var(--tiny-color-primary);
+  }
+
+  .tiny-uploader-name-fail {
+    color: var(--tiny-color-error);
+  }
+}
 
 .tiny-uploader-filename-container {
   flex: 1;
@@ -182,6 +237,20 @@ export default {
   text-overflow: ellipsis;
   word-wrap: normal;
   white-space: nowrap;
+  cursor: pointer;
+}
+
+.tiny-uploader-name-fail {
+  color: var(--tiny-color-error);
+}
+
+.tiny-uploader-size {
+  font-size: var(--tiny-font-size-small);
+}
+
+.tiny-uploader-error-meessage {
+  color: var(--tiny-color-error);
+  font-size: var(--tiny-font-size-extra-small);
 }
 
 .tiny-uploader-file-icon {
@@ -197,23 +266,26 @@ export default {
 
 .tiny-uploader-progress-wrap {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 22px;
+  left: 2px;
   width: 100%;
-  border-radius: 3px;
+  height: 2px;
+  border-radius: 2px;
   z-index: -1;
   background-color: var(--tiny-fill-color-light);
   opacity: 0.8;
 }
 
 .tiny-uploader-progress {
-  height: 28px;
-  border-radius: 4px;
+  height: 2px;
+  border-radius: 2px;
   transition: width 1s;
 }
 
 .tiny-uploader-percent {
-  width: 58px;
+  display: flex;
+  align-items: center;
+  height: 100%;
   text-align: right;
 }
 
@@ -228,14 +300,8 @@ export default {
   background-color: var(--tiny-color-reading);
 }
 
-@keyframes glow {
-  100% {
-    transform: skewX(-45deg) translateX(350%);
-  }
-}
-
 .tiny-uploader--uploading {
-  background-color: var(--tiny-color-uploading);
+  background-color: var(--tiny-color-primary);
 }
 
 .tiny-uploader--success {
@@ -243,8 +309,7 @@ export default {
 }
 
 .tiny-uploader--fail {
-  width: 100%!important;
-  background-color: var(--tiny-color-fail)
+  background-color: var(--tiny-color-error);
 }
 
 .tiny-uploader-actions {
@@ -252,15 +317,13 @@ export default {
   align-items: center;
   justify-content: flex-end;
   margin-right: 8px;
-  width: 50px;
+  cursor: pointer;
 }
 
 .tiny-uploader-action {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 14px;
-  height: 14px;
   cursor: pointer;
   margin-left: 8px;
   overflow: hidden;
