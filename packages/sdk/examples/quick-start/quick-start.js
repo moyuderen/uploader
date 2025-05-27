@@ -6,13 +6,13 @@ const { createApp, ref, reactive, onMounted, watch } = Vue
 
 // dev
 import { create, FileStatus, Callbacks, CheckStatus } from '../../src/index.js'
-import { requestSucceed, customRequest, checkRequest, mergeRequest } from './request.js'
+import { requestSucceed, customRequest, checkRequest, mergeRequest } from './api.js'
 
 const app = createApp({
   setup() {
     const drawer = ref(false)
     const actionList = [
-      'http://localhost:3000/upload',
+      'http://localhost:3000/file/upload',
       'https://jsonplaceholder.typicode.com/posts'
     ]
     const options = reactive({
@@ -30,12 +30,11 @@ const app = createApp({
       useWebWoker: true,
       // 上传相关
       name: 'file',
-      action: 'http://localhost:3000/upload',
+      action: 'http://localhost:3000/file/upload',
       withCredentials: true,
       data: {
         bucket: 'test-public',
-        filePath: 'files/test01/',
-        status: CheckStatus.None
+        filePath: 'files/test01/'
       },
       headers: {
         userauth: 'xxxxx-xxxx-xxxxx'

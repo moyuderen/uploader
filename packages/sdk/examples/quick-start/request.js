@@ -1,90 +1,77 @@
-export const requestSucceed = (response) => {
-  const { status } = response
-  if (status >= 200 && status < 300) {
-    return true
-  }
-  return false
+const { toString } = Object.prototype
+
+const typeOfTest = (value, type) => {
+  const str = toString.call(value)
+  return str.slice(8, -1).toLowerCase() === type
 }
 
-// const BASE_URL = 'http://localhost:3000'
-const BASE_URL = 'https://uploader-server-seven.vercel.app/file'
+export const isBlob = (thing) => {
+  return typeOfTest(thing, 'blob')
+}
 
-export const customRequest = (options) => {
-  const { action, data, query, headers, name, withCredentials, onSuccess, onFail, onProgress } =
-    options
-  const realData = {
-    fileHashCode: data.hash,
-    uploadId: data.fileId,
-    chunkNumber: data.index + 1,
-    chunkSize: data.size,
-    totalChunks: data.totalChunks,
-    [name]: data[name],
-    hash: data.hash,
-    filename: data.filename,
-    index: data.index,
-    // error: '1',
-    ...query
+const logger = (e) => {
+  console.warn('接口reject', e)
+}
+
+const disposeJsonResponse = (response, responseData) => {
+  const {
+    config: { rawResponse },
+    data: { code }
+  } = response
+
+  const data = responseData || response.data
+
+  if (code === '00000') {
+    return rawResponse ? response : data
   }
-  const formData = new FormData()
+  logger(data)
+  return Promise.reject(data)
+}
 
-  Object.keys(realData).forEach((key) => {
-    formData.append(key, realData[key])
-  })
-  const CancelToken = axios.CancelToken
-  const source = CancelToken.source()
+const disposeBlobResponse = async (response) => {
+  const {
+    config: { rawResponse },
+    data
+  } = response
 
-  axios({
-    url: `${BASE_URL}/upload`,
-    method: 'POST',
-    data: formData,
-    headers: headers,
-    cancelToken: source.token,
-    withCredentials: withCredentials,
-    onUploadProgress: onProgress
-  })
-    .then((res) => {
-      onSuccess(action, res)
-    })
-    .catch((e) => {
-      onFail(e)
-    })
+  if (!data.text) {
+    logger(data)
+    return Promise.reject(data)
+  }
 
-  return {
-    abort() {
-      source.cancel('Operation canceled by the user.')
-    }
+  try {
+    const blobString = await data.text()
+    const responseData = JSON.parse(blobString)
+    return disposeJsonResponse(response, responseData)
+  } catch {
+    return rawResponse ? response : data
   }
 }
 
-export const checkRequest = async (file, query, headers) => {
-  const { data, status } = await axios.get(`${BASE_URL}/check`, {
-    params: {
-      hash: file.hash,
-      filename: file.name,
-      status: 'none',
-      ...query
-      // error: '1'
-    },
-    headers
-  })
-  if (status !== 200) {
-    throw new Error()
-  }
-  return data
-}
+const request = axios.create({
+  baseURL: 'http://localhost:3000/file',
+  timeout: 10000,
+  withCredentials: true
+})
 
-export const mergeRequest = async (file, query, headers) => {
-  const { data, status } = await axios.get(`${BASE_URL}/merge`, {
-    params: {
-      hash: file.hash,
-      filename: file.name,
-      ...query
-      // error: '1'
-    },
-    headers
-  })
-  if (status !== 200) {
-    throw new Error()
+request.interceptors.request.use(
+  function (config) {
+    return config
+  },
+  function (error) {
+    return Promise.reject(error)
   }
-  return data.data
-}
+)
+
+request.interceptors.response.use(
+  function (response) {
+    const { data } = response
+    return isBlob(data) ? disposeBlobResponse(response) : disposeJsonResponse(response)
+  },
+  function (error) {
+    logger(error)
+    return Promise.reject(error)
+  }
+)
+
+export { request }
