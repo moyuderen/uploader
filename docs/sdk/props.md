@@ -33,7 +33,7 @@
 
 默认文件列表
 
-- **类型** `DefaultFile[]`, 类型[DefaultFile](./interface/#default-file)
+- **类型** `DefaultFile[]`, 类型[DefaultFile](/sdk/interface/#default-file)
 - **默认值** `[]`
 
 ## limit
@@ -380,7 +380,7 @@ const uploader = new Uploader({
 
 ## customRequest
 
-自定义上传接口, 默认为null,使用内置的[request](./interface.md#request)请求
+自定义上传接口, 默认为null,使用内置的[request](/sdk/interface.md#request)请求
 
 **类型** `null | function`
 
@@ -389,7 +389,7 @@ const uploader = new Uploader({
 > [!WARNING]
 > 如果自定义customRequest, 需要返回一个`abort`方法来取消请求
 
-**示例** [CustomRequestOption](./interface.md#custom-request-option)
+**示例** [CustomRequestOption](/sdk/interface.md#custom-request-option)
 
 ```ts
 const customRequest = (options: CustomRequestOption) => {

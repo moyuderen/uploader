@@ -11,7 +11,7 @@ uploader.assignBrowse(domNode: HTMLElement, attributes: UserAttributes)
 attributes 是 input 文件的属性对象，可覆盖属性中的 accept 和 multiple，或者添加别的属性
 
 > [!NOTE]
-> 枚举[`UserAttributes`](./enum.md#user-attributes)
+> 枚举[`UserAttributes`](/sdk/enum.md#user-attributes)
 
 ## assignDrop
 
