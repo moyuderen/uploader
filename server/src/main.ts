@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
-import { FormatResponseInterceptor } from './format-response.interceptor';
 import { CustomExceptionFilter } from './custom-exception.filter';
 
 async function bootstrap() {
