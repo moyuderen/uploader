@@ -24,7 +24,7 @@ export const customRequest = (options) => {
     filename: data.filename,
     index: data.index,
     // status_error: '1',
-    code_error: '1',
+    // code_error: '1',
     ...query
   }
   const formData = new FormData()
