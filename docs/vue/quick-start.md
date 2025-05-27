@@ -32,23 +32,8 @@ new Vue({
   <div>
     <Uploader
       ref="uploaderRef"
-      action="http://localhost:3000/upload"
-      :data="{ user: 'moyuderen' }"
-      :headers="{ token: 'xxxxxxxx' }"
-      accept=".jpg,.json,.png,.dmg"
-      :fileList="fileList"
-      :chunkSize="1024 * 1024 * 10"
-      :checkFileRequest="checkFileRequest"
-      :mergeRequest="merge"
-      @onExceed="onExceed"
-      @onFilesAdded="onFilesAdded"
-      @onFileProgress="onProgress"
-      @onFileRemove="onRemove"
-      @onFail="onFail"
-      @onSuccess="onSuccess"
-      @onAllFileSuccess="onAllFileSuccess"
+      action="http://localhost:3000/file/upload"
       @onChange="onChange"
-      @onClick="onClick"
     >
     </Uploader>
   </div>
@@ -58,68 +43,17 @@ new Vue({
 export default {
   data() {
     return {
-      fileList: [
-        {
-          name: '哈哈',
-          path: 'http://baidu.com'
-        }
-      ]
+      fileList: []
     }
   },
   methods: {
-    onExceed() {
-      console.log('超出最大上传次数了')
-    },
-    onFilesAdded(fileList) {
-      console.log('添加文件成功', fileList)
-    },
-    onRemove(file, fileList) {
-      console.log('删除文件成功', file, fileList)
-    },
-    onProgress(p, file, fileList) {
-      // console.log('上传中', p, file, fileList)
-    },
-    onFail(file, fileList) {
-      console.log('上传失败', file, fileList)
-    },
-    onSuccess(file, fileList) {
-      console.log('上传成功', file, fileList)
-    },
-    onAllFileSuccess(fileList) {
-      console.log('全部上传成功', fileList)
-    },
-    onChange(fileList) {
-      console.log('change', fileList)
-
+    onChange(file, fileList) {
       this.fileList = fileList
     },
-    onClick(file) {
-      console.log(file)
-    },
-
-    async checkFileRequest(file) {
-      const { hash, name } = file
-      const { data } = await axios.post('http://localhost:3000/checkFile', {
-        hash,
-        name,
-        status: 'none'
-      })
-      return data
-    },
-    async merge(file) {
-      const { hash, name } = file
-      const { data } = await axios.post('http://localhost:3000/merge', { hash, name })
-      file.path = data.data
-    }
   }
 }
 </script>
 
-<style lang="scss" scoped>
-::v-deep .tiny-uploader-btn {
-  color: cornflowerblue;
-}
-</style>
 ```
 
 ## Props 属性
@@ -131,11 +65,21 @@ export default {
 ### drag
 
 是否启用拖拽上传
+
 **类型** `boolean`
+
 **默认值** `true`
 
 > [!NOTE]
 > 当`drag`开启之后`trigger`slot 不在生效, 当`drag`关闭之后`drop`slot 不在生效
+
+### defaultFileList
+
+默认上传文件列表
+
+**类型** `Defaultfile[]`, [Defaultfile](../sdk/interface.md#defaultfile)
+
+**默认值** `[]`
 
 ### 事件属性
 
@@ -144,6 +88,10 @@ export default {
 #### onExceed
 
 参考 [**Exceed**](/sdk/callbacks#exceed)
+
+#### onFileAdded
+
+参考 [**FileAdded**](/sdk/callbacks#fileAdded)
 
 #### onFilesAdded
 
@@ -157,21 +105,9 @@ export default {
 
 参考 [**FileProgress**](/sdk/callbacks#fileprogress)
 
-#### onFileFail
-
-参考 [**FileFail**](/sdk/callbacks#filefail)
-
-#### onFileUploadFail
-
-参考 [**FileUploadFail**](/sdk/callbacks#fileuploadfail)
-
 #### onFileUploadSuccess
 
 参考 [**FileUploadSuccess**](/sdk/callbacks#fileuploadsuccess)
-
-#### onFileSuccess
-
-参考 [**FileSuccess**](/sdk/callbacks#filesuccess)
 
 #### onAllFileSuccess
 
@@ -193,7 +129,7 @@ export default {
 
 文件列表发生改变时调用
 
-`onChange(fileList, [file])`
+`onChange(file, fileList)`
 
 #### onClick
 
@@ -276,7 +212,7 @@ export default {
 
 - [具体代码](https://codepen.io/moyuderen/pen/XWLMMKN)
 
-## [mock 接口](/sdk/questions.html#模拟接口请求)
+## [mock 接口](/sdk/server)
 
 ## [阅读文档](https://moyuderen.github.io/uploader/vue/quick-start.html)
 

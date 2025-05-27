@@ -37,7 +37,7 @@ uploader.on(Callbacks.Exceed, (files, fileList) => {
 > [!IMPORTANT]
 > 版本`2.2.0`之后不返回 fileList 参数
 
-## fileAdded <Badge type="tip">2.2.0 新增</Badge>
+## fileAdded <Badge type="tip">2.2.0 新增</Badge> {#fileAdded}
 
 某文件选取成功添加到 `fileList` (准备上传之前)
 
