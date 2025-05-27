@@ -95,7 +95,7 @@ export default class Uploader {
     }
 
     const newFileList = originFiles.map((file) => new File(file, this))
-    await Promise.all(newFileList.map((file) => this._handleFileAdd(file), beforeAdd))
+    await Promise.all(newFileList.map((file) => this._handleFileAdd(file, beforeAdd)))
 
     this.fileList = this.fileList.filter((file) => {
       if (file.isAddFail() && addFailToRemove) {

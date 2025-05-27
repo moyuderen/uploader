@@ -33,7 +33,7 @@ export default class Chunk {
     this.customRequest = this.options.customRequest || request
   }
 
-  onSuccess(e, response, resolve) {
+  onSuccess(e, response, resolve, reject) {
     if (this.options.requestSucceed(response, this)) {
       this.status = ChunkStatus.Success
       this.file.removeUploadingChunk(this)
@@ -42,7 +42,7 @@ export default class Chunk {
       }
       resolve(this)
     } else {
-      this.onFail(e)
+      this.onFail(e, reject)
     }
   }
 
@@ -114,7 +114,7 @@ export default class Chunk {
           ...parseData(this.options.data),
           ...this.file.data
         },
-        onSuccess: (e, response) => this.onSuccess(e, response, resolve),
+        onSuccess: (e, response) => this.onSuccess(e, response, resolve, reject),
         onFail: (e) => this.onFail(e, reject),
         onProgress: (e) => this.onProgress(e)
       })
