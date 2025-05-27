@@ -1,6 +1,6 @@
 {
   "name": "@tinyuploader/sdk",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "大文件分片上传解决方案sdk, 可用于各种UI框架",
   "private": false,
   "publishConfig": {
