@@ -122,4 +122,6 @@ const onChange = (_file, list) => {
 
 属性、方法用法参考[`@tinyuploader/vue`](/vue/quick-start)
 
+## [demo](https://codesandbox.io/p/devbox/dtv5l3)
+
 ## [更新日志](https://github.com/moyuderen/uploader/blob/main/packages/vue-next/CHANGELOG.md)
