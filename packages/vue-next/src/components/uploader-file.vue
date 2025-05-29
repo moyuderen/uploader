@@ -8,14 +8,14 @@
       <div style="display: flex">
         <div class="percent">{{ parseProgress(file.progress) }}%</div>
         <div class="actions">
-          <span v-if="file.status === Status.Pause" class="action" @click="resume(file)">
+          <span v-if="file.status === FileStatus.Pause" class="action" @click="resume(file)">
             <play-icon :size="14" />
           </span>
-          <span v-if="file.status === Status.Uploading" class="action" @click="pause(file)">
+          <span v-if="file.status === FileStatus.Uploading" class="action" @click="pause(file)">
             <pause-icon :size="14" />
           </span>
           <span
-            v-if="file.status === Status.Fail || file.status === Status.UploadFail"
+            v-if="file.status === FileStatus.Fail || file.status === FileStatus.UploadFail"
             class="action"
             @click="retry(file)"
           >
@@ -32,12 +32,12 @@
           :style="{ width: progressWidth }"
           :class="{
             uploading:
-              file.status === Status.Uploading ||
-              file.status === Status.Pause ||
-              file.status === Status.Resume ||
-              file.status === Status.UploadSuccess,
-            success: file.status === Status.Success,
-            fail: file.status === Status.Fail || file.status === Status.UploadFail
+              file.status === FileStatus.Uploading ||
+              file.status === FileStatus.Pause ||
+              file.status === FileStatus.Resume ||
+              file.status === FileStatus.UploadSuccess,
+            success: file.status === FileStatus.Success,
+            fail: file.status === FileStatus.Fail || file.status === FileStatus.UploadFail
           }"
         ></div>
       </div>
@@ -47,12 +47,12 @@
 
 <script setup>
 import { inject, ref, watch } from 'vue'
-import { Status } from '@tinyuploader/sdk'
-import FileIcon from './file-icon.vue'
-import PlayIcon from './play-icon.vue'
-import PauseIcon from './pause-icon.vue'
-import RetryIcon from './retry-icon.vue'
-import RemoveIcon from './remove-icon.vue'
+import { FileStatus } from '@tinyuploader/sdk'
+import FileIcon from '../icons/file-icon.vue'
+import PlayIcon from '../icons/play-icon.vue'
+import PauseIcon from '../icons/pause-icon.vue'
+import RetryIcon from '../icons/retry-icon.vue'
+import RemoveIcon from '../icons/remove-icon.vue'
 
 const props = defineProps({
   file: Object

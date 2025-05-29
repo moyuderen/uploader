@@ -1,4 +1,4 @@
-import uploader from './components/uploader.vue'
+import uploader from './uploader.vue'
 
 const Uploader = {
   install(app) {

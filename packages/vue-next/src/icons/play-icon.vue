@@ -1,7 +1,7 @@
 <template>
   <svg
     t="1720145898869"
-    class="icon"
+    class="tiny-uploader-icon"
     viewBox="0 0 1024 1024"
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"
@@ -17,10 +17,12 @@
 </template>
 
 <script setup>
+import { toRefs } from 'vue'
 const props = defineProps({
   size: {
     type: Number,
-    default: 20
+    default: 14
   }
 })
+const { size } = toRefs(props)
 </script>
