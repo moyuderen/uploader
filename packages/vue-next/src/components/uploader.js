@@ -1,6 +1,10 @@
 import { CheckStatus } from '@tinyuploader/sdk'
 
 export const uploaderProps = {
+  drag: {
+    type: Boolean,
+    default: true
+  },
   accept: {
     type: String,
     default: '*'
@@ -9,60 +13,19 @@ export const uploaderProps = {
     type: Boolean,
     default: true
   },
-  limit: {
-    type: Number,
-    default: 10
-  },
-  fileList: {
+  defaultFileList: {
     type: Array,
     default() {
       return []
     }
   },
-  name: {
-    type: String,
-    default: 'file'
+  limit: {
+    type: Number,
+    default: 10
   },
   autoUpload: {
     type: Boolean,
     default: true
-  },
-  action: {
-    type: String
-  },
-  fakeProgress: {
-    type: Boolean,
-    default: true
-  },
-  withCredentials: {
-    type: Boolean,
-    default: true
-  },
-  headers: Object,
-  data: Object,
-  withHash: {
-    type: Boolean,
-    default: true
-  },
-  computedhashInWorker: {
-    type: Boolean,
-    default: true
-  },
-  chunkSize: {
-    type: Number,
-    default: 1024 * 1024 * 2
-  },
-  maxRetries: {
-    type: Number,
-    default: 3
-  },
-  retryInterval: {
-    type: Number,
-    default: 1000
-  },
-  maxConcurrency: {
-    type: Number,
-    default: 6
   },
   customGenerateUid: {
     type: [Function, null],
@@ -71,38 +34,84 @@ export const uploaderProps = {
   beforeAdd: {
     type: Function,
     default() {
-      return true
+      return () => true
     }
+  },
+  addFailToRemove: {
+    type: Boolean,
+    default: true
   },
   beforeRemove: {
     type: Function,
     default() {
-      return true
+      return () => true
     }
   },
-  checkFileRequest: {
-    type: Function,
-    default() {
-      return { status: CheckStatus.None }
-    }
+  chunkSize: {
+    type: Number,
+    default: 1024 * 1024 * 2
+  },
+  fakeProgress: {
+    type: Boolean,
+    default: true
+  },
+  withHash: {
+    type: Boolean,
+    default: true
+  },
+  useWebWoker: {
+    type: Boolean,
+    default: false
+  },
+  name: {
+    type: String,
+    default: 'file'
+  },
+  action: {
+    type: String
+  },
+  withCredentials: {
+    type: Boolean,
+    default: true
+  },
+  headers: [Object, Function],
+  data: [Object, Function],
+  customRequest: {
+    type: [Function, null],
+    default: null
   },
   requestSucceed: {
-    type: Function
+    type: Function,
+    default() {
+      return (response) => [200, 201, 202, 206].includes(response.status)
+    }
+  },
+  maxRetries: {
+    type: Number,
+    default: 3
+  },
+  retryInterval: {
+    type: Number,
+    default: 500
+  },
+  maxConcurrency: {
+    type: Number,
+    default: 6
+  },
+  checkRequest: {
+    type: Function,
+    default() {
+      return () => ({ status: CheckStatus.None, data: '' })
+    }
   },
   mergeRequest: {
-    type: Function
+    type: Function,
+    default() {
+      return () => true
+    }
+  },
+  processData: {
+    type: Function,
+    default: (data) => data
   }
 }
-
-export const uploaderEmits = [
-  'onExceed',
-  'onFilesAdded',
-  'onFileChange',
-  'onFileRemove',
-  'onFileProgress',
-  'onFileFail',
-  'onFileUploadFail',
-  'onFileUploadSuccess',
-  'onFileSuccess',
-  'onAllFileSuccess'
-]

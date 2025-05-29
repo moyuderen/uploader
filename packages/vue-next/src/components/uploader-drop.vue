@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { inject, nextTick, onMounted } from 'vue'
 
 onMounted(() => {
@@ -16,7 +16,7 @@ onMounted(() => {
 })
 </script>
 
-<style>
+<style lang="scss">
 .tiny-uploader-drop {
   display: flex;
   align-items: center;
@@ -24,9 +24,14 @@ onMounted(() => {
   flex-direction: column;
   width: 350px;
   height: 150px;
-  border: 1px dashed #dcdfe6;
+  border: 1px dashed var(--tiny-border-color);
   font-size: 14px;
   border-radius: 4px;
   cursor: pointer;
+  background-color: var(--tiny-fill-color-extra-light);
+}
+
+.tiny-uploader-drop:hover {
+  border: 1px dashed var(--tiny-color-primary);
 }
 </style>

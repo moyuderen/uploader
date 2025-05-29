@@ -1,5 +1,23 @@
 # @tinyuploader/vuenext
 
+## 1.3.0
+
+### Minor Changes
+
+#### 新增
+
+- drag
+- defaultFileList
+- 支持自定义上传接口
+- addFailToRemove
+
+#### 变更
+
+- checkFileRequest -> checkReuquest
+- data支持函数类型
+- headers支持函数类型
+- computedHashWorker -> useWebWoker
+
 ## 1.2.0
 
 ### Patch Changes
