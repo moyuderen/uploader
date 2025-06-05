@@ -4,7 +4,6 @@ import {
   generateUid,
   isFunction,
   isBoolean,
-  asyncCancellableComputedHash,
   each,
   throttle,
   renderSize,
@@ -15,6 +14,7 @@ export default class File {
   constructor(file, uploader, defaults) {
     this.uploader = uploader
     this.options = this.uploader.options
+    this.hasher = this.uploader.hasher
     this.uid = this.generateId()
 
     this.prevStatusLastRecord = []
@@ -174,7 +174,7 @@ export default class File {
       this.uploader.emitCallback(Callbacks.FileReadProgress, this)
     }, 200)
 
-    const { promise, abort } = asyncCancellableComputedHash(
+    const { promise, abort } = this.hasher.computedHash(
       {
         file: this.rawFile,
         chunkSize: this.chunkSize,

@@ -16,6 +16,15 @@ export default defineConfig({
       name: 'UploaderSdk',
       fileName: 'sdk'
     },
-    minify: true
+    minify: true,
+    rollupOptions: {
+      external: ['spark-md5'],
+      output: {
+        // exports: 'named', // 保留默认行为
+        globals: {
+          'spark-md5': 'SparkMD5'
+        }
+      }
+    }
   }
 })

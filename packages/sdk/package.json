@@ -51,7 +51,10 @@
   "devDependencies": {
     "vite": "^5.3.4"
   },
-  "dependencies": {
+  "peerDependencies": {
     "spark-md5": "^3.0.2"
+  },
+  "dependencies": {
+    "hashion": "^0.0.4"
   }
 }

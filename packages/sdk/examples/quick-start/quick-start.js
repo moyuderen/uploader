@@ -7,6 +7,7 @@ const { createApp, ref, reactive, onMounted, watch } = Vue
 // dev
 import { create, FileStatus, Callbacks, CheckStatus } from '../../src/index.js'
 import { requestSucceed, customRequest, checkRequest, mergeRequest } from './api.js'
+import { SparkWorker } from 'hashion/sparkWorker'
 
 const app = createApp({
   setup() {
@@ -67,6 +68,8 @@ const app = createApp({
       checkRequest,
       mergeRequest
     })
+
+    uploader.value.use(SparkWorker)
 
     uploader.value.on(Callbacks.Exceed, (file, _fileList) => {
       console.log(`Exceed ---- ${file.name} ---- ${file.status}`)
