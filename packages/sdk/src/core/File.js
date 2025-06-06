@@ -174,6 +174,12 @@ export default class File {
       this.uploader.emitCallback(Callbacks.FileReadProgress, this)
     }, 200)
 
+    if (this.options.useWebWoker && this.hasher.hashionName !== 'sparkMd5Webworker') {
+      throw new Error(`
+        Please install "SparkWorker" plugin -> npm i hashion;
+        https://www.npmjs.com/package/hashion
+      `)
+    }
     const { promise, abort } = this.hasher.computedHash(
       {
         file: this.rawFile,

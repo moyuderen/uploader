@@ -148,8 +148,8 @@ importers:
   packages/sdk:
     dependencies:
       hashion:
-        specifier: ^0.0.4
-        version: 0.0.4(spark-md5@3.0.2)
+        specifier: ^0.0.7
+        version: 0.0.7(spark-md5@3.0.2)
       spark-md5:
         specifier: ^3.0.2
         version: 3.0.2
@@ -3448,8 +3448,8 @@ packages:
   hash-sum@2.0.0:
     resolution: {integrity: sha512-WdZTbAByD+pHfl/g9QSsBIIwy8IT+EsPiKDs0KNX+zSHhdDLFKdZu0BQHljvO+0QI/BasbMSUa8wYNCZTvhslg==}
 
-  hashion@0.0.4:
-    resolution: {integrity: sha512-WtfYMEaVIhBgUDSZHYP++W0rNc1MaMmziZ7ApEZ6OptnaQGrzw+ZGJj3Rc7O9p/rZR78mmIV//DzRlYA2iN/pg==}
+  hashion@0.0.7:
+    resolution: {integrity: sha512-L1tUmnVzjDN8Cw8oHzuE+p/jkyChsust5aDgTHenvVemhFfGoNgH6YXrJS+hc5p8vd/X2RdTo5/ZobeNAOrNTw==}
     peerDependencies:
       spark-md5: ^3.0.2
 
@@ -8764,7 +8764,7 @@ snapshots:
 
   hash-sum@2.0.0: {}
 
-  hashion@0.0.4(spark-md5@3.0.2):
+  hashion@0.0.7(spark-md5@3.0.2):
     dependencies:
       spark-md5: 3.0.2
 

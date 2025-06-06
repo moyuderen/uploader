@@ -1,5 +1,12 @@
 # @tinyuploader/sdk
 
+## 2.2.1
+
+### Patch Changes
+
+- 6b574e5: support hash plugin
+- hash plugin
+
 ## 2.2.1-alpha.0
 
 ### Patch Changes

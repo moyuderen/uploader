@@ -1,5 +1,14 @@
 # @tinyuploader/vue
 
+## 1.4.1
+
+### Patch Changes
+
+- hash plugin
+- Updated dependencies [6b574e5]
+- Updated dependencies
+  - @tinyuploader/sdk@2.2.1
+
 ## 1.4.0
 
 ### Minor Changes
