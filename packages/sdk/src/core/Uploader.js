@@ -4,6 +4,8 @@ import File from './File'
 import { defaultOptions } from './defaults'
 import { Callbacks, FileStatus } from './constants'
 import { extend, isString, isArray, isFunction, isPromise } from '../shared'
+import { Hashion } from 'hashion'
+import { Spark } from 'hashion/spark'
 
 export default class Uploader {
   constructor(options) {
@@ -11,8 +13,10 @@ export default class Uploader {
     this.event = new Event()
 
     this.options = extend(defaultOptions, options)
+    this.hasher = null
     this.fileList = (this.options.fileList || []).map((file) => new File(file, this, file))
     this._setupFileListeners()
+    this.use(Spark)
   }
 
   on(name, fn) {
@@ -37,6 +41,14 @@ export default class Uploader {
 
   setOption(options) {
     this.options = extend(this.options, options)
+  }
+
+  use(plugin) {
+    const pluginName = plugin.pluginName
+
+    if (pluginName === 'hash-plugin') {
+      this.hasher = new Hashion(plugin)
+    }
   }
 
   formatAccept(accept) {

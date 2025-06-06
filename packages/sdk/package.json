@@ -1,6 +1,6 @@
 {
   "name": "@tinyuploader/sdk",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "大文件分片上传解决方案sdk, 可用于各种UI框架",
   "private": false,
   "publishConfig": {
@@ -48,10 +48,11 @@
   "files": [
     "dist"
   ],
+  "peerDependencies": {
+    "spark-md5": "^3.0.2",
+    "hashion": "^0.0.7"
+  },
   "devDependencies": {
     "vite": "^5.3.4"
-  },
-  "dependencies": {
-    "spark-md5": "^3.0.2"
   }
 }

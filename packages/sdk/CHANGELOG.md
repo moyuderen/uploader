@@ -1,5 +1,18 @@
 # @tinyuploader/sdk
 
+## 2.2.1
+
+### Patch Changes
+
+- 6b574e5: support hash plugin
+- hash plugin
+
+## 2.2.1-alpha.0
+
+### Patch Changes
+
+- support hash plugin
+
 ## 2.2.0
 
 ### Minor Changes (2025-05-27)
@@ -7,7 +20,7 @@
 #### 新增
 
 - 导出：import { FileStatus, ChunkStatus, Callbacks } from '@tinyuploader/sdk'
-- 配置：Uploader 新增默认参数fileList
+- 配置：Uploader 新增默认参数 fileList
 - 配置：Uploader 添加默认参数 addFailToRemove，添加文件失败时是否删除
 - 配置：支持自定义上传接口 customRequest
 - 配置：updateData 更新 data
@@ -15,7 +28,7 @@
 - 配置：processData 方法，用户自定义处理 data
 - 配置：setDefaultFileList 异步设置 fileList
 - 状态：FileStatus.addFail 状态，文件添加失败状态
-- 状态：FileStatus.checkFail 状态，checkRequest 存在时，且 checkRequest失败文件变更为checkFail
+- 状态：FileStatus.checkFail 状态，checkRequest 存在时，且 checkRequest 失败文件变更为 checkFail
 - 状态：CheckStatus.waitMerge, 文件上传完毕等待合并
 - 回调：fileAddFail
 - 回调：fileReadStart
@@ -32,14 +45,14 @@
 
 - 导出：Status -> FileStatus, ChunkStatus
 - 导出：Events -> Callbacks
-- 配置：chunkSize 默认为 1024 *1024* 2（2m）
+- 配置：chunkSize 默认为 1024 _1024_ 2（2m）
 - 配置：headers, data 支持函数，默认返回{}
 - 配置：action 默认为''
 - 配置：checkFileRequest -> checkRequest
 - 配置：beforeAdd 支持异步，返回 false，或者 reject 时添加失败
 - 方法：computedHashWorker -> useWebWoker
-- File:  文件属性变更 file.path -> file.url
-- File:  checkRequest 支持异步，返回 false，或者 reject 时失败
+- File: 文件属性变更 file.path -> file.url
+- File: checkRequest 支持异步，返回 false，或者 reject 时失败
 
 #### 优化
 

@@ -1,5 +1,14 @@
 # @tinyuploader/vuenext
 
+## 1.3.1
+
+### Patch Changes
+
+- hash plugin
+- Updated dependencies [6b574e5]
+- Updated dependencies
+  - @tinyuploader/sdk@2.2.1
+
 ## 1.3.0
 
 ### Minor Changes
@@ -14,8 +23,8 @@
 #### 变更
 
 - checkFileRequest -> checkReuquest
-- data支持函数类型
-- headers支持函数类型
+- data 支持函数类型
+- headers 支持函数类型
 - computedHashWorker -> useWebWoker
 
 ## 1.2.0
