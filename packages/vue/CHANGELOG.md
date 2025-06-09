@@ -1,6 +1,12 @@
 # @tinyuploader/vue
 
-## 1.4.2
+## 1.4.3
+
+### Patch Changes
+
+- fix: checkReuqest default value
+
+## 1.4.2 （deprecate）
 
 ### Patch Changes
 

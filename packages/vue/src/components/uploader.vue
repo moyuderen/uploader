@@ -148,13 +148,13 @@ export default {
     checkRequest: {
       type: Function,
       default() {
-        return () => true
+        return () => ({status: 'none'})
       }
     },
     mergeRequest: {
       type: Function,
       default() {
-        return () => ({status: 'none'})
+        return () => true
       }
     },
     processData: {
