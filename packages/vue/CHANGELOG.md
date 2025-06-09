@@ -1,5 +1,11 @@
 # @tinyuploader/vue
 
+## 1.4.6
+
+### Patch Changes
+
+- feat: make icons clearer.
+
 ## 1.4.5
 
 ### Patch Changes

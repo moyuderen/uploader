@@ -2,7 +2,7 @@
   <div class="tiny-uploader">
     <uploader-drop v-if="drag">
       <slot name="drop" v-bind:scope="{ multiple, accept }">
-        <upload-icon :size="40" :color="primaryColor" style="margin-bottom: 6px" />
+        <upload-icon style="margin-bottom: 6px; width: 64px; height: 40px;" />
         <div>
           <span>Drop file here or</span>
           <uploader-button> click to upload </uploader-button>
@@ -164,7 +164,6 @@ export default {
     return {
       uploader: null,
       files: [],
-      primaryColor: ''
     }
   },
   watch: {
@@ -175,10 +174,6 @@ export default {
     }
   },
   created() {
-    this.primaryColor = getComputedStyle(document.documentElement)
-      .getPropertyValue('--tiny-color-primary')
-      .trim()
-
     this.uploader = new Uploader({
       // input 属性相关
       accept: this.accept,

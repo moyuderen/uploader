@@ -1,7 +1,7 @@
 <template>
   <svg
     t="1720146896680"
-    class="tiny-uploader-icon"
+    class="tiny-uploader-icon tiny-uploader-icon-file"
     viewBox="0 0 1024 1024"
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +27,7 @@ export default {
   props: {
     size: {
       type: Number,
-      default: 14
+      default: 32
     }
   }
 }

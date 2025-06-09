@@ -8,6 +8,7 @@
 
     <Uploader
       ref="uploaderRef"
+      class="tiny-uploader"
       v-bind="option"
       :defaultFileList="defaultFileList"
       @onExceed="onExceed"
@@ -98,3 +99,10 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.tiny-uploader {
+  --tiny-color-primary: #1dce9f;
+}
+</style>
+

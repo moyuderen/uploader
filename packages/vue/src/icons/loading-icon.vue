@@ -22,7 +22,7 @@ export default {
   props: {
     size: {
       type: Number,
-      default: 14
+      default: 32
     }
   }
 }

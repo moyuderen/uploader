@@ -197,6 +197,10 @@ export default {
 </script>
 
 <style lang="scss">
+.tiny-uploader-icon {
+  width: var(--tiny-font-size-medium);
+}
+
 .tiny-uploader-info-wrap {
   position: relative;
   display: flex;
