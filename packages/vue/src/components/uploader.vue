@@ -147,9 +147,7 @@ export default {
     },
     checkRequest: {
       type: Function,
-      default() {
-        return () => ({status: 'none'})
-      }
+      default: () => ({status: 'none'})
     },
     mergeRequest: {
       type: Function,

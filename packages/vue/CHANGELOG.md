@@ -1,5 +1,11 @@
 # @tinyuploader/vue
 
+## 1.4.4
+
+### Patch Changes
+
+- checkRequest default value
+
 ## 1.4.3
 
 ### Patch Changes

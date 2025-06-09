@@ -100,9 +100,7 @@ export const uploaderProps = {
   },
   checkRequest: {
     type: Function,
-    default() {
-      return () => ({ status: CheckStatus.None, data: '' })
-    }
+    default: () => ({ status: CheckStatus.None, data: '' })
   },
   mergeRequest: {
     type: Function,
