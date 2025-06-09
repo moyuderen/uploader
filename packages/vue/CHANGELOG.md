@@ -1,5 +1,11 @@
 # @tinyuploader/vue
 
+## 1.4.7
+
+### Patch Changes
+
+- Support custom Component name
+
 ## 1.4.6
 
 ### Patch Changes

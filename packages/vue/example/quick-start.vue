@@ -6,7 +6,7 @@
       <button v-if="option.autoUpload === false" @click="submit">手动提交</button>
     </div>
 
-    <Uploader
+    <TinyUploader
       ref="uploaderRef"
       class="tiny-uploader"
       v-bind="option"
@@ -23,7 +23,7 @@
       @onAllFileSuccess="onAllFileSuccess"
       @onClick="onClick"
     >
-    </Uploader>
+    </TinyUploader>
   </div>
 </template>
 

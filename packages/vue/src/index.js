@@ -1,8 +1,9 @@
 import Uploader from './components/uploader.vue'
 
 const uploader = {
-  install(Vue) {
-    Vue.component('Uploader', Uploader)
+  install(Vue, options = {}) {
+    const { name } = options
+    Vue.component(name || 'Uploader', Uploader)
   }
 }
 
