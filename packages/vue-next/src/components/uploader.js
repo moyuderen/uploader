@@ -82,9 +82,7 @@ export const uploaderProps = {
   },
   requestSucceed: {
     type: Function,
-    default() {
-      return (response) => [200, 201, 202, 206].includes(response.status)
-    }
+    default: (response) => [200, 201, 202, 206].includes(response.status)
   },
   maxRetries: {
     type: Number,
@@ -104,9 +102,7 @@ export const uploaderProps = {
   },
   mergeRequest: {
     type: Function,
-    default() {
-      return () => true
-    }
+    default: () => true
   },
   processData: {
     type: Function,

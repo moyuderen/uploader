@@ -1,5 +1,11 @@
 # @tinyuploader/vue
 
+## 1.4.5
+
+### Patch Changes
+
+- default function value
+
 ## 1.4.4
 
 ### Patch Changes

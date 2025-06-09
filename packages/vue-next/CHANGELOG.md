@@ -1,5 +1,11 @@
 # @tinyuploader/vuenext
 
+## 1.3.3
+
+### Patch Changes
+
+- default function value
+
 ## 1.3.2
 
 ### Patch Changes
