@@ -27,7 +27,7 @@ export default defineConfig({
     minify: true,
     cssCodeSplit: false,
     rollupOptions: {
-      external: ['vue'],
+      external: ['vue', 'spark-md5'],
       output: {
         globals: {
           vue: 'Vue'
