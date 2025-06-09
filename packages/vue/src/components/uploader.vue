@@ -154,7 +154,7 @@ export default {
     mergeRequest: {
       type: Function,
       default() {
-        return () => true
+        return () => ({status: 'none'})
       }
     },
     processData: {
